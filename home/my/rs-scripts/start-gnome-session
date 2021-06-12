@@ -1,0 +1,10 @@
+#!/bin/sh
+
+SESSION='gnome-session'
+
+sed -i "s/#exec $SESSION/exec $SESSION/g" "$HOME/.xsession"
+
+startx
+
+sed -i "s/exec $SESSION/#exec $SESSION/g" "$HOME/.xsession"
+

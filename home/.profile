@@ -1,0 +1,102 @@
+# ~/.profile: executed by the command interpreter for login shells.
+# This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
+# exists.
+# see /usr/share/doc/bash/examples/startup-files for examples.
+# the files are located in the bash-doc package
+
+if test -n "$MY_SHELL_INITIALIZED"
+then true
+else echo "$PATH" > "/tmp/initial-env-$USER"
+fi
+
+case $IN_NIX_SHELL in
+	pure)
+		export PATH=$(cat "/tmp/initial-env-$USER")
+		return
+esac
+
+# # Breaks stuff on GuixSD, so.... yeah
+#if test -n "$MY_SHELL_INITIALIZED"
+#then return
+#else export MY_SHELL_INITIALIZED=true
+#fi
+
+if which my-safe-rm 1>/dev/null 2>/dev/null
+then alias rm=my-safe-rm
+fi
+
+###############
+## VARIABLES ##
+###############
+
+export MY_HOSTNAME=$(cat /etc/hostname)
+export MY_MEDIA="$HOME/my/media"
+export MY_TRASH="$HOME/my/tmp/trash"
+export MY_SERVER_NAME="vauplace.xyz"
+
+# Export locale so terminals and tmux are fancy
+export LC_ALL='en_US.UTF-8'
+
+if test -z $COLUMNS
+then COLUMNS=80
+fi
+export COLUMNS
+
+export PAGER=less
+export EDITOR=ec
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+###########
+## PATHS ##
+###########
+
+test -d "$HOME/.cabal/bin" && PATH="${HOME}/.cabal/bin:${PATH}"
+test -d "$HOME/.cargo/bin" && PATH="${HOME}/.cargo/bin:${PATH}"
+test -d "$HOME/.local/nodejs/bin" && PATH="${HOME}/.local/nodejs/bin:${PATH}"
+test -d "/usr/local/go/bin" && PATH="/usr/local/go/bin:${PATH}"
+
+# Some XDG hack to make flatpak unbug itself
+export XDG_DATA_DIRS="/usr/share/gnome:/usr/local/share/:/usr/share/:$XDG_DATA_DIRS"
+
+# Read nix env and fix archive directory (https://github.com/nix-community/home-manager/issues/354)
+if test -d "$HOME/.nix-profile"
+then
+	test -e "$HOME/.nix-profile/etc/profile.d/nix.sh" && \
+		. "$HOME/.nix-profile/etc/profile.d/nix.sh"
+	test -e '$HOME/.nix-profile/etc/profile.d/nix-daemon.sh' && \
+		. '$HOME/.nix-profile/etc/profile.d/nix-daemon.sh'
+	test -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' && \
+		. '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+	test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh' && \
+		. '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
+	export LOCALE_ARCHIVE=$(nix-build --no-out-link '<nixpkgs>' -A glibcLocales 2>/dev/null)/lib/locale/locale-archive
+fi
+
+## Remove duplicates (disabled because bugged on nixos)
+# PATH=$(echo "$PATH" | awk -v 'RS=:' -v 'ORS=:' '!($0 in a) {a[$0]; print}')
+
+# prepend ~.local/bin to PATH
+PATH="${HOME}/.local/bin:${PATH}"
+
+export PATH
+
+# Chibi scheme load path
+if test -z "$CHIBI_MODULE_PATH"
+then export CHIBI_MODULE_PATH="$HOME/.local/share/chibi:$HOME/.local/lib/chibi"
+else export CHIBI_MODULE_PATH="$HOME/.local/share/chibi:$HOME/.local/lib/chibi"
+fi
+
+if test -z "$FISH_SHELL"
+then export FISH_SHELL=$(which fish 2>/dev/null)
+fi
+
+if test -n "$FISH_SHELL"
+then
+	export SHELL="$FISH_SHELL"
+
+	if test -n "$SSH_CONNECTION"
+	then exec fish
+	fi
+fi
+
+

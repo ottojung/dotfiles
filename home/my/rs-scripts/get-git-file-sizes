@@ -1,0 +1,2 @@
+#!/bin/sh
+git ls-files | xargs -I% du -s % | awk '{ printf "%0.10d %s\n", $1, $2 }' | sort

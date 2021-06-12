@@ -1,0 +1,11 @@
+// Place your key bindings in this file to override the defaultsauto[]
+[
+    {
+        "key": "alt+e",
+        "command": "paragraphjump.down"
+    },
+    {
+        "key": "alt+a",
+        "command": "paragraphjump.up"
+    }
+]

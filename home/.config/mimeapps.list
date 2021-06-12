@@ -1,0 +1,29 @@
+[Default Applications]
+x-scheme-handler/http=myBrowser.desktop
+x-scheme-handler/https=myBrowser.desktop
+x-scheme-handler/ftp=myBrowser.desktop
+x-scheme-handler/chrome=myBrowser.desktop
+x-scheme-handler/magnet=userapp-transmission-gtk-XNCF10.desktop
+x-scheme-handler/msteams=teams.desktop
+text/plain=ec.desktop
+image/jpeg=sxiv.desktop
+image/png=sxiv.desktop
+video/mp4=mpv.desktop
+video/mpeg=mpv.desktop
+video/webm=mpv.desktop
+video/x-matroska=mpv.desktop
+application/pdf=zathura.desktop
+image/vnd.djvu+multipage=okular.desktop
+x-scheme-handler/magnet=userapp-transmission-gtk-XNCF10.desktop;
+
+[Added Associations]
+text/plain=ec.desktop
+image/jpeg=sxiv.desktop
+image/png=sxiv.desktop
+video/mp4=mpv.desktop
+video/mpeg=mpv.desktop
+video/webm=mpv.desktop
+video/x-matroska=mpv.desktop
+application/pdf=zathura.desktop
+image/vnd.djvu+multipage=okular.desktop
+x-scheme-handler/magnet=userapp-transmission-gtk-XNCF10.desktop;

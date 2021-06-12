@@ -1,0 +1,28 @@
+*~
+\#*#
+.#*
+.*.swp
+
+.emacs.desktop
+.emacs.desktop.lock
+
+auto-save-list/
+url/
+
+# temp
+recentf
+recentf~
+eshell/history
+eshell/lastdir
+
+
+# lisp compiled
+*.elc
+
+# data
+*.data
+
+projectile.cache
+projectile-bookmarks.eld
+ido.last
+

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Sxiv
+MimeType=image/jpeg;image/jpg;image/png;image/gif;
+Exec=sxiv %F
+Type=Application
+Terminal=false
+Keywords=Image;

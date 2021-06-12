@@ -1,0 +1,43 @@
+
+{xs} - x -> {xs} (1 + x)
+{xs} - x {ys} -> {xs} (1 + x) {ys}
+
+-------------------
+
+x {xs} + y {ys} -> (x {xs}) + (y {ys})
+x {xs} * y {ys} -> (x {xs}) * (y {ys})
+
+-------------------
+
+not x -> 1 + x
+a => b -> 1 + (a + (a * b))
+a <=> b -> 1 + (a + b)
+a or b -> (a + b) + (a * b)
+a and b -> a * b
+a nand b -> 1 + (a * b)
+if x then a else b -> b + ((a * x) + (b * x))
+
+-------------------
+
+a + a -> 0
+a + (a + b) -> b
+a * a -> a
+a * (a * b) -> a * b
+1 * x -> x
+0 + x -> x
+0 * x -> 0
+
+a f b -> b f a | b < a
+a f (b f c) -> b f (a f c) | b < a
+(a f b) f c -> a f (b f c)
+x * (a + b) -> (x * a) + (x * b)
+
+-------------------
+
+(a + b) + c -> a + b + c
+a + (b + c) -> a + b + c
+(a * b) * c -> a * b * c
+a * (b * c) -> a * b * c
+
+
+

@@ -1,0 +1,21 @@
+[global_config]
+  borderless = True
+  extra_styling = False
+  inactive_color_offset = 0.601851851852
+[keybindings]
+[layouts]
+  [[default]]
+    [[[child1]]]
+      parent = window0
+      type = Terminal
+    [[[window0]]]
+      parent = ""
+      type = Window
+[plugins]
+[profiles]
+  [[default]]
+    autoclean_groups = False
+    cursor_color = "#aaaaaa"
+    scrollback_lines = 5000
+    scrollbar_position = hidden
+    show_titlebar = False

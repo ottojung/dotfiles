@@ -1,0 +1,23 @@
+#!/bin/sh
+
+DIR=/home/admin/my/media/
+LOCAL=/home/$USER/my/media/
+mkdir -p "$LOCAL"
+
+REMOTE=ssh://admin@192.168.12.1/$DIR
+#PREFER=$LOCAL
+PREFER=$REMOTE
+DAEMON=false
+
+CMD="unison -batch -ui text -auto -prefer '$PREFER'"
+
+if test "$PREFER" = "$LOCAL"
+then CMD="$CMD -root '$LOCAL' -root '$REMOTE'"
+else CMD="$CMD -root '$REMOTE' -root '$LOCAL'"
+fi
+
+if $DAEMON
+then while true; do sh -c "$CMD"; sleep 120; done
+else sh -c "$CMD"
+fi
+

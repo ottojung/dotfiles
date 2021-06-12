@@ -1,0 +1,68 @@
+#!/usr/bin/env guile
+!#
+
+(use-modules (euphrates common)
+             (ice-9 pretty-print))
+
+(define (reset-author-cmd date)
+  (sh
+   (stringf
+    "GIT_COMMITTER_DATE='~a' git commit --amend --reset-author --no-edit '--date=~a'"
+    date
+    date)))
+
+(define-syntax-rule (with-possible-conflicts . bodies)
+  (let lp ((i 0))
+    (catch-any
+     (lambda _ . bodies)
+     (lambda _
+       (when (= 0 i)
+         (lp (1+ i)))
+
+       (dprintln "-----------------")
+       (pretty-print (quote bodies))
+       (dprintln "Errors ^^^ Need to fix merge conflict? Press enter when finished")
+       (read)
+       (lp (1+ i))))))
+
+(define SED-CMD
+  "s/FROM/TO/g")
+
+(define (sed-files-cmd date)
+  (sh "(git checkout --their . || true) ;
+       git ls-files | xargs -I% sh -c \"test -f '%' && sed -i '~a' '%' || true\" ;
+       git add . ;
+       GIT_COMMITTER_DATE='~a' git commit --amend --no-edit '--date=~a'
+      "
+      SED-CMD
+      date
+      date))
+
+(define commits-text
+  (sh-re "git log --oneline --format='%H %aD'"))
+
+(define commits
+  (map
+   (lambda (line)
+     (let* ((w (words line))
+            (H (car w))
+            (d (substring line (1+ (string-length H)))))
+       d))
+   (lines commits-text)))
+
+(define (run func)
+
+  (sh "git tag save-~a" (big-random-int 1000000000))
+  (sh "git clean -dfx")
+  (sh "GIT_EDITOR='sed -i s/^pick/edit/' git rebase -i --root")
+
+  (for-each
+   (lambda (date)
+     (with-possible-conflicts
+      (func date)
+      (sh "git rebase --continue")))
+   (reverse commits)))
+
+;; (run reset-author-cmd)
+;; (run sed-files-cmd)
+

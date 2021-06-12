@@ -1,0 +1,179 @@
+
+(eval-when
+ (expand load eval)
+ (add-to-load-path (dirname (current-filename))))
+
+(use-modules (gnu))
+(use-modules (gnu packages))
+(use-modules (gnu packages commencement))
+(use-modules (guix profiles))
+(use-modules (my helpers))
+
+(use-package-modules haskell haskell-xyz wm gcc)
+
+(define-packages cli-tools
+  time ;; measure time taken by programs
+  pv ;; measures progress of the unix pipe
+  man-db ;; default manual
+  stow ;; a tool to deploy dotfiles
+  ;; bc ;; very old calculator, provides bc and dc. Use awk instead
+  fzf ;; command line fuzzy finder
+  openssl ;; protocols & encryption stuff
+  recode ;; Charset converter tool and library
+  jq ;; JSON query language. Preprocessor
+  pup ;; HTML processor, like jq but for HTML instead of JSON
+  rlwrap ;; provides `readline` functionality for CLI programs
+  tree ;; like `ls` but recursive
+  entr ;; runs command when file is updated
+  wget ;; downloads stuff from the internet, like curl
+  curl ;; downloads stuff from the internet, like wget
+  libnotify ;; provides `notify-send'
+  sox ;; provides `play' command
+  pamixer ;; setting volume and stuff
+  ;; doas ;; alternative to "sudo"
+  )
+
+(define-packages cli-programs
+  vim ;; text editor
+  git ;; version control system
+  fish ;; shell
+  htop ;; process monitor
+  screen ;; terminal multiplexer a la tmux
+  tmux ;; terminal multiplexer a la screen
+  cmus ;; terminal music player
+  ;; cordless ;; discord CLI client
+  ;; neofetch ;; to look cool on the internet
+  p7zip ;; .7z archive manager
+  unzip ;; .zip archive extractor
+  zip ;; .zip archive creator
+  ;; unrar ;; .rar archive manager, unfree :(
+  ;; megacmd ;; mega.nz command line interface, unfree :(
+  ffmpeg ;; video covertery
+  pandoc ;; conversion between formats, like markdown to HTML
+  ;; scc ;; cloc alternative
+  cloc ;; scc alternative
+  nitrogen ;; changes wallpapers
+  cpupower ;; `cpupower' utility (nix: linuxPackages.cpupower)
+  lm-sensors ;; CPU diagnostics tool, provides `sensors' program and others (nix: lm_sensors)
+  acpi ;; battery diagnostics tool
+  rsync ;; copies files between remote computers
+  unison ;; like rsync, but for syncing
+  ;; ;; youtube-dl ;; need newest version
+  ;; texlive.combined.scheme-full ;; distribution of TeX programs
+  )
+
+(define-packages compilers
+  ;; gcc-toolchain ;; (nix: gcc)
+  ;; binutils ;; gcc and linker and stuff
+  ;; nodejs
+  make ;; (nix: gnumake)
+  ;; guile
+  ;; python ;; (nix: python3)
+  ;; racket
+  ;; chez ;; provides `scheme' - r6rs compiler
+  ;; chibi ;; provides `chibi-scheme' - r7rs interpreter
+  ;; libck ;; instead of `cyclone-scheme` which is broken
+  ;; dotnet-sdk ;; provides `dotnet` - C;;, F;; and VB.NET compilers
+  ;; R libjpeg libpng ;; provides `R` - R-language interpreter
+  ;; ghc ;; provides `ghci` - haskell language interpreter
+  ;; coq ;; Coq language compiler
+  ;; maxima ;; mathematica-like computer algebra system
+  )
+
+(define-packages x-server
+  xsel ;; copy-paste from terminal
+  ;; xmonad-with-packages ;; main xmonad program and libraries
+  ;; xmobar ;; panel
+  ;; mime-types ;; for xdg-open
+  shared-mime-info ;; for xdg-open
+  arandr ;; managing multiple screens
+  xrandr ;; managing resolution and stuff (nix: xorg.xrandr)
+  xmodmap ;; managing shortcuts (nix: xorg.xmodmap)
+  xev ;; captures keyboard keycodes (nix: xorg.xev)
+  compton ;; allows transparency and screen sharing
+  scrot ;; making screenshots
+  ;; gromit-mpx ;; drawing on the screen ;; TODO: port to guix
+  ;; dunst ;; notify manager
+  stalonetray ;; tray manager
+  ;; trayer ;; tray manager ;; TODO: port to guix
+  )
+
+(define-packages gui-small
+  pcmanfm ;; gui file manager
+  emacs ;; operating system
+  ;; lilyterm ;; terminal emulator
+  ;; mlterm ;; terminal emulator
+  alacritty ;; terminal emulator
+  rofi ;; application launcher
+  mpv ;; simple video player
+  pavucontrol ;; audio mixer/controller
+  sxiv ;; simple X image viewer
+  transmission-remote-gtk ;; torrent client (nix: transmission-gtk)
+  ;; wicd ;; GUI wifi manager (does not work)
+  )
+
+(define-packages gui-big
+  audacity ;; audio editor
+  telegram-desktop ;; Telegram desktop client (nix: tdesktop)
+  ;; virtualbox ;; virtual machine (some parts are propriatary)
+  virt-manager ;; virtual machine helper
+  ungoogled-chromium ;; chromium without google services
+  firefox ;; fuck mozilla
+  ;; torbrowser ;; breaks ;; TODO: track incoming: https://issues.guix.gnu.org/42380
+  ;; nyxt ;; doesn't work
+  ;; teams ;; unfree :(
+  obs ;; (nix: obs-studio)
+  ;; flatpak
+  okular ;; pdf-reader
+  zathura ;; pdf-reader
+  ;; vlc ;; video-player. Use mpv instead
+  libreoffice
+  ;; krita ;; paint program
+  gimp ;; image editor
+  mypaint ;; simple paint program
+  )
+
+(define-packages fonts
+  font-fira-code ;; (nix: fira-code)
+  font-fira-go
+  font-fira-sans
+  font-fira-mono
+  )
+
+(define-packages e-mail
+  notmuch ;; mail indexer
+  isync ;; also known as `mbsync' and uses `~/.mbsyncrc'
+  msmtp ;; for sending mails, uses `~/.msmtprc'
+  )
+
+(define-packages drivers
+  xf86-input-wacom ;; wacom tablet driver
+  libwacom ;; wacom tablet library
+  ;; wacomtablet ;; KDE thingy
+  )
+
+(define-packages guix-packages
+  gnupg ;; gpg for pgs
+  pinentry ;; needed for GPG for some reason
+  ncurses ;; provides "clear" and "reset"
+  dash ;; bash replacement
+  )
+
+(define xmonad-packages
+  (list gcc-toolchain ghc ghc-hostname ghc-xmonad-contrib xmonad xmobar))
+
+(packages->manifest
+ (append
+  cli-tools
+  cli-programs
+  compilers
+  x-server
+  gui-small
+  gui-big
+  fonts
+  e-mail
+  drivers
+
+  guix-packages
+  xmonad-packages
+  ))

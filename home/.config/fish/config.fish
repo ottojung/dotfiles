@@ -1,0 +1,117 @@
+
+if which my-safe-rm 1>/dev/null 2>/dev/null
+	alias rm "my-safe-rm"
+end
+
+# Fix for ESHELL prompt
+function fish_title
+end
+
+function fish_greeting
+end
+
+if [ (id --user) = 1000 ]
+	export MY_IS_DEFAULT_USER=true
+end
+
+function fish_prompt
+	set -l display_status $status
+
+	set_color purple
+	printf "\n$PWD" | sed "s#$HOME#~#"
+
+	if [ -n "$MY_INSIDE_SSH" ]
+		set_color red
+		printf " $MY_INSIDE_SSH"
+	end
+
+	if [ -z "$MY_IS_DEFAULT_USER" ]
+		set_color blue
+		printf " \$$USER"
+	end
+
+	if [ -n "$GUIX_ENVIRONMENT" ]
+		set_color yellow
+		printf " [env]"
+	end
+
+	if [ "$display_status" = 0 ]
+		set_color green
+	else
+		set_color red
+	end
+
+	printf '\n▶ '
+	set_color normal
+end
+
+function mkcd
+	mkdir -p "$argv"; and cd "$argv"
+end
+
+function my-timed
+	time sh -c "$argv"
+	my-notify "DONE"
+end
+
+function mvcd
+	set len (count $argv)
+	set last_index (math $len - 1)
+	set dest "$argv[$len]"
+
+	# Making directory using last argument
+	mkdir -p "$dest" ; or return 1
+
+	# Moving everything to directory just made
+	for i in (seq 1 $last_index)
+		mv -v "$argv[$i]" "$dest"
+	end
+
+	# CD into created directory
+	cd "$dest"
+end
+
+function mvtemp
+	cd (my-move-to-temporary $argv) && ls
+end
+
+set LPWD $PWD
+
+function cd
+	set PPWD "$PWD"
+
+	if [ "$argv" = "" ]
+		if [ "$HOME" = "" ]
+			echo "BAD HOME"
+		else
+			cd "$HOME"
+		end
+	else if [ "$argv" = "-" ]
+		if [ "$LPWD" = "-" ]
+			echo "BAD LPWD"
+		else
+			cd "$LPWD"
+		end
+	else if builtin cd "$argv"
+		if [ "$LPWD" = "$PPWD" ]
+			true
+		else
+			set LPWD $PPWD
+		end
+	end
+end
+
+# emacs dir tracking
+if [ -n "$INSIDE_EMACS" ]
+	function prompt_AnSiT -e fish_prompt
+		printf "\eAnSiTc %s\n" "$PWD"
+	end
+	printf "\eAnSiTu %s\n" "$USER"
+end
+
+# # SSH prompt
+# if [ -n "$SSH_CONNECTION" ] && [ -z "$MY_INSIDE_SSH" ]
+# 	export MY_INSIDE_SSH="@$MY_HOSTNAME"
+# 	export SHELL=(which fish)
+# 	screen
+# end

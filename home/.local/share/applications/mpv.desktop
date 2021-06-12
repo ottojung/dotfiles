@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=mpv
+MimeType=video/mp4;video/mpeg;video/webm
+Exec=mpv -loop %F
+Type=Application
+Terminal=false
+Keywords=Image;

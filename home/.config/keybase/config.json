@@ -1,0 +1,21 @@
+{
+    "current_user": "janetmorris",
+    "kbfs": {
+        "block_cache": {
+            "disk_max_fraction": "0.01",
+            "sync_max_fraction": "0.01"
+        },
+        "mode": "constrained"
+    },
+    "mountdir": "/run/user/1000/keybase/kbfs",
+    "mountdirdefault": "/run/user/1000/keybase/kbfs",
+    "users": {
+        "janetmorris": {
+            "device": "f111fea994df1de02c23e85e80fe5a18",
+            "id": "9392d3773127b29fa28d4de457c9d319",
+            "name": "janetmorris",
+            "passphrase_state": 0,
+            "salt": "0a2db9a19d3e20d680211d5800d511fa"
+        }
+    }
+}

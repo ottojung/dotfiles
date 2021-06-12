@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Okular
+MimeType=application/pdf;image/vnd.djvu+multipage;
+Exec=okular %F
+Type=Application
+Terminal=false
+Keywords=PDF;Documents;

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# guix pull &
+# PULL_PID=$?
+
+MANIFEST=~/.config/guix/config.scm
+
+"$EDITOR" "$MANIFEST"
+
+wait $PULL_PID
+guix package -m "$MANIFEST"
+
