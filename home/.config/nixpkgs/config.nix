@@ -123,6 +123,7 @@ paths =
 	firefox # fuck mozilla
 	# unstable.torbrowser # breaks
 	# nyxt # doesn't work
+	qutebrowser # python-based browser
 	# teams # unfree :(
 	obs-studio
 	# flatpak

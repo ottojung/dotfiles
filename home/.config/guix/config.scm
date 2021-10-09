@@ -119,8 +119,9 @@
   virt-manager ;; virtual machine helper
   ungoogled-chromium ;; chromium without google services
   ;; firefox ;; fuck mozilla
+  icecat ;; better firefox
   ;; torbrowser ;; breaks ;; TODO: track incoming: https://issues.guix.gnu.org/42380
-  ;; nyxt ;; doesn't work
+  nyxt ;; doesn't work
   ;; teams ;; unfree :(
   obs ;; (nix: obs-studio)
   ;; flatpak
