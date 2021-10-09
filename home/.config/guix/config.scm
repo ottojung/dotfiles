@@ -118,7 +118,7 @@
   ;; virtualbox ;; virtual machine (some parts are propriatary)
   virt-manager ;; virtual machine helper
   ungoogled-chromium ;; chromium without google services
-  firefox ;; fuck mozilla
+  ;; firefox ;; fuck mozilla
   ;; torbrowser ;; breaks ;; TODO: track incoming: https://issues.guix.gnu.org/42380
   ;; nyxt ;; doesn't work
   ;; teams ;; unfree :(
