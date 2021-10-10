@@ -20,9 +20,9 @@ function fish_prompt
 	set_color purple
 	printf "\n$PWD" | sed "s#$HOME#~#"
 
-	if [ -n "$MY_INSIDE_SSH" ]
+	if [ -n "$SSH_CONNECTION" ]
 		set_color red
-		printf " $MY_INSIDE_SSH"
+		printf " @$MY_HOSTNAME"
 	end
 
 	if [ -z "$MY_IS_DEFAULT_USER" ]
