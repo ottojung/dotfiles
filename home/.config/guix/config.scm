@@ -78,6 +78,7 @@
   ;; ghc ;; provides `ghci` - haskell language interpreter
   ;; coq ;; Coq language compiler
   ;; maxima ;; mathematica-like computer algebra system
+  swi-prolog ;; free prolog implementation
   )
 
 (define-packages x-server
