@@ -613,6 +613,8 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
       (list
        (my-path-join MY-MEDIA-DIR "text" "notes" "org" "todo"))
     (error (message "Org-agenda directory does not exist"))))
+(customize-set-variable
+ 'org-agenda-default-appointment-duration 90)
 ;; org agend)
 
 ;; always use minimal dired
