@@ -445,7 +445,10 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
       (my-save-buffer old))))
 (advice-add 'select-window :around 'my-select-window-advice)
 (advice-add 'switch-to-buffer :around 'my-select-window-advice)
-(add-function :after after-focus-change-function #'my-save-current-buffer)
+
+(condition-case nil
+	(add-function :after after-focus-change-function #'my-save-current-buffer)
+  (error (warn "Adding 'after-focus-change-function hook failed. Your emacs is too old.")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; LOOK/TRANSPARENCY ;;
@@ -499,14 +502,28 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 
 (defvar buffer-face-mode-remapping) ;; SUPRESS WARNING
 
+(defun my-font-exists-p
+    (font)
+  "check if font exists"
+  (if (null (x-list-fonts font)) nil t))
+
+(defconst my-prog-font "Fira Code")
+
+(unless (my-font-exists-p my-prog-font)
+  (warn "No font '%s' found" my-prog-font))
+
+(defun my-set-prog-face ()
+  (when (my-font-exists-p my-prog-font)
+    (setq buffer-face-mode-remapping
+          (face-remap-add-relative 'default `(:family ,my-prog-font)))))
+
 (defun my-prog-mode-hook ()
   (tabs-reset-defaults-local)
   (whitespace-mode 1)
   (line-number-mode t)
   (column-number-mode t)
 
-  (setq buffer-face-mode-remapping
-        (face-remap-add-relative 'default '(:family "Fira Code")))
+  (my-set-prog-face)
 
   ;; (set-input-method "TeX")
   )
@@ -612,7 +629,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
   (condition-case nil
       (list
        (my-path-join MY-MEDIA-DIR "text" "notes" "org" "todo"))
-    (error (message "Org-agenda directory does not exist"))))
+    (error (warn "Org-agenda directory does not exist"))))
 (customize-set-variable
  'org-agenda-default-appointment-duration 90)
 ;; org agend)
