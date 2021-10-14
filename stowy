@@ -39,7 +39,10 @@ my_pushd() {
 }
 
 my_popd() {
-	STACK=$(echo "$STACK" | tr '/' '\n' | head -n -1 | tr '\n' '/' | tr -s '/')
+	STACK=$(echo "$STACK" | tr -s '/' | tr '/' '\n' | head -n -1 | tr '\n' '/' | tr -s '/')
+	case "$STACK" in
+		*/) STACK=${STACK%?} ;;
+	esac
 	cd ..
 }
 
@@ -156,20 +159,17 @@ my_link() {
 	TGT=$(echo "$TARGET/$STACK/$1" | tr -s "/")
 
 	if ! test "$VERBOSITY" = 0 && ! test "$MODE" = "check"
-	then
-		echo ln -srf "$SRC" "$TGT"
+	then echo ln -srf "$SRC" "$TGT"
 	fi
 
 	if test "$OVERWRITE" = 0 && test -e "$TGT"
-	then
-		if ! test $(readlink -f "$TGT" || echo "/") = $(readlink -f "$SRC" || echo "//")
+	then if ! test $(readlink -f "$TGT" || echo "/") = $(readlink -f "$SRC" || echo "//")
 		then fatal "Want to replace file '$(readlink -f "$SRC" || echo "//")' by '$(readlink -f "$TGT" || echo "//")' but that is only allowed with --overwrite flag"
 		fi
 	fi
 
 	if test "$MODE" = "run"
-	then
-		ln -srf "$SRC" "$TGT"
+	then ln -srf "$SRC" "$TGT"
 	fi
 }
 
@@ -186,7 +186,7 @@ my_install_push() {
 my_install() {
 	for FILE in $(ls -a)
 	do
-		if test "$FILE" = "." || test "$FILE" = ".."
+		if test "$FILE" = "." || test "$FILE" = ".." || test -L "$FILE"
 		then continue
 		fi
 
