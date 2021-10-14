@@ -129,6 +129,11 @@ case "$SOURCE" in
 	*) SOURCE="$PWD/$SOURCE" ;;
 esac
 
+case "$TARGET" in
+	/*) ;;
+	*) TARGET="$PWD/$TARGET" ;;
+esac
+
 require which
 require ls
 require ln
