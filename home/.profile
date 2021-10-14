@@ -25,31 +25,6 @@ if command -v my-safe-rm 1>/dev/null 2>/dev/null
 then alias rm=my-safe-rm
 fi
 
-###############
-## VARIABLES ##
-###############
-
-export MY_HOSTNAME=$(cat /etc/hostname)
-export MY_MEDIA="$HOME/my/media"
-export MY_TRASH="$HOME/my/tmp/trash"
-export MY_SERVER_NAME="vauplace.xyz"
-
-# Export locale so terminals and tmux are fancy
-export LC_ALL='en_US.UTF-8'
-
-if test -z $COLUMNS
-then COLUMNS=80
-fi
-export COLUMNS
-
-if command -v ec 1>/dev/null 2>/dev/null
-then export EDITOR=ec
-else export EDITOR=vi
-fi
-
-export PAGER=less
-export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-
 ###########
 ## PATHS ##
 ###########
@@ -83,6 +58,31 @@ fi
 PATH="${HOME}/.local/bin:${PATH}"
 
 export PATH
+
+###############
+## VARIABLES ##
+###############
+
+export MY_HOSTNAME=$(cat /etc/hostname)
+export MY_MEDIA="$HOME/my/media"
+export MY_TRASH="$HOME/my/tmp/trash"
+export MY_SERVER_NAME="vauplace.xyz"
+
+# Export locale so terminals and tmux are fancy
+export LC_ALL='en_US.UTF-8'
+
+if test -z $COLUMNS
+then COLUMNS=80
+fi
+export COLUMNS
+
+if command -v ec 1>/dev/null 2>/dev/null
+then export EDITOR=ec
+else export EDITOR=vi
+fi
+
+export PAGER=less
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 # Chibi scheme load path
 if test -z "$CHIBI_MODULE_PATH"
