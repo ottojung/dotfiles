@@ -6,12 +6,12 @@
 
 if test -n "$MY_SHELL_INITIALIZED"
 then true
-else echo "$PATH" > "/tmp/initial-env-$USER"
+else echo "$PATH" > ".my-initial-env"
 fi
 
 case $IN_NIX_SHELL in
 	pure)
-		export PATH=$(cat "/tmp/initial-env-$USER")
+		export PATH=$(cat ".my-initial-env")
 		return
 esac
 
