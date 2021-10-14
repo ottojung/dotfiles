@@ -149,10 +149,6 @@ fi
 ################
 
 my_link() {
-	if test "$1" = "." || test "$1" = ".."
-	then return 0
-	fi
-
 	SRC=$(echo "$SOURCE/$STACK/$1" | tr -s "/")
 	TGT=$(echo "$TARGET/$STACK/$1" | tr -s "/")
 
