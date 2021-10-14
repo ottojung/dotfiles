@@ -21,7 +21,7 @@ then
 fi
 
 # Source the system-wide file.
-source /etc/bashrc
+test -f /etc/bashrc && source /etc/bashrc
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
