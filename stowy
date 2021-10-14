@@ -139,7 +139,6 @@ require ls
 require ln
 require tr
 require head
-require tail
 
 if test "$OVERWRITE" = 0
 then require readlink
