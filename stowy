@@ -1,0 +1,233 @@
+#! /bin/sh
+
+####################
+# Helper functions #
+####################
+
+fatal() {
+	echo "ERROR: $1" 1>&2
+	exit 1
+}
+
+show_help() {
+	echo "Usage: $0 [OPTS...] run    <SOURCE> <TARGET>" 1>&2
+	echo "       $0 [OPTS...] dryrun <SOURCE> <TARGET>" 1>&2
+	echo "       $0 [OPTS...] check  <SOURCE> <TARGET>" 1>&2
+	echo "" 1>&2
+	echo "OPTS:  --overwrite | --no-overwrite | --unsafe | --safe | --quiet | --verbose | --readlink | --no-readlink" 1>&2
+	echo "" 1>&2
+	echo "$0 is a dotfiles deployment script, a very simple version of 'stow'" 1>&2
+}
+
+require() {
+	if ! which "$1" 1>/dev/null 2>/dev/null
+	then fatal "'$1' is required to deploy links"
+	fi
+}
+
+my_pushd() {
+	if cd "$1"
+	then
+		if test -z "$STACK"
+		then STACK="$1"
+		else STACK="$STACK/$1"
+		fi
+		STACK=$(echo "$STACK" | tr -s "/")
+	else
+		return $?
+	fi
+}
+
+my_popd() {
+	STACK=$(echo "$STACK" | tr '/' '\n' | head -n -1 | tr '\n' '/' | tr -s '/')
+	cd ..
+}
+
+####################
+# Argument parsing #
+####################
+
+OVERWRITE=0
+VERBOSITY=1
+READLINK=0
+SAFE=1
+
+while true
+do
+	OPT="$1"
+	shift
+	case "$OPT" in
+		--overwrite)
+			OVERWRITE=1
+			;;
+		--no-overwrite)
+			OVERWRITE=0
+			;;
+		--safe)
+			SAFE=1
+			OVERWRITE=0
+			;;
+		--unsafe)
+			SAFE=0
+			OVERWRITE=1
+			;;
+		--quiet)
+			VERBOSITY=0
+			;;
+		--verbose)
+			VERBOSITY=1
+			;;
+		--readlink)
+			READLINK=1
+			;;
+		--no-readlink)
+			READLINK=0
+			;;
+		run)
+			SOURCE="$1"
+			TARGET="$2"
+			MODE=run
+			break
+			;;
+		dryrun)
+			SOURCE="$1"
+			TARGET="$2"
+			MODE=dryrun
+			break
+			;;
+		check)
+			SOURCE="$1"
+			TARGET="$2"
+			MODE=check
+			break
+			;;
+		*)
+			show_help
+			exit 1
+			;;
+	esac
+done
+
+if ! test -d "$SOURCE"
+then
+	show_help
+	fatal "Source '$SOURCE' should be a directory, but is not"
+fi
+
+if ! test -d "$TARGET"
+then
+	show_help
+	fatal "Target '$TARGET' should be a directory, but is not"
+fi
+
+###############
+# Preparation #
+###############
+
+case "$SOURCE" in
+	/*) ;;
+	*) SOURCE="$PWD/$SOURCE" ;;
+esac
+
+require which
+require ls
+require ln
+require tr
+require head
+require tail
+
+if test "$OVERWRITE" = 0
+then require readlink
+fi
+
+if test "$READLINK" = 1
+then require readlink
+fi
+
+################
+# Installation #
+################
+
+my_link() {
+	if test "$1" = "." || test "$1" = ".."
+	then return 0
+	fi
+
+	SRC=$(echo "$SOURCE/$STACK/$1" | tr -s "/")
+	TGT=$(echo "$TARGET/$STACK/$1" | tr -s "/")
+
+	if ! test "$VERBOSITY" = 0 && ! test "$MODE" = "check"
+	then
+		echo ln -srf "$SRC" "$TGT"
+	fi
+
+	if test "$OVERWRITE" = 0 && test -e "$TGT"
+	then
+		if ! test $(readlink -f "$TGT" || echo "/") = $(readlink -f "$SRC" || echo "//")
+		then fatal "Want to replace file '$(readlink -f "$SRC" || echo "//")' by '$(readlink -f "$TGT" || echo "//")' but that is only allowed with --overwrite flag"
+		fi
+	fi
+
+	if test "$MODE" = "run"
+	then
+		ln -srf "$SRC" "$TGT"
+	fi
+}
+
+my_install_push() {
+	if test "$READLINK" = 1 && test $(readlink -f "$1" || echo "/") = $(readlink -f "$TARGET/$STACK/$1" || echo "//")
+	then return 0
+	fi
+
+	my_pushd "$1"
+	my_install
+	my_popd
+}
+
+my_install() {
+	for FILE in $(ls -a)
+	do
+		if test "$FILE" = "." || test "$FILE" = ".."
+		then continue
+		fi
+
+		if test -d "$FILE"
+		then
+			if test -d "$TARGET/$STACK/$FILE"
+			then my_install_push "$FILE"
+			elif test -e "$TARGET/$STACK/$FILE" && test "$SAFE" = 1
+			then fatal "Want to place directory '$STACK/$FILE' in '$TARGET', but there is something else there!"
+			else my_link "$FILE"
+			fi
+		elif test -f "$FILE"
+		then
+			if test -e "$TARGET/$STACK/$FILE" && ! test -f "$TARGET/$STACK/$FILE" && test "$SAFE" = 1
+			then fatal "Want to place file '$STACK/$FILE' in '$TARGET', but there is something else there!"
+			else my_link "$FILE"
+			fi
+		else
+			echo "WARN: Skipping irregular file '$STACK/$FILE'" 1>&2
+		fi
+	done
+}
+
+#############
+# Execution #
+#############
+
+cd "$SOURCE"
+
+case "$MODE" in
+	dryrun)
+		my_install
+		;;
+	check)
+		my_install
+		;;
+	run)
+		MODE=check
+		my_install
+		MODE=run
+		my_install
+		;;
+esac

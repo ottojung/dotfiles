@@ -11,14 +11,11 @@ include programs.make
 include email.make
 include root.make
 
-HOMESTOWCMD = stow --restow "--target=$(HOME)" "--verbose=2" $(SFLAGS) home/
-
 root: root-make-all
 
 home: check_requisites check-user initialize_home initialize_private setup_email install_programs compile_emacs
 
 check_requisites:
-	which stow || ( echo '"stow" is needed to initialize home links' ; exit 1 )
 	which guile || ( echo '"guile" is needed to install programs' ; exit 1 )
 	which gcc || ( echo '"gcc" is needed to install programs' ; exit 1 )
 	which emacs || ( echo '"emacs" is needed to configure emacs' ; exit 1 )
@@ -26,19 +23,10 @@ check_requisites:
 	which notmuch || ( echo '"notmuch" is needed for emails' ; exit 1 )
 
 initialize_home: $(DIRECTORIES)
-	$(HOMESTOWCMD)
+	./stowy --overwrite --readlink $(STOWYFLAGS) run home $(HOME)
 
 initialize_private:
 	cd ../config-private/ && $(MAKE)
-
-# Use this when initialize_home fails
-unsafe_home_cleanup:
-	$(HOMESTOWCMD) --simulate 2>&1 | \
-		grep -e 'CONFLICT when stowing' -e 'existing target is neither a link nor a directory' | \
-		sed 's/.*:\s*//' | \
-		xargs -I% rm -rfv "$(HOME)/%"
-
-	cd ../config-private/ && $(MAKE) unsafe_home_cleanup
 
 install_programs: $(PREFIXBIN)
 	PATH=$(PATH):$(PREFIXBIN) $(MAKE) install_programs_go

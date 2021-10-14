@@ -11,7 +11,6 @@ Personal configs and scripts.
 
 For user:
 
-- stow
 - guile
 - gcc
 - emacs
@@ -20,7 +19,6 @@ For user:
 
 For root:
 
-- stow
 - gcc
 - guile
 - cpupower
