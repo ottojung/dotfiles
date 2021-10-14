@@ -61,8 +61,9 @@ fi
 ## ALIASES ##
 #############
 
-
-alias rm="my-safe-rm"
+if which my-safe-rm 1>/dev/null 2>/dev/null
+then alias rm="my-safe-rm"
+fi
 
 # LPWD=$PWD
 
