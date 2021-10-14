@@ -51,7 +51,7 @@ then PS1="\n\[\033[01;34m\]\W\[\033[00m\] \[\033[01;32m\]▶\[\033[00m\] "
 else PS1="\n\W > "
 fi
 
-if [ -n "$TASKS_PRINT_AT_START" ] && which task 2>/dev/null 1>/dev/null
+if [ -n "$TASKS_PRINT_AT_START" ] && command -v task 2>/dev/null 1>/dev/null
 then
 	task minimal
 	export TASKS_PRINT_AT_START=0
@@ -61,7 +61,7 @@ fi
 ## ALIASES ##
 #############
 
-if which my-safe-rm 1>/dev/null 2>/dev/null
+if command -v my-safe-rm 1>/dev/null 2>/dev/null
 then alias rm="my-safe-rm"
 fi
 

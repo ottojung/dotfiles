@@ -21,7 +21,7 @@ esac
 #else export MY_SHELL_INITIALIZED=true
 #fi
 
-if which my-safe-rm 1>/dev/null 2>/dev/null
+if command -v my-safe-rm 1>/dev/null 2>/dev/null
 then alias rm=my-safe-rm
 fi
 
@@ -42,7 +42,7 @@ then COLUMNS=80
 fi
 export COLUMNS
 
-if which ec 1>/dev/null 2>/dev/null
+if command -v ec 1>/dev/null 2>/dev/null
 then export EDITOR=ec
 else export EDITOR=vi
 fi
@@ -91,7 +91,7 @@ else export CHIBI_MODULE_PATH="$HOME/.local/share/chibi:$HOME/.local/lib/chibi"
 fi
 
 if test -z "$FISH_SHELL"
-then export FISH_SHELL=$(which fish 2>/dev/null)
+then export FISH_SHELL=$(command -v fish 2>/dev/null)
 fi
 
 if test -n "$FISH_SHELL"
