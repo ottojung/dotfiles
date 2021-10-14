@@ -5,7 +5,6 @@ root-make-all: check-root-requisites check-root
 	$(MAKE) root-stow make-hardware-configuration check-hardware-link make-root-do
 
 check-root-requisites:
-	which stow || ( echo '"stow" is needed to initialize root' ; exit 1 )
 	which gcc || ( echo '"gcc" is needed to compile stuff' ; exit 1 )
 	which guile || ( echo '"guile" is needed to compile stuff' ; exit 1 )
 	which cpupower || ( echo '"cpupower" may be required to run my-root-do' ; exit 1 )
@@ -23,24 +22,15 @@ check-root:
 /etc/nixos:
 	mkdir -p /etc/nixos
 
-ROOTSTOWCMD = stow --restow "--target=$(ROOTSLASH)" "--verbose=2" $(SFLAGS) root/
-
 root-stow: do-root-stow /etc/nixos
 	rm -f "$(ROOT)/etc/nixos/configuration.nix"
-	$(ROOTSTOWCMD)
+	./stowy --overwrite --readlink $(STOWYFLAGS) run root $(ROOTSLASH)
 	rm -f "$(ROOT)/etc/nixos/configuration.nix"
 	cp "root/etc/nixos/configuration.nix" $(ROOT)/etc/nixos/
 	@ echo "Nixos config installed. To enable it, run 'sudo nixos-rebuild switch'"
 
 make-root-do:
 	cd "../code/my-root-service" && $(MAKE) all-root
-
-# Use this when root-stow fails
-unsafe_root_cleanup:
-	$(ROOTSTOWCMD) --simulate 2>&1 | \
-		grep -e 'CONFLICT when stowing' -e 'existing target is neither a link nor a directory' | \
-		sed 's/.*:\s*//' | \
-		xargs -I% rm -rfv "$(ROOT)/%"
 
 check-hardware-link:
 	@ test -f $(ROOT)/etc/nixos/hardware.nix || \
