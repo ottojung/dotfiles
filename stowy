@@ -20,7 +20,7 @@ show_help() {
 }
 
 require() {
-	if ! which "$1" 1>/dev/null 2>/dev/null
+	if ! command -v "$1" 1>/dev/null 2>/dev/null
 	then fatal "'$1' is required to deploy links"
 	fi
 }
@@ -134,7 +134,6 @@ case "$TARGET" in
 	*) TARGET="$PWD/$TARGET" ;;
 esac
 
-require which
 require ls
 require ln
 require tr
