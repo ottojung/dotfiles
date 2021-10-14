@@ -24,3 +24,7 @@ For root:
 - gcc
 - guile
 - cpupower
+
+# License
+
+Attribution-ShareAlike 4.0 International
