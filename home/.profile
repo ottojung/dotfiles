@@ -42,8 +42,12 @@ then COLUMNS=80
 fi
 export COLUMNS
 
+if which ec 1>/dev/null 2>/dev/null
+then export EDITOR=ec
+else export EDITOR=vi
+fi
+
 export PAGER=less
-export EDITOR=ec
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 ###########
