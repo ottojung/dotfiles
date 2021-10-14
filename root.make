@@ -5,9 +5,9 @@ root-make-all: check-root-requisites check-root
 	$(MAKE) root-stow make-hardware-configuration check-hardware-link make-root-do
 
 check-root-requisites:
-	which gcc || ( echo '"gcc" is needed to compile stuff' ; exit 1 )
-	which guile || ( echo '"guile" is needed to compile stuff' ; exit 1 )
-	which cpupower || ( echo '"cpupower" may be required to run my-root-do' ; exit 1 )
+	command -v gcc || ( echo '"gcc" is needed to compile stuff' ; exit 1 )
+	command -v guile || ( echo '"guile" is needed to compile stuff' ; exit 1 )
+	command -v cpupower || ( echo '"cpupower" may be required to run my-root-do' ; exit 1 )
 
 check-root:
 	@ if test 0 = $$(id --user) ; \
@@ -40,7 +40,7 @@ check-hardware-link:
 		true )
 
 make-hardware-configuration:
-	if which nixos-generate-config ; then $(MAKE) $(ROOT)/etc/nixos/hardware-configuration.nix ; fi
+	if command -v nixos-generate-config ; then $(MAKE) $(ROOT)/etc/nixos/hardware-configuration.nix ; fi
 
 $(ROOT)/etc/nixos/hardware-configuration.nix:
 	nixos-generate-config
