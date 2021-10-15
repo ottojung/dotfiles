@@ -41,7 +41,7 @@ function fish_prompt
 		set_color red
 	end
 
-	printf '\n▶ '
+	printf '\n> '
 	set_color normal
 end
 
