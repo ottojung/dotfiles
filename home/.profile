@@ -69,7 +69,7 @@ export MY_TRASH="$HOME/my/tmp/trash"
 export MY_SERVER_NAME="vauplace.xyz"
 
 # Export locale so terminals and tmux are fancy
-export LC_ALL='en_US.UTF-8'
+# export LC_ALL='en_US.UTF-8'
 
 if test -z $COLUMNS
 then COLUMNS=80
