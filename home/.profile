@@ -4,9 +4,10 @@
 # see /usr/share/doc/bash/examples/startup-files for examples.
 # the files are located in the bash-doc package
 
-if test -n "$MY_SHELL_INITIALIZED"
-then true
-else echo "$PATH" > "$HOME/.my-initial-env"
+if ! test -n "$MY_SHELL_INITIALIZED"
+then
+	echo "$PATH" > "$HOME/.my-initial-env"
+	export MY_SHELL_INITIALIZED=true
 fi
 
 case $IN_NIX_SHELL in
@@ -18,7 +19,6 @@ esac
 # # Breaks stuff on GuixSD, so.... yeah
 #if test -n "$MY_SHELL_INITIALIZED"
 #then return
-#else export MY_SHELL_INITIALIZED=true
 #fi
 
 if command -v my-safe-rm 1>/dev/null 2>/dev/null
