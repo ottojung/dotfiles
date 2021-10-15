@@ -5,7 +5,7 @@ fi
 
 case $IN_NIX_SHELL in
 	pure)
-		export PATH=$(cat "/tmp/initial-env-$USER")
+		export PATH=$(cat "$HOME/.my-initial-env")
 		return
 esac
 
