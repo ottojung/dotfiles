@@ -505,7 +505,11 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 (defun my-font-exists-p
     (font)
   "check if font exists"
-  (if (null (x-list-fonts font)) nil t))
+  (condition-case nil
+      (if (null (x-list-fonts font)) nil t)
+    (error
+     (warn "Could not determine if font %s exists" font)
+     nil)))
 
 (defconst my-prog-font "Fira Code")
 
