@@ -291,7 +291,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 (defun program-resolve-path (program)
   (string-trim
    (car
-    (call-process-with-output "which" "fish"))))
+    (call-process-with-output "which" program))))
 
 (defun call-process-with-output (proc &rest args)
   (let ((return-code -1))
