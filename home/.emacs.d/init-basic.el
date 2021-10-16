@@ -448,7 +448,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 
 (condition-case nil
 	(add-function :after after-focus-change-function #'my-save-current-buffer)
-  (error (warn "Adding 'after-focus-change-function hook failed. Your emacs is too old.")))
+  (error (message "Adding 'after-focus-change-function hook failed. Your emacs is too old.")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; LOOK/TRANSPARENCY ;;
@@ -508,13 +508,13 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
   (condition-case nil
       (if (null (x-list-fonts font)) nil t)
     (error
-     (warn "Could not determine if font %s exists" font)
+     (message "Could not determine if font %s exists" font)
      nil)))
 
 (defconst my-prog-font "Fira Code")
 
 (unless (my-font-exists-p my-prog-font)
-  (warn "No font '%s' found" my-prog-font))
+  (message "No font '%s' found" my-prog-font))
 
 (defun my-set-prog-face ()
   (when (my-font-exists-p my-prog-font)
@@ -633,7 +633,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
   (condition-case nil
       (list
        (my-path-join MY-MEDIA-DIR "text" "notes" "org" "todo"))
-    (error (warn "Org-agenda directory does not exist"))))
+    (error (message "Org-agenda directory does not exist"))))
 (customize-set-variable
  'org-agenda-default-appointment-duration 90)
 ;; org agend)
