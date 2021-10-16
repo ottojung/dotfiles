@@ -500,6 +500,8 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 
 (defvar buffer-face-mode-remapping) ;; SUPRESS WARNING
 
+(defconst my-emacs-in-terminal-mode? (not window-system))
+
 (defun my-font-exists-p
     (font)
   "check if font exists"
@@ -511,13 +513,15 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 
 (defconst my-prog-font "Fira Code")
 
-(unless (my-font-exists-p my-prog-font)
-  (message "No font '%s' found" my-prog-font))
+(unless my-emacs-in-terminal-mode?
+  (unless (my-font-exists-p my-prog-font)
+    (message "No font '%s' found" my-prog-font)))
 
 (defun my-set-prog-face ()
-  (when (my-font-exists-p my-prog-font)
-    (setq buffer-face-mode-remapping
-          (face-remap-add-relative 'default `(:family ,my-prog-font)))))
+  (unless my-emacs-in-terminal-mode?
+    (when (my-font-exists-p my-prog-font)
+      (setq buffer-face-mode-remapping
+            (face-remap-add-relative 'default `(:family ,my-prog-font))))))
 
 (defun my-prog-mode-hook ()
   (tabs-reset-defaults-local)
