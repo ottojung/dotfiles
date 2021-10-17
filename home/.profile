@@ -96,10 +96,9 @@ fi
 
 if test -n "$FISH_SHELL"
 then
+	export SHELL="$FISH_SHELL"
 	case "$-" in
 		*i*)
-			export SHELL="$FISH_SHELL"
-
 			if test -n "$SSH_CONNECTION"
 			then exec fish
 			fi
