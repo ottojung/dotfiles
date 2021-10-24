@@ -29,6 +29,8 @@
   curl ;; downloads stuff from the internet, like wget
   libnotify ;; provides `notify-send'
   sox ;; provides `play' command
+  figlet ;; transforms text into nice drawings
+  cowsay ;; transforms text into nice drawings
   pamixer ;; setting volume and stuff
   ;; doas ;; alternative to "sudo"
   )
