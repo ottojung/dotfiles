@@ -30,6 +30,7 @@ paths =
 	sox # provides `play' command
 	figlet # transforms text into nice drawings
 	cowsay # transforms text into nice drawings
+	ncdu # program for exploring filesystem
 
 	################
 	# CLI Programs #
