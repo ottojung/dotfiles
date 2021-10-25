@@ -9,14 +9,26 @@ fi
 
 cd create_ap
 
-# sudo systemctl stop wpa_supplicant.service
+sudo systemctl stop wpa_supplicant.service
 eval $(my-require bash.guix util-linux.guix procps.guix hostapd.nix hostapd.guix iproute2.guix iw.guix dnsmasq.nix dnsmasq.guix iptables.guix)
 
-sudo herd stop networking # network manager hungs on guix
+# sudo herd stop networking # network manager hungs on guix
 
-sudo ./create_ap wlo1 wlo1 AndroidAP2372 Android1
+sudo sh -c 'while true
+do
+	./create_ap wlo1 wlo1 AndroidAP2372 Android1 &
+	PP=$!
 
-sudo herd start networking
+	sleep 10
+	echo Press enter to restart...
+	read RESTART
+	echo Restarting...
+
+	kill -2 "$PP"
+	sleep 10
+done'
+
+# sudo herd start networking
 
 # if ! which create_ap >/dev/null
 # then
