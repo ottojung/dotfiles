@@ -5,7 +5,7 @@
 ####################
 
 fatal() {
-	echo "ERROR: $1" 1>&2
+	echo "ERROR: $*" 1>&2
 	exit 1
 }
 
@@ -14,7 +14,9 @@ show_help() {
 	echo "       $0 [OPTS...] dryrun <SOURCE> <TARGET>" 1>&2
 	echo "       $0 [OPTS...] check  <SOURCE> <TARGET>" 1>&2
 	echo "" 1>&2
-	echo "OPTS:  --overwrite | --no-overwrite | --unsafe | --safe | --quiet | --verbose | --readlink | --no-readlink" 1>&2
+	echo "OPTS:  --overwrite | --no-overwrite | --safe | --unsafe | --quiet | --verbose | --readlink | --no-readlink" 1>&2
+	echo "Defaults: --safe --no-overwrite --verbose --no-readlink" 1>&2
+	echo "Notes: --overwrite implies --readlink" 1>&2
 	echo "" 1>&2
 	echo "$0 is a dotfiles deployment script, a very simple version of 'stow'" 1>&2
 }
