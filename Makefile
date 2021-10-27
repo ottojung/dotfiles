@@ -14,7 +14,6 @@ root: root-make-all
 home: check_requisites check-user initialize_home compile_emacs
 
 check_requisites:
-	command -v gcc || ( echo '"gcc" is needed to install programs' ; exit 1 )
 	command -v emacs || ( echo '"emacs" is needed to configure emacs' ; exit 1 )
 
 initialize_home: $(DIRECTORIES)

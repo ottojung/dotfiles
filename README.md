@@ -9,19 +9,7 @@ Personal configs and scripts.
 
 # Requirements
 
-For user:
-
-- guile
-- gcc
 - emacs
-- gpg
-- notmuch
-
-For root:
-
-- gcc
-- guile
-- cpupower
 
 # License
 
