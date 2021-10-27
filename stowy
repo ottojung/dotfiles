@@ -5,8 +5,10 @@
 ####################
 
 fatal() {
-	echo "ERROR: $*" 1>&2
-	exit 1
+	if test "$KEEP_GOING" = "0"
+	then echo "ERROR: $*" 1>&2 ; exit 1
+	else echo "IGNORE: $*" 1>&2
+	fi
 }
 
 show_help() {
@@ -15,8 +17,8 @@ show_help() {
 	echo "       $0 [OPTS...] dryrun <SOURCE> <TARGET>" 1>&2
 	echo "       $0 [OPTS...] check  <SOURCE> <TARGET>" 1>&2
 	echo "" 1>&2
-	echo "OPTS:  --overwrite | --no-overwrite | --safe | --unsafe | --quiet | --verbose | --readlink | --no-readlink" 1>&2
-	echo "Defaults: --safe --no-overwrite --verbose --no-readlink" 1>&2
+	echo "OPTS:  --overwrite | --no-overwrite | --safe | --unsafe | --quiet | --verbose | --readlink | --no-readlink | --keep-going | --no-keep-going" 1>&2
+	echo "Defaults: --safe --no-overwrite --verbose --no-readlink --no-keep-going" 1>&2
 	echo "Notes: --overwrite implies --readlink" 1>&2
 	echo "To do a cleanup (uninstall), make use of STOWY_LINK_CMD variable" 1>&2
 	echo "  like this: 'STOWY_LINK_CMD=rm ./stowy ...'" 1>&2
@@ -57,6 +59,7 @@ OVERWRITE=0
 VERBOSITY=1
 READLINK=0
 SAFE=1
+KEEP_GOING=0
 
 while true
 do
@@ -88,6 +91,12 @@ do
 			;;
 		--no-readlink)
 			READLINK=0
+			;;
+		--keep-going)
+			KEEP_GOING=1
+			;;
+		--no-keep-going)
+			KEEP_GOING=0
 			;;
 		run)
 			SOURCE="$1"
