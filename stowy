@@ -166,7 +166,7 @@ my_link() {
 	TGT=$(echo "$TARGET/$STACK/$1" | tr -s "/")
 
 	if ! test "$VERBOSITY" = 0 && ! test "$MODE" = "check"
-	then echo ln -srf "$SRC" "$TGT"
+	then echo ln -srfn "$SRC" "$TGT"
 	fi
 
 	if test "$OVERWRITE" = 0 && test -e "$TGT"
