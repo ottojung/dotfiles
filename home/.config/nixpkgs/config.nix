@@ -43,13 +43,13 @@ paths =
 	tmux # terminal multiplexer a la screen
 	cmus # terminal music player
 	# cordless # discord CLI client
-	# neofetch # to look cool on the internet
+	neofetch # to look cool on the internet
 	p7zip # .7z archive manager
 	unzip # .zip archive extractor
 	zip # .zip archive creator
 	# unrar # .rar archive manager, unfree :(
-	# megacmd # mega.nz command line interface, unfree :(
-	# ffmpeg # video coverter
+	# megacmd # mega.nz command line interface
+	ffmpeg # video coverter
 	pandoc # conversion between formats, like markdown to HTML
 	scc # cloc alternative
 	nitrogen # changes wallpapers
