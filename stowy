@@ -182,8 +182,10 @@ my_link() {
 	TGT=$(echo "$TARGET/$STACK/$1" | tr -s "/")
 
 	if test "$OVERWRITE" = 0 && test -e "$TGT"
-	then if ! test $(readlink -f "$TGT" || echo "/") = $(readlink -f "$SRC" || echo "//")
-		then
+	then
+		if test $(readlink -f "$TGT" || echo "/") = $(readlink -f "$SRC" || echo "//")
+		then return 0
+		else
 			 error "Want to replace file '$(readlink -f "$SRC" || echo "//")' by '$(readlink -f "$TGT" || echo "//")' but that is only allowed with --overwrite flag"
 			 return 1
 		fi
