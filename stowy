@@ -4,11 +4,16 @@
 # Helper functions #
 ####################
 
-fatal() {
+error() {
 	if test "$KEEP_GOING" = "0"
 	then echo "ERROR: $*" 1>&2 ; exit 1
 	else echo "IGNORE: $*" 1>&2
 	fi
+}
+
+fatal() {
+	echo "ERROR: $*" 1>&2
+	exit 1
 }
 
 show_help() {
@@ -180,7 +185,7 @@ my_link() {
 
 	if test "$OVERWRITE" = 0 && test -e "$TGT"
 	then if ! test $(readlink -f "$TGT" || echo "/") = $(readlink -f "$SRC" || echo "//")
-		then fatal "Want to replace file '$(readlink -f "$SRC" || echo "//")' by '$(readlink -f "$TGT" || echo "//")' but that is only allowed with --overwrite flag"
+		then error "Want to replace file '$(readlink -f "$SRC" || echo "//")' by '$(readlink -f "$TGT" || echo "//")' but that is only allowed with --overwrite flag"
 		fi
 	fi
 
@@ -209,13 +214,13 @@ my_install() {
 			if test -d "$TARGET/$STACK/$FILE"
 			then my_install_push "$FILE"
 			elif test -e "$TARGET/$STACK/$FILE" && test "$SAFE" = 1
-			then fatal "Want to place directory '$STACK/$FILE' in '$TARGET', but there is something else there!"
+			then error "Want to place directory '$STACK/$FILE' in '$TARGET', but there is something else there!"
 			else my_link "$FILE"
 			fi
 		elif test -f "$FILE"
 		then
 			if test -e "$TARGET/$STACK/$FILE" && ! test -f "$TARGET/$STACK/$FILE" && test "$SAFE" = 1
-			then fatal "Want to place file '$STACK/$FILE' in '$TARGET', but there is something else there!"
+			then error "Want to place file '$STACK/$FILE' in '$TARGET', but there is something else there!"
 			else my_link "$FILE"
 			fi
 		else
