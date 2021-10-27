@@ -20,9 +20,6 @@ check_requisites:
 initialize_home: $(DIRECTORIES)
 	./stowy --overwrite --readlink $(STOWYFLAGS) run home $(HOME)
 
-install_programs: $(PREFIXBIN)
-	PATH=$(PATH):$(PREFIXBIN) $(MAKE) install_programs_go
-
 compile_emacs:
 	cd home/.emacs.d && git clean -dfx
 	emacs --batch --eval '(byte-recompile-directory "home/.emacs.d/" 0 t)' || true
