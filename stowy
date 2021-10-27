@@ -188,7 +188,7 @@ my_install_push() {
 my_install() {
 	ls -a | while IFS= read -r FILE
 	do
-		if test "$FILE" = "." || test "$FILE" = ".." || test -L "$FILE"
+		if test "$FILE" = "." || test "$FILE" = ".."
 		then continue
 		fi
 
