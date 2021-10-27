@@ -186,7 +186,7 @@ my_link() {
 		if test $(readlink -f "$TGT" || echo "/") = $(readlink -f "$SRC" || echo "//")
 		then return 0
 		else
-			 error "Want to replace file '$(readlink -f "$SRC" || echo "//")' by '$(readlink -f "$TGT" || echo "//")' but that is only allowed with --overwrite flag"
+			 error "Want to replace file '$(readlink -f "$SRC" || echo "//")'\n  by '$(readlink -f "$TGT" || echo "//")'\n  but that is only allowed with --overwrite flag"
 			 return 1
 		fi
 	fi
