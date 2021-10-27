@@ -166,7 +166,7 @@ my_link() {
 	TGT=$(echo "$TARGET/$STACK/$1" | tr -s "/")
 
 	if ! test "$VERBOSITY" = 0 && ! test "$MODE" = "check"
-	then echo $STOWY_REMOVE_CMD "$SRC" "$TGT"
+	then echo $STOWY_LINK_CMD "$SRC" "$TGT"
 	fi
 
 	if test "$OVERWRITE" = 0 && test -e "$TGT"
@@ -175,7 +175,7 @@ my_link() {
 		fi
 	fi
 
-	test "$MODE" = "run" && $STOWY_REMOVE_CMD "$SRC" "$TGT"
+	test "$MODE" = "run" && $STOWY_LINK_CMD "$SRC" "$TGT"
 }
 
 my_install_push() {
