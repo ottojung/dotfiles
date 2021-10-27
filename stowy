@@ -10,6 +10,7 @@ fatal() {
 }
 
 show_help() {
+	echo "$0 is a dotfiles deployment script, a very simple version of 'stow'" 1>&2
 	echo "Usage: $0 [OPTS...] run    <SOURCE> <TARGET>" 1>&2
 	echo "       $0 [OPTS...] dryrun <SOURCE> <TARGET>" 1>&2
 	echo "       $0 [OPTS...] check  <SOURCE> <TARGET>" 1>&2
@@ -17,8 +18,8 @@ show_help() {
 	echo "OPTS:  --overwrite | --no-overwrite | --safe | --unsafe | --quiet | --verbose | --readlink | --no-readlink" 1>&2
 	echo "Defaults: --safe --no-overwrite --verbose --no-readlink" 1>&2
 	echo "Notes: --overwrite implies --readlink" 1>&2
-	echo "" 1>&2
-	echo "$0 is a dotfiles deployment script, a very simple version of 'stow'" 1>&2
+	echo "To do a cleanup (uninstall), make use of STOWY_LINK_CMD variable" 1>&2
+	echo "  like this: 'STOWY_LINK_CMD=rm ./stowy ...'" 1>&2
 }
 
 require() {
@@ -152,6 +153,10 @@ if test "$READLINK" = 1
 then require readlink
 fi
 
+if test -z "$STOWY_LINK_CMD"
+then STOWY_LINK_CMD="ln -srf"
+fi
+
 ################
 # Installation #
 ################
@@ -170,9 +175,7 @@ my_link() {
 		fi
 	fi
 
-	if test "$MODE" = "run"
-	then ln -srf "$SRC" "$TGT"
-	fi
+	test "$MODE" = "run" && $STOWY_REMOVE_CMD "$SRC" "$TGT"
 }
 
 my_install_push() {
