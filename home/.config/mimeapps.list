@@ -17,6 +17,7 @@ image/vnd.djvu+multipage=okular.desktop
 x-scheme-handler/magnet=userapp-transmission-gtk-XNCF10.desktop;
 
 [Added Associations]
+application/epub+zip=okular.desktop
 text/plain=ec.desktop
 image/jpeg=sxiv.desktop
 image/png=sxiv.desktop
