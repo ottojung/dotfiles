@@ -7,26 +7,18 @@ DIRECTORIES = $(HOME)/my $(HOME)/.config $(HOME)/.local $(HOME)/Downloads $(HOME
 all:
 	@ echo "run '$(MAKE) root' as root followed by '$(MAKE) home' as a regular user"
 
-include programs.make
-include email.make
 include root.make
 
 root: root-make-all
 
-home: check_requisites check-user initialize_home initialize_private setup_email install_programs compile_emacs
+home: check_requisites check-user initialize_home compile_emacs
 
 check_requisites:
-	command -v guile || ( echo '"guile" is needed to install programs' ; exit 1 )
 	command -v gcc || ( echo '"gcc" is needed to install programs' ; exit 1 )
 	command -v emacs || ( echo '"emacs" is needed to configure emacs' ; exit 1 )
-	command -v gpg || ( echo '"gpg" is needed for private stuff' ; exit 1 )
-	command -v notmuch || ( echo '"notmuch" is needed for emails' ; exit 1 )
 
 initialize_home: $(DIRECTORIES)
 	./stowy --overwrite --readlink $(STOWYFLAGS) run home $(HOME)
-
-initialize_private:
-	cd ../config-private/ && $(MAKE)
 
 install_programs: $(PREFIXBIN)
 	PATH=$(PATH):$(PREFIXBIN) $(MAKE) install_programs_go

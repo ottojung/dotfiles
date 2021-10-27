@@ -1,7 +1,0 @@
-#!/bin/sh
-
-lsblk
-
-sync
-
-my-root-do mount-for-user "$USER" /dev/sdb1

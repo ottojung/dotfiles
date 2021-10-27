@@ -1,5 +1,0 @@
-mbsync -a
-echo mbsync returned $?
-
-notmuch new
-echo notmuch returned $?

@@ -1,2 +1,0 @@
-#! /bin/sh
-du -s * | awk '{ printf "%0.10d %s\n", $1, $2 }' | sort
