@@ -67,6 +67,7 @@ export MY_HOSTNAME=$(cat /etc/hostname)
 export MY_MEDIA="$HOME/my/media"
 export MY_TRASH="$HOME/my/tmp/trash"
 export MY_SERVER_NAME="vauplace.xyz"
+export MY_BACKUP_SERVER_NAME="back.vauplace.xyz"
 
 # Export locale so terminals and tmux are fancy
 # export LC_ALL='en_US.UTF-8'
