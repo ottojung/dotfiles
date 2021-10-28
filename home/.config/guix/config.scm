@@ -33,6 +33,7 @@
   cowsay ;; transforms text into nice drawings
   pamixer ;; setting volume and stuff
   ;; doas ;; alternative to "sudo"
+  ncdu ;; program for exploring filesystem
   )
 
 (define-packages cli-programs
@@ -44,7 +45,7 @@
   tmux ;; terminal multiplexer a la screen
   cmus ;; terminal music player
   ;; cordless ;; discord CLI client
-  ;; neofetch ;; to look cool on the internet
+  neofetch ;; to look cool on the internet
   p7zip ;; .7z archive manager
   unzip ;; .zip archive extractor
   zip ;; .zip archive creator
@@ -131,9 +132,9 @@
   ;; flatpak
   okular ;; pdf-reader
   zathura ;; pdf-reader
-  ;; vlc ;; video-player. Use mpv instead
+  vlc ;; video-player. Use mpv instead
   libreoffice
-  ;; krita ;; paint program
+  krita ;; paint program
   gimp ;; image editor
   mypaint ;; simple paint program
   )
