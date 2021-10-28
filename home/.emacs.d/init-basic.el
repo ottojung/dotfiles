@@ -452,7 +452,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 ;; LOOK/TRANSPARENCY ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst MY-DEFAULT-TRANSPARENCY 85)
+(defconst MY-DEFAULT-TRANSPARENCY 95)
 
 (setq default-frame-alist
       (set-in-alist default-frame-alist 'alpha MY-DEFAULT-TRANSPARENCY))
