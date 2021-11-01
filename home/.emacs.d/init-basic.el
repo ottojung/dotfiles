@@ -317,7 +317,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 (defun my-revert-buffer ()
   (interactive)
   (message
-   (if (revert-buffer nil t nil)
+   (if (revert-buffer t t t)
        "I reverted buffer :)"
      "I failed you, sensei")))
 
