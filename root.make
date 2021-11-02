@@ -4,10 +4,10 @@ ROOTSLASH = $(shell if test -z $(ROOT) ; then echo "/" ; else echo $(ROOT) ; fi)
 root-make-all: check-root-requisites check-root
 	$(MAKE) root-stow make-hardware-configuration check-hardware-link
 
-/etc/nixos:
+$(ROOT)/etc/nixos:
 	mkdir -p /etc/nixos
 
-root-stow: do-root-stow /etc/nixos
+root-stow: do-root-stow $(ROOT)/etc/nixos
 	rm -f "$(ROOT)/etc/nixos/configuration.nix"
 	./stowy --overwrite --readlink $(STOWYFLAGS) run root $(ROOTSLASH)
 	rm -f "$(ROOT)/etc/nixos/configuration.nix"
