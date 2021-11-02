@@ -24,7 +24,7 @@ show_help() {
 	echo "" 1>&2
 	echo "OPTS:  --overwrite | --no-overwrite | --safe | --unsafe | --quiet | --verbose | --readlink | --no-readlink | --keep-going | --no-keep-going" 1>&2
 	echo "Defaults: --safe --no-overwrite --verbose --no-readlink --no-keep-going" 1>&2
-	echo "Notes: --overwrite implies --readlink" 1>&2
+	echo "Notes: --no-overwrite implies --readlink" 1>&2
 	echo "To do a cleanup (uninstall), make use of STOWY_LINK_CMD variable" 1>&2
 	echo "  like this: 'STOWY_LINK_CMD=rm ./stowy ...'" 1>&2
 }
