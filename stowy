@@ -4,18 +4,16 @@
 # Helper functions #
 ####################
 
-error() {
-	if test "$KEEP_GOING" = "0"
-	then echo "ERROR: $*" 1>&2 ; exit 1
-	else if ! test "$MODE" = "check"
-		then echo "IGNORE: $*" 1>&2
-		fi
-	fi
-}
-
 fatal() {
 	echo "ERROR: $*" 1>&2
 	exit 1
+}
+
+error() {
+	if test "$KEEP_GOING" = "0"
+	then fatal "$*"
+	else test "$MODE" = "check" || echo "IGNORED: $*" 1>&2
+	fi
 }
 
 show_help() {
