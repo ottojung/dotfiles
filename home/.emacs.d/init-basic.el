@@ -585,19 +585,24 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 
 (defun tabs-reset-defaults-local  ()
   (setq-local tab-width my-default-tab-width)
-  (if (or (not my-global-tab-mode)
-          (memq major-mode
-                '(lisp-mode
-                  javascript-mode
-                  typescript-mode
-                  emacs-lisp-mode
-                  racket-mode
-                  scheme-mode
-                  guile-mode
-                  agda-mode
-                  agda2-mode)))
-      (disable-tabs)
-    (enable-tabs)))
+  (cond
+   ((or (memq major-mode
+              '(lisp-mode
+                lisp-interaction-mode
+                emacs-lisp-mode
+                scheme-mode
+                racket-mode
+                guile-mode
+                javascript-mode
+                typescript-mode
+                agda-mode
+                agda2-mode
+                html-mode)))
+    (disable-tabs))
+   ((or (memq major-mode
+              '(c-mode
+                c++-mode)))
+    (enable-tabs))))
 
 ;; (defun reset-local-tab-with ()
 ;;   (setq-local tab-width my-default-tab-width))
