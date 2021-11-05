@@ -528,13 +528,12 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
   (whitespace-mode 1)
   (line-number-mode t)
   (column-number-mode t)
-
   (my-set-prog-face)
-
   ;; (set-input-method "TeX")
   )
 
 (add-hook 'prog-mode-hook 'my-prog-mode-hook)
+(add-hook 'html-mode-hook 'my-prog-mode-hook)
 (add-hook 'conf-mode-hook 'my-prog-mode-hook)
 
 (defconst initial-scroll-preserve-screen-position scroll-preserve-screen-position)
