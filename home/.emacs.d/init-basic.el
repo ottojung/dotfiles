@@ -533,7 +533,6 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
   )
 
 (add-hook 'prog-mode-hook 'my-prog-mode-hook)
-(add-hook 'html-mode-hook 'my-prog-mode-hook)
 (add-hook 'conf-mode-hook 'my-prog-mode-hook)
 
 (defconst initial-scroll-preserve-screen-position scroll-preserve-screen-position)
@@ -585,22 +584,23 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 (defun tabs-reset-defaults-local  ()
   (setq-local tab-width my-default-tab-width)
   (cond
-   ((or (memq major-mode
-              '(lisp-mode
-                lisp-interaction-mode
-                emacs-lisp-mode
-                scheme-mode
-                racket-mode
-                guile-mode
-                javascript-mode
-                typescript-mode
-                agda-mode
-                agda2-mode
-                html-mode)))
+   ((memq major-mode
+          '(lisp-mode
+            lisp-interaction-mode
+            emacs-lisp-mode
+            scheme-mode
+            racket-mode
+            guile-mode
+            javascript-mode
+            typescript-mode
+            agda-mode
+            agda2-mode
+            html-mode
+            mhtml-mode))
     (disable-tabs))
-   ((or (memq major-mode
-              '(c-mode
-                c++-mode)))
+   ((memq major-mode
+          '(c-mode
+            c++-mode))
     (enable-tabs))))
 
 ;; (defun reset-local-tab-with ()
