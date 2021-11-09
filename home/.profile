@@ -77,7 +77,7 @@ then COLUMNS=80
 fi
 export COLUMNS
 
-if command -v ec 1>/dev/null 2>/dev/null
+if command -v ec 1>/dev/null 2>/dev/null && command -v emacs 1>/dev/null 2>/dev/null
 then export EDITOR=ec
 else export EDITOR=vi
 fi
