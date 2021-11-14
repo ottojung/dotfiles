@@ -43,7 +43,8 @@
   htop ;; process monitor
   screen ;; terminal multiplexer a la tmux
   tmux ;; terminal multiplexer a la screen
-  cmus ;; terminal music player
+  ;; cmus ;; terminal music player
+  mpd mpd-mpc ncmpcpp ;; terminal music player suite
   ;; cordless ;; discord CLI client
   neofetch ;; to look cool on the internet
   p7zip ;; .7z archive manager
