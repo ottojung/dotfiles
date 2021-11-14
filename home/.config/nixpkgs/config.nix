@@ -59,7 +59,7 @@ paths =
 	acpi # battery diagnostics tool
 	rsync # copies files between remote computers
 	unison # like rsync, but for syncing
-	youtube-dl # need newest version
+	unstable.youtube-dl # need newest version
 	texlive.combined.scheme-full # distribution of TeX programs
 
 	#############
