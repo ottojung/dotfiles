@@ -15,6 +15,8 @@
     # If markup is not allowed, those tags will be stripped out of the message.
     allow_markup = yes
 
+	corner_radius = 10
+
     # The format of the message. Possible variables are:
     #   %a  appname
     #   %s  summary
@@ -115,6 +117,7 @@
     #  * frame: use the same color as the frame.
     #  * anything else will be interpreted as a X color
     separator_color = frame
+    separator_height = '#FF0000'
 
     # print a notification on startup
     # This is mainly for error detection, since dbus (re-)starts dunst
