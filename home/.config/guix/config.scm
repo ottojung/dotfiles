@@ -63,7 +63,7 @@
   rsync ;; copies files between remote computers
   unison ;; like rsync, but for syncing
   youtube-dl ;; need newest version
-  ;; texlive.combined.scheme-full ;; distribution of TeX programs
+  texlive ;; distribution of TeX programs (nix: texlive.combined.scheme-full)
   )
 
 (define-packages compilers
