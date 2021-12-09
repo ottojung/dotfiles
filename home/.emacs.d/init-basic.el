@@ -304,7 +304,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 (defun my-git-save ()
   (interactive)
   (my-save-current-buffer-sync)
-  (let ((out (call-process-with-output "gcma" "save")))
+  (let ((out (call-process-with-output "/bin/sh" "-c" "git add --update && git status --short && git commit --message 'save'")))
     (message "%s" (string-trim (car out)))))
 
 (defun my-git-status ()
