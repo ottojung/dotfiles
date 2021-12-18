@@ -592,6 +592,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
             scheme-mode
             racket-mode
             guile-mode
+            rust-mode
             javascript-mode
             typescript-mode
             agda-mode
