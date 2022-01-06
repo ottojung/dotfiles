@@ -131,8 +131,8 @@ paths =
 	# teams # unfree :(
 	obs-studio
 	# flatpak
-	okular # pdf-reader
-	zathura # pdf-reader
+	unstable.okular # pdf-reader
+	unstable.zathura # pdf-reader
 	vlc # video-player. Use mpv instead
 	libreoffice
 	krita # paint program
