@@ -668,6 +668,20 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 
 ;; latex) mode)
 
+;; (mode (prolog
+
+(defun my-prolog-hook ()
+  ;; disable stupid paragraph separators
+  (setq paragraph-start (default-value 'paragraph-start))
+  (setq paragraph-separate (default-value 'paragraph-separate))
+  (local-unset-key (kbd "M-e"))
+  (local-unset-key (kbd "M-a"))
+  )
+
+(add-hook 'prolog-mode-hook 'my-prolog-hook)
+
+;; prolog) mode)
+
 ;; ido mode
 ;; alternatives are `iswitchb-mode' (obsolete but faster) and `icomplete-mode'
 ;; remaps `switch-to-buffer' only
