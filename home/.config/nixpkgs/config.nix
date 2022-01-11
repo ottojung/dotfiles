@@ -65,7 +65,7 @@ paths =
 	#############
 	# Compilers #
 	#############
-	gcc binutils # gcc and linker and stuff
+	# gcc binutils # gcc and linker and stuff
 	# nodejs
 	gnumake
 	# guile
