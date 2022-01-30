@@ -89,6 +89,7 @@
   xsel ;; copy-paste from terminal
   ;; xmonad-with-packages ;; main xmonad program and libraries
   ;; xmobar ;; panel
+  xdg-utils ;; provides xdg-open
   ;; mime-types ;; for xdg-open
   shared-mime-info ;; for xdg-open
   arandr ;; managing multiple screens
