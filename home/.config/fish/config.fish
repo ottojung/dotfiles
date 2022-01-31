@@ -10,10 +10,6 @@ end
 function fish_greeting
 end
 
-if [ (id --user) = 1000 ]
-	export MY_IS_DEFAULT_USER=true
-end
-
 function fish_prompt
 	set -l display_status $status
 
@@ -25,10 +21,8 @@ function fish_prompt
 		printf " @$MY_HOSTNAME"
 	end
 
-	if [ -z "$MY_IS_DEFAULT_USER" ]
-		set_color blue
-		printf " \$$USER"
-	end
+	set_color blue
+	printf " \$$USER"
 
 	if [ -n "$GUIX_ENVIRONMENT" ]
 		set_color yellow
