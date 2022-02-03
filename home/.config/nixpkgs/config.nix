@@ -84,7 +84,8 @@ paths =
 	############
 	# X Server #
 	############
-	xsel # copy-paste from terminal
+	# xsel # copy-paste from terminal, alternative for xclip
+	xclip # copy-paste from terminal, alternative for xsel
 	xmonad-with-packages # main xmonad program and libraries
 	xmobar # panel
 	mime-types # for xdg-open
