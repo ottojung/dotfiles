@@ -1,5 +1,5 @@
 
-if which my-safe-rm 1>/dev/null 2>/dev/null
+if command -v my-safe-rm 1>/dev/null 2>/dev/null
 	alias rm "my-safe-rm"
 end
 
@@ -8,6 +8,10 @@ function fish_title
 end
 
 function fish_greeting
+end
+
+if [ -z "$MY_HOSTNAME" ]
+	set MY_HOSTNAME (cat /etc/hostname)
 end
 
 function fish_prompt
@@ -106,6 +110,6 @@ end
 # # SSH prompt
 # if [ -n "$SSH_CONNECTION" ] && [ -z "$MY_INSIDE_SSH" ]
 # 	export MY_INSIDE_SSH="@$MY_HOSTNAME"
-# 	export SHELL=(which fish)
+# 	export SHELL=(command -v fish)
 # 	screen
 # end
