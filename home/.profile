@@ -68,6 +68,7 @@ export MY_ROOT="$HOME/my"
 export MY_MEDIA="$MY_ROOT/media"
 export MY_TRASH="$MY_ROOT/tmp/trash"
 export MY_SERVER_NAME="vauplace.xyz"
+export TEGFS_ROOT="$MY_ROOT/tegfs/root"
 
 # Export locale so terminals and tmux are fancy
 # export LC_ALL='en_US.UTF-8'
