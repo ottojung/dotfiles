@@ -4,15 +4,16 @@
 # see /usr/share/doc/bash/examples/startup-files for examples.
 # the files are located in the bash-doc package
 
-if ! test -n "$MY_SHELL_INITIALIZED"
-then
-	echo "$PATH" > "$HOME/.my-initial-env"
-	export MY_SHELL_INITIALIZED=true
-fi
+# # Save initial state
+# if ! test -n "$MY_SHELL_INITIALIZED"
+# then
+# 	echo "$PATH" > "$HOME/.my-initial-env"
+# 	export MY_SHELL_INITIALIZED=true
+# fi
 
 case $IN_NIX_SHELL in
 	pure)
-		export PATH=$(cat "$HOME/.my-initial-env")
+		# export PATH=$(cat "$HOME/.my-initial-env")
 		return
 esac
 
