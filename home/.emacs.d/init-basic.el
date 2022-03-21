@@ -62,8 +62,8 @@ Bcc:
          kill-buffer-query-functions))
 
 (unless (getenv "LC_ALL")
-  (setenv "LC_ALL" "en_US.utf8")
-  (setenv "LANG" "en_US.utf8"))
+  (setenv "LC_ALL" "en_US.UTF-8")
+  (setenv "LANG" "en_US.UTF-8"))
 
 (defun my-path-join* (rest)
   (if (cdr rest)
