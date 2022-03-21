@@ -40,7 +40,9 @@
 		# Enable touchpad support (enabled default in most desktopManagers).
 		libinput = {
 			enable = true;
-			tapping = false;
+			touchpad = {
+				tapping = false;
+			};
 		};
 	};
 
