@@ -481,8 +481,6 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 ;; LOOK ;;
 ;;;;;;;;;;
 
-(
-
 (font-lock-add-keywords
  'scheme-mode
  '(("\\('\\([^] (){}[]+\\)\\|\\b[0-9]+\\b\\)" . font-lock-constant-face)
