@@ -7,6 +7,21 @@ root-make-all: check-root-requisites check-root
 $(ROOT)/etc/nixos:
 	mkdir -p /etc/nixos
 
+check-root-requisites:
+	command -v gcc || ( echo '"gcc" is needed to compile stuff' ; exit 1 )
+	command -v guile || ( echo '"guile" is needed to compile stuff' ; exit 1 )
+	command -v cpupower || ( echo '"cpupower" may be required to run my-root-do' ; exit 1 )
+
+check-root:
+	@ if test 0 = $$(id --user) ; \
+	then echo Ok, you are root 1>&2 ; \
+	else echo Must run this makefile as root 1>&2 ; exit 1 ; \
+	fi
+	@ if env | grep -q -E -e '^SUDO_' ; \
+	then echo But you used sudo... disgusting ; exit 1 ;\
+	else echo And you did not use sudo. Well played ; \
+	fi
+
 root-stow: do-root-stow $(ROOT)/etc/nixos
 	rm -f "$(ROOT)/etc/nixos/configuration.nix"
 	./stowy --overwrite --readlink $(STOWYFLAGS) run root $(ROOTSLASH)

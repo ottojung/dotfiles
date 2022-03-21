@@ -1,4 +1,6 @@
 
+include root.make
+
 SFLAGS =
 
 ROOT =
