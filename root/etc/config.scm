@@ -99,7 +99,7 @@
   (bootloader
     (bootloader-configuration
       (bootloader grub-bootloader)
-      (target "/dev/sda")
+      (targets "/dev/sda")
       (keyboard-layout my-console-keyboard)))
   (file-systems
     (cons* (file-system
