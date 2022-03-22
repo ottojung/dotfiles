@@ -76,7 +76,7 @@
   (kernel linux)
   (firmware (list linux-firmware))
 
-  (locale "en_US.utf8")
+  (locale "en_US.UTF-8")
   (timezone "Europe/Warsaw")
   (keyboard-layout my-console-keyboard)
 
