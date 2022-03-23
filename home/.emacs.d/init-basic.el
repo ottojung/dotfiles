@@ -489,7 +489,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 
 (font-lock-add-keywords
  'scheme-mode
- '(("\\('\\([^] (){}[]+\\)\\|\\b[0-9]+\\b\\)" . font-lock-constant-face)
+ '(("\\('\\([^] (){}[]+\\)\\|\\b[+-]?[0-9]+\\([.][0-9]+\\)?\\b\\|\\b[+-]inf.0\\b\\|\\b[+-]?[0-9]+/[0-9]+\\b\\)" . font-lock-constant-face)
    ("\\(\\bset!\\b\\)" . font-lock-keyword-face)
    ("\\(\\bmap\\b\\|\\bfor-each\\b\\|\\breverese\\b\\|\\b=\\b\\|\\beq\\?\\b\\|\\beqv\\?\\b\\|\\bequal\\?\\b\\|\\beval\\b\\|\\\\b\\|\\bcons\\b\\|\\bpair\\?\\b\\)" . font-lock-builtin-face)))
 
