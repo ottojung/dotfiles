@@ -61,9 +61,17 @@ Bcc:
   (remq 'process-kill-buffer-query-function
          kill-buffer-query-functions))
 
+;;;;;;;;;;;;;;;;;;;;
+;;; set up unicode
 (unless (getenv "LC_ALL")
   (setenv "LC_ALL" "en_US.UTF-8")
   (setenv "LANG" "en_US.UTF-8"))
+(prefer-coding-system       'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(setq default-buffer-file-coding-system 'utf-8)
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 
 (defun my-path-join* (rest)
   (if (cdr rest)
