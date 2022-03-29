@@ -31,6 +31,7 @@ paths =
 	figlet # transforms text into nice drawings
 	cowsay # transforms text into nice drawings
 	ncdu # program for exploring filesystem
+	pamixer # program to control audio, setting volume and stuff, similar to `pactl'
 
 	################
 	# CLI Programs #

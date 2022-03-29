@@ -31,7 +31,7 @@
   sox ;; provides `play' command
   figlet ;; transforms text into nice drawings
   cowsay ;; transforms text into nice drawings
-  pamixer ;; setting volume and stuff
+  pamixer ;; program to control audio, setting volume and stuff, similar to `pactl'
   ;; doas ;; alternative to "sudo"
   ncdu ;; program for exploring filesystem
   )
