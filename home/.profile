@@ -74,10 +74,17 @@ export TEGFS_ROOT="$MY_ROOT/tegfs/root"
 # Export locale so terminals and tmux are fancy
 # export LC_ALL='en_US.UTF-8'
 
-if test -z $COLUMNS
-then COLUMNS=80
+if test -z "$COLUMNS"
+then
+	if command -v tput
+	then
+		COLUMNS=$(tput cols)
+		if test "$?" = 0
+		then export COLUMNS
+		else unset COLUMNS
+		fi
+	fi
 fi
-export COLUMNS
 
 if command -v ec 1>/dev/null 2>/dev/null && command -v emacs 1>/dev/null 2>/dev/null
 then export EDITOR=ec
