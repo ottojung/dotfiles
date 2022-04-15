@@ -76,7 +76,7 @@ export TEGFS_ROOT="$MY_ROOT/tegfs/root"
 
 if test -z "$COLUMNS"
 then
-	if command -v tput
+	if command -v tput 1>/dev/null 2>/dev/null
 	then
 		COLUMNS=$(tput cols)
 		if test "$?" = 0
