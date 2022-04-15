@@ -34,6 +34,7 @@
   pamixer ;; program to control audio, setting volume and stuff, similar to `pactl'
   ;; doas ;; alternative to "sudo"
   ncdu ;; program for exploring filesystem
+  brightnessctl ;; program to control screen brightnessctl
   )
 
 (define-packages cli-programs
