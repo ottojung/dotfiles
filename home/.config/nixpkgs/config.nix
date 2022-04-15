@@ -32,6 +32,7 @@ paths =
 	cowsay # transforms text into nice drawings
 	ncdu # program for exploring filesystem
 	pamixer # program to control audio, setting volume and stuff, similar to `pactl'
+	brightnessctl # program to control screen brightness
 
 	################
 	# CLI Programs #
@@ -122,7 +123,7 @@ paths =
 	###########
 	### big apps
 	audacity # audio editor
-	# unstable.tdesktop # Telegram desktop client
+	unstable.tdesktop # Telegram desktop client
 	# virtualbox # virtual machine (some parts are propriatary)
 	virt-manager # virtual machine helper
 	ungoogled-chromium # chromium without google services
