@@ -1,0 +1,20 @@
+#! /bin/sh
+
+while read file
+do
+        case "$1" in
+        "C-d")
+                my-safe-rm "$file"
+				notify-send "Removed '$file'"
+                ;;
+        "C-y")
+                printf "%s" "$file" | xclip -selection clipboard
+				notify-send "Copied '$file'"
+				;;
+		"C-s")
+				x-terminal-emulator-exe "my-save '$file'"
+				;;
+        "C-w")
+                nitrogen --save --set-zoom-fill "$file" ;;
+        esac
+done
