@@ -126,7 +126,7 @@ paths =
 	unstable.tdesktop # Telegram desktop client
 	# virtualbox # virtual machine (some parts are propriatary)
 	virt-manager # virtual machine helper
-	ungoogled-chromium # chromium without google services
+	unstable.ungoogled-chromium # chromium without google services
 	firefox # fuck mozilla
 	# unstable.torbrowser # breaks
 	# nyxt # doesn't work
