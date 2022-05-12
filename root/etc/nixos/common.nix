@@ -99,6 +99,21 @@
 	# services.keybase.enable = true;
 	# services.kbfs.enable = true;
 
+	# Blocking some nasty websites
+	networking.extraHosts =
+		''
+			0.0.0.0 https://yewtu.be
+			0.0.0.0 http://yewtu.be
+			0.0.0.0 https://youtube.com
+			0.0.0.0 http://youtube.com
+			0.0.0.0 https://kavin.rocks
+			0.0.0.0 http://kavin.rocks
+			0.0.0.0 https://invidious.kavin.rocks
+			0.0.0.0 http://invidious.kavin.rocks
+			0.0.0.0 https://invidious-us.kavin.rocks
+			0.0.0.0 http://invidious-us.kavin.rocks
+		'';
+
 	# This value determines the NixOS release from which the default
 	# settings for stateful data, like file locations and database versions
 	# on your system were taken. It‘s perfectly fine and recommended to leave
