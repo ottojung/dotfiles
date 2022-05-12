@@ -17,10 +17,6 @@ check-root:
 	then echo Ok, you are root 1>&2 ; \
 	else echo Must run this makefile as root 1>&2 ; exit 1 ; \
 	fi
-	@ if env | grep -q -E -e '^SUDO_' ; \
-	then echo But you used sudo... disgusting ; exit 1 ;\
-	else echo And you did not use sudo. Well played ; \
-	fi
 
 root-stow: do-root-stow $(ROOT)/etc/nixos
 	rm -f "$(ROOT)/etc/nixos/configuration.nix"
