@@ -99,20 +99,17 @@
 	# services.keybase.enable = true;
 	# services.kbfs.enable = true;
 
-	# Blocking some nasty websites
-	networking.extraHosts =
-		''
-0.0.0.0 yewtu.be
-0.0.0.0 yewtu.be
-0.0.0.0 youtube.com
-0.0.0.0 youtube.com
-0.0.0.0 kavin.rocks
-0.0.0.0 kavin.rocks
-0.0.0.0 invidious.kavin.rocks
-0.0.0.0 invidious.kavin.rocks
-0.0.0.0 invidious-us.kavin.rocks
-0.0.0.0 invidious-us.kavin.rocks
-		'';
+# 	# Blocking some nasty websites
+# 	networking.extraHosts =
+# 		''
+# 0.0.0.0 youtube.com
+# 0.0.0.0 www.youtube.com
+# 0.0.0.0 www.youtube.pl
+# 0.0.0.0 yewtu.be
+# 0.0.0.0 kavin.rocks
+# 0.0.0.0 invidious.kavin.rocks
+# 0.0.0.0 invidious-us.kavin.rocks
+# 		'';
 
 	# This value determines the NixOS release from which the default
 	# settings for stateful data, like file locations and database versions
