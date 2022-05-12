@@ -102,16 +102,16 @@
 	# Blocking some nasty websites
 	networking.extraHosts =
 		''
-			0.0.0.0 https://yewtu.be
-			0.0.0.0 http://yewtu.be
-			0.0.0.0 https://youtube.com
-			0.0.0.0 http://youtube.com
-			0.0.0.0 https://kavin.rocks
-			0.0.0.0 http://kavin.rocks
-			0.0.0.0 https://invidious.kavin.rocks
-			0.0.0.0 http://invidious.kavin.rocks
-			0.0.0.0 https://invidious-us.kavin.rocks
-			0.0.0.0 http://invidious-us.kavin.rocks
+0.0.0.0 yewtu.be
+0.0.0.0 yewtu.be
+0.0.0.0 youtube.com
+0.0.0.0 youtube.com
+0.0.0.0 kavin.rocks
+0.0.0.0 kavin.rocks
+0.0.0.0 invidious.kavin.rocks
+0.0.0.0 invidious.kavin.rocks
+0.0.0.0 invidious-us.kavin.rocks
+0.0.0.0 invidious-us.kavin.rocks
 		'';
 
 	# This value determines the NixOS release from which the default
