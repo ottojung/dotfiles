@@ -63,8 +63,9 @@
 		home = "/home/u2";
 		shell = pkgs.dash;
 	};
-
-	users.users.root.shell = pkgs.dash;
+	users.users.root = {
+		shell = pkgs.dash;
+	};
 
 	# List packages installed in system profile. To search, run:
 	# $ nix search wget
