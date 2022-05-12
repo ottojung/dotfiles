@@ -8,9 +8,7 @@ $(ROOT)/etc/nixos:
 	mkdir -p /etc/nixos
 
 check-root-requisites:
-	command -v gcc || ( echo '"gcc" is needed to compile stuff' ; exit 1 )
-	command -v guile || ( echo '"guile" is needed to compile stuff' ; exit 1 )
-	command -v cpupower || ( echo '"cpupower" may be required to run my-root-do' ; exit 1 )
+	# No dependencies
 
 check-root:
 	@ if test 0 = $$(id --user) ; \
