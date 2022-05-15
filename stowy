@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-VERSION=1.1
+VERSION=1.2
 
 ####################
 # Helper functions #
@@ -82,7 +82,7 @@ my_pushd() {
 my_popd() {
 	STACK=$(echo "$STACK" | tr -s '/' | tr '/' '\n' | head -n -1 | tr '\n' '/' | tr -s '/')
 	case "$STACK" in
-		*/) STACK=${STACK%?} ;;
+		*/) STACK="${STACK%?}" ;;
 	esac
 }
 
@@ -198,9 +198,10 @@ if test "$READLINK" = 1
 then require readlink to inspect symlinks
 fi
 
-if test -z "$STOWY_LINK_CMD"
-then
-	STOWY_LINK_CMD="ln -srf"
+if test -n "$STOWY_LINK_CMD"
+then LINK_CMD="$STOWY_LINK_CMD"
+else
+	LINK_CMD="ln -srf"
 	require ln to make symlinks
 fi
 
@@ -214,26 +215,28 @@ my_link() {
 
 	if test "$OVERWRITE" = 0 && test -e "$TGT"
 	then
-		if test $(readlink -f "$TGT" || echo "/") = $(readlink -f "$SRC" || echo "//")
+		if test $(readlink -f "$TGT" || echo "///") = $(readlink -f "$SRC" || echo "//")
 		then return 0
 		else
-			 error "Want to replace file '$(readlink -f "$SRC" || echo "//")'\n  by '$(readlink -f "$TGT" || echo "//")'\n  but that is only allowed with --overwrite flag"
+			 error "Want to replace file '$(readlink -f "$SRC" || echo "///")' by '$(readlink -f "$TGT" || echo "//")', but that is only allowed with --overwrite flag"
 			 return 1
 		fi
 	fi
 
 	if ! test "$VERBOSITY" = 0 && ! test "$MODE" = "check"
-	then yell $STOWY_LINK_CMD "$SRC" "$TGT"
+	then yell $LINK_CMD "$SRC" "$TGT"
 	fi
 
 	if test "$MODE" = "run"
-	then $STOWY_LINK_CMD "$SRC" "$TGT" || error "Link failed"
+	then $LINK_CMD "$SRC" "$TGT" || error "Link failed"
 	fi
 }
 
 my_install_push() {
-	if test "$READLINK" = 1 && test $(readlink -f "$1" || echo "///") = $(readlink -f "$TARGET/$STACK/$1" || echo "//")
-	then return 0
+	if test "$READLINK" = 1 && test $(readlink -f "$SOURCE/$STACK/$1" || echo "///") = $(readlink -f "$TARGET/$STACK/$1" || echo "//")
+	then
+		test "$OVERWRITE" = 1 && test -n "$STOWY_LINK_CMD" && my_link "$1"
+		return
 	fi
 
 	my_pushd "$1"
@@ -242,10 +245,6 @@ my_install_push() {
 }
 
 my_install() {
-	if test "$READLINK" = 1 && test $(readlink -f "$SOURCE/$STACK/" || echo "///") = $(readlink -f "$TARGET/$STACK/" || echo "//")
-	then return 0
-	fi
-
 	ls -a "$SOURCE/$STACK/" | while IFS= read -r FILE
 	do
 		if test "$FILE" = "." || test "$FILE" = ".."
