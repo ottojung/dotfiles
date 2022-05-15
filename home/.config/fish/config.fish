@@ -18,7 +18,7 @@ function fish_prompt
 	set -l display_status $status
 
 	set_color purple
-	printf "\n$PWD" | sed "s#$HOME#~#"
+	printf "\n$PWD" | sed "s#^$HOME#~#"
 
 	if [ -n "$SSH_CONNECTION" ]
 		set_color red
