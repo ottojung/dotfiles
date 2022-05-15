@@ -1,42 +1,73 @@
 #! /bin/sh
+# Copyright (C) 2021, 2022  Otto Jung
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 3 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+VERSION=1.1
 
 ####################
 # Helper functions #
 ####################
 
+yell() {
+	echo "$*" 1>&2
+}
+
 fatal() {
-	echo "ERROR: $*" 1>&2
+	yell "ERROR: $*"
 	exit 1
 }
 
 error() {
 	if test "$KEEP_GOING" = "0"
 	then fatal "$*"
-	else test "$MODE" = "check" || echo "IGNORED: $*" 1>&2
+	else test "$MODE" = "check" || yell "IGNORED: $*"
 	fi
 }
 
 show_help() {
-	echo "$0 is a dotfiles deployment script, a very simple version of 'stow'" 1>&2
-	echo "Usage: $0 [OPTS...] run    <SOURCE> <TARGET>" 1>&2
-	echo "       $0 [OPTS...] dryrun <SOURCE> <TARGET>" 1>&2
-	echo "       $0 [OPTS...] check  <SOURCE> <TARGET>" 1>&2
-	echo "" 1>&2
-	echo "OPTS:  --overwrite | --no-overwrite | --safe | --unsafe | --quiet | --verbose | --readlink | --no-readlink | --keep-going | --no-keep-going" 1>&2
-	echo "Defaults: --safe --no-overwrite --verbose --no-readlink --no-keep-going" 1>&2
-	echo "Notes: --no-overwrite implies --readlink" 1>&2
-	echo "To do a cleanup (uninstall), make use of STOWY_LINK_CMD variable" 1>&2
-	echo "  like this: 'STOWY_LINK_CMD=rm ./stowy ...'" 1>&2
+	yell "$0 is a dotfiles deployment script, a very simple version of 'stow'"
+	yell "Usage: $0 [OPTS...] run    <SOURCE> <TARGET>"
+	yell "       $0 [OPTS...] dryrun <SOURCE> <TARGET>"
+	yell "       $0 [OPTS...] check  <SOURCE> <TARGET>"
+	yell "       $0 -v"
+	yell ""
+	yell "OPTS:  --overwrite | --no-overwrite |"
+	yell "       --safe | --unsafe |"
+	yell "       --quiet | --verbose |"
+	yell "       --readlink | --no-readlink |"
+	yell "       --keep-going | --no-keep-going"
+	yell ""
+	yell "Defaults are --safe, --no-overwrite, --verbose, --readlink, and --no-keep-going."
+	yell ""
+	yell "Note that --no-overwrite implies --readlink."
+	yell ""
+	yell "To do a cleanup (uninstall), make use of STOWY_LINK_CMD variable, like so:"
+	yell "  STOWY_LINK_CMD=remove-command ./stowy --overwrite ..."
+	yell "where the 'remove-command' is a program like 'link-cmds/remove.sh'"
 }
 
 require() {
-	if ! command -v "$1" 1>/dev/null 2>/dev/null
-	then fatal "'$1' is required to deploy links"
+	PROGRAM="$1"
+	shift
+
+	if ! command -v "$PROGRAM" 1>/dev/null 2>/dev/null
+	then fatal "'$PROGRAM' is required $*"
 	fi
 }
 
 my_pushd() {
-	if cd "$1"
+	if test -d "$SOURCE/$STACK/$1"
 	then
 		if test -z "$STACK"
 		then STACK="$1"
@@ -53,7 +84,6 @@ my_popd() {
 	case "$STACK" in
 		*/) STACK=${STACK%?} ;;
 	esac
-	cd ..
 }
 
 ####################
@@ -62,28 +92,34 @@ my_popd() {
 
 OVERWRITE=0
 VERBOSITY=1
-READLINK=0
+READLINK=1
 SAFE=1
 KEEP_GOING=0
 
 while true
 do
 	OPT="$1"
-	shift
 	case "$OPT" in
+		-v)
+			echo "$VERSION"
+			exit 1
+			;;
+		--version)
+			echo "$VERSION"
+			exit 1
+			;;
 		--overwrite)
 			OVERWRITE=1
 			;;
 		--no-overwrite)
 			OVERWRITE=0
+			READLINK=1
 			;;
 		--safe)
 			SAFE=1
-			OVERWRITE=0
 			;;
 		--unsafe)
 			SAFE=0
-			OVERWRITE=1
 			;;
 		--quiet)
 			VERBOSITY=0
@@ -104,20 +140,20 @@ do
 			KEEP_GOING=0
 			;;
 		run)
-			SOURCE="$1"
-			TARGET="$2"
+			SOURCE="$2"
+			TARGET="$3"
 			MODE=run
 			break
 			;;
 		dryrun)
-			SOURCE="$1"
-			TARGET="$2"
+			SOURCE="$2"
+			TARGET="$3"
 			MODE=dryrun
 			break
 			;;
 		check)
-			SOURCE="$1"
-			TARGET="$2"
+			SOURCE="$2"
+			TARGET="$3"
 			MODE=check
 			break
 			;;
@@ -126,6 +162,7 @@ do
 			exit 1
 			;;
 	esac
+	shift
 done
 
 if ! test -d "$SOURCE"
@@ -140,35 +177,31 @@ then
 	fatal "Target '$TARGET' should be a directory, but is not"
 fi
 
+if test "$OVERWRITE" = 0 && test "$READLINK" = 0
+then
+	fatal "Flag --no-readlink can only be used together with --overwrite"
+fi
+
 ###############
 # Preparation #
 ###############
 
-case "$SOURCE" in
-	/*) ;;
-	*) SOURCE="$PWD/$SOURCE" ;;
-esac
-
-case "$TARGET" in
-	/*) ;;
-	*) TARGET="$PWD/$TARGET" ;;
-esac
-
-require ls
-require ln
-require tr
-require head
+require ls to list files
+require tr to handle internal stack
+require head to handle internal stack
 
 if test "$OVERWRITE" = 0
-then require readlink
+then require readlink to inspect symlinks
 fi
 
 if test "$READLINK" = 1
-then require readlink
+then require readlink to inspect symlinks
 fi
 
 if test -z "$STOWY_LINK_CMD"
-then STOWY_LINK_CMD="ln -srf"
+then
+	STOWY_LINK_CMD="ln -srf"
+	require ln to make symlinks
 fi
 
 ################
@@ -190,14 +223,16 @@ my_link() {
 	fi
 
 	if ! test "$VERBOSITY" = 0 && ! test "$MODE" = "check"
-	then echo $STOWY_LINK_CMD "$SRC" "$TGT"
+	then yell $STOWY_LINK_CMD "$SRC" "$TGT"
 	fi
 
-	test "$MODE" = "run" && $STOWY_LINK_CMD "$SRC" "$TGT"
+	if test "$MODE" = "run"
+	then $STOWY_LINK_CMD "$SRC" "$TGT" || error "Link failed"
+	fi
 }
 
 my_install_push() {
-	if test "$READLINK" = 1 && test $(readlink -f "$1" || echo "/") = $(readlink -f "$TARGET/$STACK/$1" || echo "//")
+	if test "$READLINK" = 1 && test $(readlink -f "$1" || echo "///") = $(readlink -f "$TARGET/$STACK/$1" || echo "//")
 	then return 0
 	fi
 
@@ -207,28 +242,33 @@ my_install_push() {
 }
 
 my_install() {
-	ls -a | while IFS= read -r FILE
+	if test "$READLINK" = 1 && test $(readlink -f "$SOURCE/$STACK/" || echo "///") = $(readlink -f "$TARGET/$STACK/" || echo "//")
+	then return 0
+	fi
+
+	ls -a "$SOURCE/$STACK/" | while IFS= read -r FILE
 	do
 		if test "$FILE" = "." || test "$FILE" = ".."
 		then continue
 		fi
 
-		if test -d "$FILE"
+		FULLNAME="$STACK/$FILE"
+		if test -d "$SOURCE/$FULLNAME"
 		then
-			if test -d "$TARGET/$STACK/$FILE"
+			if test -d "$TARGET/$FULLNAME"
 			then my_install_push "$FILE"
-			elif test -e "$TARGET/$STACK/$FILE" && test "$SAFE" = 1
-			then error "Want to place directory '$STACK/$FILE' in '$TARGET', but there is something else there!"
+			elif test -e "$TARGET/$FULLNAME" && test "$SAFE" = 1
+			then error "Want to place directory '$FULLNAME' in '$TARGET', but there is something else there!"
 			else my_link "$FILE"
 			fi
-		elif test -f "$FILE"
+		elif test -f "$SOURCE/$FULLNAME"
 		then
-			if test -e "$TARGET/$STACK/$FILE" && ! test -f "$TARGET/$STACK/$FILE" && test "$SAFE" = 1
-			then error "Want to place file '$STACK/$FILE' in '$TARGET', but there is something else there!"
+			if test -e "$TARGET/$FULLNAME" && ! test -f "$TARGET/$FULLNAME" && test "$SAFE" = 1
+			then error "Want to place file '$FULLNAME' in '$TARGET', but there is something else there!"
 			else my_link "$FILE"
 			fi
 		else
-			echo "WARN: Skipping irregular file '$STACK/$FILE'" 1>&2
+			yell "WARN: Skipping irregular file '$SOURCE/$FULLNAME'"
 		fi
 	done
 }
@@ -236,8 +276,6 @@ my_install() {
 #############
 # Execution #
 #############
-
-cd "$SOURCE"
 
 case "$MODE" in
 	dryrun)

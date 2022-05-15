@@ -19,7 +19,7 @@ check_requisites:
 	command -v emacs || ( echo '"emacs" is needed to configure emacs' ; exit 1 )
 
 initialize_home: $(DIRECTORIES)
-	./stowy --overwrite --readlink $(STOWYFLAGS) run home $(HOME)
+	./stowy $(STOWYFLAGS) run home $(HOME)
 
 compile_emacs:
 	cd home/.emacs.d && git clean -dfx
