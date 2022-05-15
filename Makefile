@@ -9,8 +9,6 @@ DIRECTORIES = $(HOME)/my $(HOME)/.config $(HOME)/.local $(HOME)/Downloads $(HOME
 all:
 	@ echo "run '$(MAKE) root' as root followed by '$(MAKE) home' as a regular user"
 
-include root.make
-
 root: root-make-all
 
 home: check_requisites check-user initialize_home compile_emacs
