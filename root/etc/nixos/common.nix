@@ -97,6 +97,10 @@
 	virtualisation.libvirtd.enable = true;
 	users.extraGroups.vboxusers.members = [ "libvirtd" ];
 
+	services.flatpak.enable = true;
+	xdg.portal.enable = true; # ``- To use Flatpak you must enable XDG Desktop Portals with xdg.portal.enable.''
+	xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ]; # ``- Setting xdg.portal.enable to true requires a portal implementation in xdg.portal.extraPortals such as xdg-desktop-portal-gtk or xdg-desktop-portal-kde.''
+
 	# # Keybase server which is for some reason needed for the GUI client
 	# services.keybase.enable = true;
 	# services.kbfs.enable = true;
