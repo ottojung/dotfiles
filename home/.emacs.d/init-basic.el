@@ -6,6 +6,7 @@
  ;; If there is more than one, they won't work right.
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
+ '(dired-dwim-target t)
  '(ansi-color-names-vector
    ["#454545" "#cd5542" "#6aaf50" "#baba36" "#5180b3" "#ab75c3" "#68a5e9" "#bdbdb3"])
  '(backward-delete-char-untabify-method 'hungry)
