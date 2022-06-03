@@ -327,9 +327,9 @@
 
 (haskell-tab-indent-mode 1)
 
-;; (use-package projectile
-;;   :ensure nil
-;;   :init (projectile-mode))
+(use-package projectile
+  :ensure nil
+  :init (projectile-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; CYRILLIC LAYOUT ;;
