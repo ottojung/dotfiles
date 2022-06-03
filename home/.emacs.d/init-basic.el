@@ -6,7 +6,6 @@
  ;; If there is more than one, they won't work right.
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
- '(dired-dwim-target t)
  '(ansi-color-names-vector
    ["#454545" "#cd5542" "#6aaf50" "#baba36" "#5180b3" "#ab75c3" "#68a5e9" "#bdbdb3"])
  '(backward-delete-char-untabify-method 'hungry)
@@ -17,6 +16,7 @@
  '(custom-safe-themes
    '("36ca8f60565af20ef4f30783aa16a26d96c02df7b4e54e9900a5138fb33808da" "bf798e9e8ff00d4bf2512597f36e5a135ce48e477ce88a0764cfb5d8104e8163" "c9ddf33b383e74dac7690255dd2c3dfa1961a8e8a1d20e401c6572febef61045" "d8dc153c58354d612b2576fea87fe676a3a5d43bcc71170c62ddde4a1ad9e1fb" default))
  '(default-input-method "TeX")
+ '(dired-dwim-target t)
  '(dired-hide-details-hide-information-lines t)
  '(dired-hide-details-hide-symlink-targets nil)
  '(dired-listing-switches "-alFhgG")
@@ -32,9 +32,9 @@ Bcc:
  '(org-startup-truncated nil)
  '(package-archives
    '(("gnu" . "http://elpa.gnu.org/packages/")
-	 ("melpa" . "https://melpa.org/packages/")))
+     ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(maxima yaml-mode web-mode tide typescript-mode proof-general csharp-mode ess nix-mode json-mode elfeed gnus-alias rust-mode lua-mode buffer-flip notmuch lean-mode ample-theme abyss-theme live-py-mode racket-mode projectile popup magit-todos idris-mode company-tabnine company-ghc))
+   '(maxima yaml-mode web-mode tide typescript-mode proof-general csharp-mode ess nix-mode json-mode elfeed gnus-alias rust-mode lua-mode buffer-flip notmuch lean-mode ample-theme abyss-theme live-py-mode racket-mode popup magit-todos idris-mode company-tabnine company-ghc))
  '(scroll-bar-mode nil)
  '(send-mail-function 'smtpmail-send-it)
  '(shell-file-name "/bin/sh")
