@@ -63,6 +63,7 @@ paths =
 	unison # like rsync, but for syncing
 	unstable.youtube-dl # need newest version
 	texlive.combined.scheme-full # distribution of TeX programs
+	imagemagick # CLI tool to edit images
 
 	#############
 	# Compilers #
