@@ -25,4 +25,5 @@ eshell/lastdir
 projectile.cache
 projectile-bookmarks.eld
 ido.last
+transient # magit shit
 
