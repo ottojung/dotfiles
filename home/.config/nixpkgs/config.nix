@@ -139,7 +139,7 @@ paths =
 	unstable.zathura # pdf-reader
 	vlc # video-player. Use mpv instead
 	libreoffice
-	krita # paint program
+	# krita # paint program
 	gimp # image editor
 	mypaint # simple paint program
 

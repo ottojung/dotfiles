@@ -65,6 +65,7 @@
   unison ;; like rsync, but for syncing
   youtube-dl ;; need newest version
   texlive ;; distribution of TeX programs (nix: texlive.combined.scheme-full)
+  imagemagick ;; CLI tool to edit images
   )
 
 (define-packages compilers
@@ -138,7 +139,7 @@
   zathura ;; pdf-reader
   vlc ;; video-player. Use mpv instead
   libreoffice
-  krita ;; paint program
+  ;; krita ;; paint program
   gimp ;; image editor
   mypaint ;; simple paint program
   )
