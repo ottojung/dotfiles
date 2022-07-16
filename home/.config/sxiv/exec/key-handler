@@ -1,20 +1,25 @@
 #! /bin/sh
 
-while read file
+while read FILE
 do
+	case "$FILE" in
+		/*) ;;
+		*) FILE="$PWD/$FILE" ;;
+	esac
 	case "$1" in
 		"C-d")
-			my-safe-rm "$file"
-			notify-send "Removed '$file'"
+			my-safe-rm "$FILE"
+			notify-send "Removed '$FILE'"
 			;;
 		"C-y")
-			printf "%s" "$PWD/$file" | xclip -selection clipboard
-			notify-send "Copied '$file'"
+			printf "%s" "$FILE" | xclip -selection clipboard
+			notify-send "Copied '$FILE'"
 			;;
 		"C-s")
-			x-terminal-emulator-exe "my-save '$file'"
+			ESC="$(my-escape-name "$FILE")"
+			x-terminal-emulator-exe "my-save $ESC"
 			;;
 		"C-w")
-			nitrogen --save --set-zoom-fill "$file" ;;
+			nitrogen --save --set-zoom-fill "$FILE" ;;
 	esac
 done
