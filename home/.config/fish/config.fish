@@ -18,19 +18,19 @@ function fish_prompt
 	set -l display_status $status
 
 	set_color purple
-	printf "\n$PWD" | sed "s#^$HOME#~#"
+	printf "\n%s" "$PWD" | sed "s#^$HOME#~#"
 
 	if [ -n "$SSH_CONNECTION" ]
 		set_color red
-		printf " @$MY_HOSTNAME"
+		printf "%s" " @$MY_HOSTNAME"
 	end
 
 	set_color blue
-	printf " \$$USER"
+	printf "%s" " \$$USER"
 
 	if [ -n "$GUIX_ENVIRONMENT" ]
 		set_color yellow
-		printf " [env]"
+		printf "%s" " [env]"
 	end
 
 	if [ "$display_status" = 0 ]
