@@ -124,6 +124,7 @@
 0.0.0.0 www.snopyta.org
 0.0.0.0 kavin.rocks
 0.0.0.0 www.kavin.rocks
+0.0.0.0 invidious.kavin.rocks
 0.0.0.0 riverside.rocks
 0.0.0.0 www.riverside.rocks
 0.0.0.0 invidious.osi.kr
