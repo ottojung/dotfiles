@@ -349,6 +349,15 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
           name)
       (message (format "Buffer %s is not associated with any file" (buffer-name))))))
 
+(defun my-fix-imports ()
+  "Tries to fix missing imports in the current file."
+  (interactive)
+  (my-save-buffer-force)
+  (let ((filepath (buffer-file-name (current-buffer))))
+    (let ((out (sh "my-fix-imports" filepath)))
+      (message "%s" out)
+      (revert-buffer t t t))))
+
 ;;;;;;;;;;
 ;; KEYS ;;
 ;;;;;;;;;;
@@ -424,6 +433,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
      ("M-y"   my-term-taged)
      ("M-u"   my-rerun-compile)
      ("t u"   my-run-last-term-command)
+     ("f i"   my-fix-imports)
      )
 
     ;; terminal for each number
