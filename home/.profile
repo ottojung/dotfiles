@@ -78,7 +78,7 @@ if test -z "$COLUMNS"
 then
 	if command -v tput 1>/dev/null 2>/dev/null
 	then
-		COLUMNS=$(tput cols)
+		COLUMNS=$(tput cols 2>/dev/null)
 		if test "$?" = 0
 		then export COLUMNS
 		else unset COLUMNS
