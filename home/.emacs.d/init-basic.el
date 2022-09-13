@@ -571,7 +571,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 (defconst initial-scroll-margin scroll-margin)
 
 (define-minor-mode my-centered-cursor-mode
-  "Major mode for editing Work Time pseudocode"
+  "Minor mode for centered cursor viewing."
   :lighter " Centered"
   :after-hook
   (if my-centered-cursor-mode
