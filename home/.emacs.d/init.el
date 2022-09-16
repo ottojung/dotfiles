@@ -1,11 +1,14 @@
 
 (setq custom-file "~/.emacs.d/init-basic.el")
 (load "~/.emacs.d/init-basic")
-(load (emacs-root-join "private.el"))
 (defvar my-window-map)
 
 (customize-set-variable 'grep-command "grep --color -HRIn")
 (customize-set-variable 'grep-use-null-device nil)
+
+(let ((private (emacs-root-join "private.el")))
+  (when (file-exists-p private)
+    (load private)))
 
 ;;;;;;;;;;;;;;
 ;; PACKAGES ;;
