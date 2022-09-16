@@ -27,3 +27,6 @@ projectile-bookmarks.eld
 ido.last
 transient # magit shit
 
+# my private stuff
+private.el
+
