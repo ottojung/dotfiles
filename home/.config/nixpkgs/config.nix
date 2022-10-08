@@ -124,7 +124,7 @@ paths =
 	###########
 	### big apps
 	audacity # audio editor
-	unstable.tdesktop # Telegram desktop client
+	# unstable.tdesktop # Telegram desktop client
 	# virtualbox # virtual machine (some parts are propriatary)
 	virt-manager # virtual machine helper
 	unstable.ungoogled-chromium # chromium without google services
