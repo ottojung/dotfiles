@@ -69,7 +69,9 @@ Bcc:
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
+(defvar default-buffer-file-coding-system)
 (setq default-buffer-file-coding-system 'utf-8)
+(defvar x-select-request-type)
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 
 (defun my-path-join* (rest)
