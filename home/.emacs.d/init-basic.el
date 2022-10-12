@@ -99,6 +99,8 @@ Bcc:
       (auto-saves-dir (emacs-root-join "autosaves~")))
 
   (dolist (dir (list backup-dir auto-saves-dir))
+    (when (file-symlink-p dir)
+      (delete-file dir))
     (when (not (file-directory-p dir))
       (make-directory dir t)))
   (setq backup-directory-alist `(("." . ,backup-dir))
