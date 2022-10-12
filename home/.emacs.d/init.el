@@ -350,8 +350,8 @@ the OS keyboard is english or russian"
                                           (concat prefix (string char)))))))
         (case-fold-search nil)
         (keys-pairs (zip-with 'cons
-                              "йцукенгшщзхъфывапролджэячсмитьбюЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖ\ЭЯЧСМИТЬБЮ№"
-                              "qwertyuiop[]asdfghjkl;'zxcvbnm,.QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>#"))
+                              "йцукенгшщзхъїфіывапролджєэґячсмитьбюЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖ\ЭЯЧСМИТЬБЮ№"
+                              "qwertyuiop[]]assdfghjkl;''\\zxcvbnm,.QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>#"))
         ;; (prefixes '("" "s-" "M-" "M-s-"
         ;; "C-" "C-s-" "C-M-" "C-M-s-")))
         (prefixes '( "s-" "M-" "M-s-"
