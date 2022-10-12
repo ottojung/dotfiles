@@ -46,6 +46,7 @@
 
 (setenv "EMACS_SERVER_NAME" MY-EMACS-SERVER-NAME)
 
+(defvar server-name)
 (setq server-name MY-EMACS-SERVER-NAME)
 
 (defvar MY-EMACS-SERVER-STARTED nil)

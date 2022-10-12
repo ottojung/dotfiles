@@ -226,12 +226,18 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
           (nreverse cl-res)))
     (mapcar cl-func cl-x)))
 
+(provide 'zip-with)
+
 (defun repeat-n (n f)
     (funcall f)
     (if (> n 0) (repeat-n (- n 1) f)))
 
+(provide 'repeat-n)
+
 (defun list-to-string (list)
   (mapconcat 'string list ""))
+
+(provide 'list-to-string)
 
 ;;;; scrolling
 
