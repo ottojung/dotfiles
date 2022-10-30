@@ -1,6 +1,6 @@
-#!/bin/sh
+#! /bin/sh
 
-setxkbmap -layout 'pl,ru' -option 'ctrl:swapcaps,grp:win_space_toggle'
+. "$HOME/.xsession-private"
 #cat $HOME/.Xmodmap | xmodmap -
 
 TMP="$HOME/my/tmp/.my-xsession-temp"
