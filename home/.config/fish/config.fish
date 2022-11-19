@@ -1,6 +1,6 @@
 
 if command -v my-safe-rm 1>/dev/null 2>/dev/null
-	alias rm "my-safe-rm"
+	alias rm "my-safe-rm -v"
 end
 
 # Fix for ESHELL prompt
