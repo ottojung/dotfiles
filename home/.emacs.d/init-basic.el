@@ -10,6 +10,7 @@
    ["#454545" "#cd5542" "#6aaf50" "#baba36" "#5180b3" "#ab75c3" "#68a5e9" "#bdbdb3"])
  '(backward-delete-char-untabify-method 'hungry)
  '(blink-cursor-mode nil)
+ '(delete-by-moving-to-trash t)
  '(compilation-disable-input t)
  '(compilation-scroll-output 'first-error)
  '(confirm-nonexistent-file-or-buffer nil)
