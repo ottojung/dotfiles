@@ -22,6 +22,9 @@ image/vnd.djvu+multipage=okular.desktop
 x-scheme-handler/magnet=userapp-transmission-gtk-XNCF10.desktop;
 
 [Added Associations]
+x-scheme-handler/http=myBrowser.desktop
+x-scheme-handler/https=myBrowser.desktop
+x-scheme-handler/ftp=myBrowser.desktop
 text/plain=ec.desktop
 image/avif=sxiv.desktop
 image/bmp=sxiv.desktop
