@@ -152,11 +152,6 @@
   :after web-mode
   :diminish flycheck-mode)
 
-(eval-when-compile
-  (add-to-list 'load-path "~/.emacs.d/custom/translate.el"))
-(add-to-list 'load-path "~/.emacs.d/custom/translate.el")
-(require 'translate.el)
-
 (defun my-prolog-consult-file-advice (orig-fun)
   "Saves file before evaluating it."
   (my-save-buffer-force)
