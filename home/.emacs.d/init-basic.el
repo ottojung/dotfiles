@@ -440,6 +440,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
      ("M-c"   shell-command)
      ("c"     my-term-exe)
      ("M-t"   my-term)
+     ("M-l"   my-translate)
      ("M-y"   my-term-taged)
      ("M-u"   my-rerun-compile)
      ("t u"   my-run-last-term-command)
