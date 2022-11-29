@@ -152,6 +152,9 @@
   :after web-mode
   :diminish flycheck-mode)
 
+
+(load "~/.emacs.d/custom/translate.el/translate.el")
+
 (defun my-prolog-consult-file-advice (orig-fun)
   "Saves file before evaluating it."
   (my-save-buffer-force)
