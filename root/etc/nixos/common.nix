@@ -46,6 +46,9 @@
 		};
 	};
 
+	# Enable Trash folder in Gnome apps.
+	services.gvfs.enable = true;
+
 	# Enable sound.
 	sound.enable = true;
 	hardware.pulseaudio.enable = true;
