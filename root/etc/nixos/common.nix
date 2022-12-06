@@ -123,7 +123,8 @@
 0.0.0.0 www.yewtu.be
 0.0.0.0 puffyan.us
 0.0.0.0 www.puffyan.us
-0.0.0.0 snopyta.org
+0.0.0.0 vid.puffyan.us
+0.0.0.0 invidious.snopyta.org
 0.0.0.0 www.snopyta.org
 0.0.0.0 kavin.rocks
 0.0.0.0 www.kavin.rocks
