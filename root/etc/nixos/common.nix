@@ -5,7 +5,7 @@
 { config, pkgs, ... }:
 
 {
-	nixpkgs.config.allowUnfree = false;
+	nixpkgs.config.allowUnfree = true;
 
 	# Set your time zone.
 	time.timeZone = "Europe/Warsaw";
