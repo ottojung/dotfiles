@@ -54,7 +54,7 @@
     var =>
     (set-in-alist
      var
-     (list "/bin/sh" (file-append dash "/bin/dash"))
+     ;; (list "/bin/sh" (file-append dash "/bin/dash"))
      (list "/usr/bin/env" (file-append coreutils "/bin/env"))
      ))))
 
