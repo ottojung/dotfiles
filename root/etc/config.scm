@@ -61,8 +61,7 @@
 (define my-libvirt-service
   (service libvirt-service-type
            (libvirt-configuration
-            (unix-sock-group "libvirt")
-            (tls-port "16555"))))
+            (unix-sock-group "libvirt"))))
 
 (define (add-libvirt-service services)
   (cons my-libvirt-service services))
@@ -91,7 +90,7 @@
                 %base-user-accounts))
   (packages
     (append
-      (map specification->package '("dash" "nss-certs"))
+      (map specification->package '("dash" "nss-certs" "qemu"))
       %base-packages))
   (services
     (cons* (service openssh-service-type)
