@@ -95,6 +95,7 @@
   xdg-utils ;; provides xdg-open
   ;; mime-types ;; for xdg-open
   shared-mime-info ;; for xdg-open
+  setxkbmap ;; for setting the language and swapping capslock
   arandr ;; managing multiple screens
   xrandr ;; managing resolution and stuff (nix: xorg.xrandr)
   xmodmap ;; managing shortcuts (nix: xorg.xmodmap)
@@ -105,6 +106,7 @@
   ;; dunst ;; notify manager
   stalonetray ;; tray manager
   ;; trayer ;; tray manager ;; TODO: port to guix
+  xfce ;; desktop environment
   )
 
 (define-packages gui-small
@@ -123,7 +125,7 @@
 
 (define-packages gui-big
   audacity ;; audio editor
-  telegram-desktop ;; Telegram desktop client (nix: tdesktop)
+  ;; telegram-desktop ;; Telegram desktop client (nix: tdesktop)
   ;; virtualbox ;; virtual machine (some parts are propriatary)
   virt-manager ;; virtual machine helper
   ungoogled-chromium ;; chromium without google services
