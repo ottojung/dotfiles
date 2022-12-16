@@ -87,7 +87,7 @@
                   (group "users")
                   (home-directory "/home/user1")
                   (supplementary-groups
-                    '("wheel" "netdev" "audio" "video" "libvirt")))
+                    '("wheel" "netdev" "audio" "video" "libvirt" "lp" "tty" "input" "kvm")))
                 %base-user-accounts))
   (packages
     (append
