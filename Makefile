@@ -4,7 +4,7 @@ include root.make
 SFLAGS =
 
 ROOT =
-DIRECTORIES = $(HOME)/my $(HOME)/.config $(HOME)/.local/share $(HOME)/Downloads $(HOME)/Pictures $(HOME)/.emacs.d
+DIRECTORIES = $(HOME)/my $(HOME)/.config $(HOME)/.local/share $(HOME)/Downloads $(HOME)/Pictures $(HOME)/.emacs.d $(HOME)/.config/fish
 
 all:
 	@ echo "run '$(MAKE) root' as root followed by '$(MAKE) home' as a regular user"
