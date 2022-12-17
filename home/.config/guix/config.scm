@@ -151,6 +151,8 @@
 
 (define-packages fonts
   fontconfig
+  font-awesome
+  font-microsoft-web-core-fonts
   font-gnu-freefont
   font-dejavu
   font-liberation
@@ -159,6 +161,9 @@
   font-jetbrains-mono
   font-wqy-microhei
   font-iosevka-aile
+  font-iosevka
+  font-inconsolata
+  font-openmoji
   font-fira-code ;; (nix: fira-code)
   font-fira-go
   font-fira-sans
