@@ -36,6 +36,7 @@
   ;; doas ;; alternative to "sudo"
   ncdu ;; program for exploring filesystem
   brightnessctl ;; program to control screen brightnessctl
+  dbus ;; for communications
   )
 
 (define-packages cli-programs
