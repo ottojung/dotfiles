@@ -105,7 +105,7 @@
   compton ;; allows transparency and screen sharing
   scrot ;; making screenshots
   ;; gromit-mpx ;; drawing on the screen ;; TODO: port to guix
-  ;; dunst ;; notify manager
+  dunst ;; notify manager
   stalonetray ;; tray manager
   ;; trayer ;; tray manager ;; TODO: port to guix
   ;; xfce ;; desktop environment
