@@ -146,9 +146,17 @@
   ;; krita ;; paint program
   gimp ;; image editor
   mypaint ;; simple paint program
+  element-desktop ;; default matrix client
   )
 
 (define-packages fonts
+  font-liberation
+  font-dejavu
+  font-gnu-freefont
+  font-awesome
+  font-jetbrains-mono
+  font-wqy-microhei
+  font-iosevka-aile
   font-fira-code ;; (nix: fira-code)
   font-fira-go
   font-fira-sans

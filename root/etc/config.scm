@@ -92,9 +92,24 @@
                 %base-user-accounts))
 
   (packages
-    (append
-      (map specification->package '("dash" "nss-certs" "qemu"))
-      %base-packages))
+   (append
+    (map specification->package
+         '("dash"
+           "nss-certs"
+           "font-liberation"
+           "font-awesome"
+           "font-liberation-sans"
+           "font-dejavu"
+           "font-gnu-freefont"
+           "font-jetbrains-mono"
+           "font-wqy-microhei"
+           "font-iosevka-aile"
+           "font-fira-code"
+           "font-fira-go"
+           "font-fira-sans"
+           "font-fira-mono"
+           ))
+    %base-packages))
 
   (services
    (cons*
