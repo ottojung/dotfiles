@@ -138,7 +138,7 @@
   qutebrowser ;; python-based web browser
   ;; teams ;; unfree :(
   obs ;; (nix: obs-studio)
-  ;; flatpak
+  flatpak
   okular ;; pdf-reader
   zathura ;; pdf-reader
   vlc ;; video-player. Use mpv instead
