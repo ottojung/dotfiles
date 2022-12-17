@@ -98,7 +98,6 @@
            "nss-certs"
            "font-liberation"
            "font-awesome"
-           "font-liberation-sans"
            "font-dejavu"
            "font-gnu-freefont"
            "font-jetbrains-mono"
