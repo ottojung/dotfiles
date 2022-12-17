@@ -16,7 +16,7 @@
   xorg)
 
 (define my-desktop-keyboard
-  (keyboard-layout "pl,ru" #:options (list "ctrl:swapcaps" "grp:win_space_toggle")))
+  (keyboard-layout "us,ru" #:options (list "ctrl:swapcaps" "grp:win_space_toggle")))
 
 (define my-console-keyboard
   (keyboard-layout "us" #:options (list "ctrl:swapcaps")))
@@ -79,32 +79,48 @@
   (timezone "Europe/Warsaw")
   (keyboard-layout my-console-keyboard)
 
-  (host-name "kek")
+  (host-name "pc")
+
+  ;; The list of user accounts ('root' is implicit).
   (users (cons* (user-account
                   (name "user1")
                   (comment "user1")
                   (group "users")
                   (home-directory "/home/user1")
                   (supplementary-groups
-                    '("wheel" "netdev" "audio" "video" "libvirt" "lp" "tty" "input" "kvm")))
+                   '("wheel" "netdev" "audio" "video" "libvirt" "lp" "tty" "input" "kvm")))
                 %base-user-accounts))
+
   (packages
     (append
       (map specification->package '("dash" "nss-certs" "qemu"))
       %base-packages))
+
   (services
-    (cons* (service openssh-service-type)
-     my-desktop-services))
-  (bootloader
-    (bootloader-configuration
-      (bootloader grub-bootloader)
-      (targets (list "/dev/sda"))
-      (keyboard-layout my-console-keyboard)))
-  (file-systems
-    (cons* (file-system
-             (mount-point "/")
-             (device
-               (uuid "d7b1a4ac-b1ab-4038-9023-30a10ed50b9a"
-                     'ext4))
-             (type "ext4"))
-           %base-file-systems)))
+   (cons*
+    (service gnome-desktop-service-type)
+    my-desktop-services))
+
+  (bootloader (bootloader-configuration
+               (bootloader grub-efi-bootloader)
+               (targets (list "/boot/efi"))
+               (keyboard-layout keyboard-layout)))
+  (mapped-devices (list (mapped-device
+                         (source (uuid
+                                  "8b37a5aa-dd43-4f9c-901a-8e488ae6e701"))
+                         (target "cryptroot")
+                         (type luks-device-mapping))))
+
+  ;; The list of file systems that get "mounted".  The unique
+  ;; file system identifiers there ("UUIDs") can be obtained
+  ;; by running 'blkid' in a terminal.
+  (file-systems (cons* (file-system
+                        (mount-point "/boot/efi")
+                        (device (uuid "4ED6-B9A2"
+                                      'fat32))
+                        (type "vfat"))
+                       (file-system
+                        (mount-point "/")
+                        (device "/dev/mapper/cryptroot")
+                        (type "ext4")
+                        (dependencies mapped-devices)) %base-file-systems)))
