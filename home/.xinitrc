@@ -1,3 +1,5 @@
 #! /bin/sh
 
-sh ~/.xsession
+#exec (gnome-session ; true) || gnome-shell
+exec xmonad
+#exec awesome
