@@ -107,7 +107,7 @@
   ;; dunst ;; notify manager
   stalonetray ;; tray manager
   ;; trayer ;; tray manager ;; TODO: port to guix
-  xfce ;; desktop environment
+  ;; xfce ;; desktop environment
   )
 
 (define-packages gui-small
