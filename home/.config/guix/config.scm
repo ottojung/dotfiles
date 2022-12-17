@@ -19,6 +19,7 @@
   ;; bc ;; very old calculator, provides bc and dc. Use awk instead
   fzf ;; command line fuzzy finder
   openssl ;; protocols & encryption stuff
+  openssh ;; allows to ssh on servers
   recode ;; Charset converter tool and library
   jq ;; JSON query language. Preprocessor
   pup ;; HTML processor, like jq but for HTML instead of JSON
@@ -127,7 +128,7 @@
   audacity ;; audio editor
   ;; telegram-desktop ;; Telegram desktop client (nix: tdesktop)
   ;; virtualbox ;; virtual machine (some parts are propriatary)
-  virt-manager ;; virtual machine helper
+  ;; virt-manager ;; virtual machine helper
   ungoogled-chromium ;; chromium without google services
   ;; firefox ;; fuck mozilla
   icecat ;; better firefox
