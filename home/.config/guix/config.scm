@@ -150,10 +150,12 @@
   )
 
 (define-packages fonts
-  font-liberation
-  font-dejavu
+  fontconfig
   font-gnu-freefont
+  font-dejavu
+  font-liberation
   font-awesome
+  font-ghostscript
   font-jetbrains-mono
   font-wqy-microhei
   font-iosevka-aile
