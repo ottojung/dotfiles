@@ -134,7 +134,7 @@
   ;; firefox ;; fuck mozilla
   icecat ;; better firefox
   ;; torbrowser ;; breaks ;; TODO: track incoming: https://issues.guix.gnu.org/42380
-  ;; nyxt ;; lisp-based web browser
+  nyxt ;; lisp-based web browser
   qutebrowser ;; python-based web browser
   ;; teams ;; unfree :(
   obs ;; (nix: obs-studio)
