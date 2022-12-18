@@ -129,7 +129,7 @@
   audacity ;; audio editor
   ;; telegram-desktop ;; Telegram desktop client (nix: tdesktop)
   ;; virtualbox ;; virtual machine (some parts are propriatary)
-  ;; virt-manager ;; virtual machine helper
+  virt-manager ;; virtual machine helper
   ungoogled-chromium ;; chromium without google services
   ;; firefox ;; fuck mozilla
   icecat ;; better firefox
