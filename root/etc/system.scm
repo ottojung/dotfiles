@@ -63,11 +63,16 @@
            (libvirt-configuration
             (unix-sock-group "libvirt"))))
 
-(define (add-libvirt-service services)
-  (cons my-libvirt-service services))
+(define my-virtlog-service
+  (service virtlog-service-type
+           (virtlog-configuration
+            (max-clients 1000))))
+
+(define (add-libvirt-services services)
+  (cons* my-libvirt-service my-virtlog-service services))
 
 (define my-desktop-services
-  ((compose add-libvirt-service set-display-manager modify-special-files)
+  ((compose add-libvirt-services set-display-manager modify-special-files)
    %desktop-services))
 
 (operating-system
