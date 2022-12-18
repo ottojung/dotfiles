@@ -97,6 +97,7 @@
          '("dash"
            "nss-certs"
            "fontconfig"
+           "font-gnu-unifont"
            "font-awesome"
            "font-microsoft-web-core-fonts"
            "font-gnu-freefont"
