@@ -102,6 +102,7 @@
          '("dash"
            "nss-certs"
            "fontconfig"
+           "font-ibm-plex"
            "font-gnu-unifont"
            "font-awesome"
            "font-microsoft-web-core-fonts"

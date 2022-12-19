@@ -37,6 +37,7 @@
   ncdu ;; program for exploring filesystem
   brightnessctl ;; program to control screen brightnessctl
   dbus ;; for communications
+  transmission ;; torrent server
   )
 
 (define-packages cli-programs
@@ -121,7 +122,8 @@
   mpv ;; simple video player
   pavucontrol ;; audio mixer/controller
   sxiv ;; simple X image viewer
-  transmission-remote-gtk ;; torrent client (nix: transmission-gtk)
+  ;; transmission-remote-gtk ;; torrent client (nix: transmission-gtk)
+  qbittorrent ;; torrent client
   ;; wicd ;; GUI wifi manager (does not work)
   )
 
@@ -161,6 +163,7 @@
   font-ghostscript
   font-jetbrains-mono
   font-wqy-microhei
+  font-ibm-plex
   font-iosevka-aile
   font-iosevka
   font-inconsolata
