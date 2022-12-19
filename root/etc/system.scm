@@ -65,9 +65,8 @@
 (define (add-libvirt-services services)
   (cons* my-libvirt-service my-virtlog-service services))
 
-(define my-desktop-services
-  ((compose add-libvirt-services set-display-manager modify-special-files)
-   %desktop-services))
+(define add-my-desktop-services
+  (compose add-libvirt-services set-display-manager modify-special-files))
 
 (operating-system
   ;; propriatary kernel + firmware
@@ -122,9 +121,9 @@
     %base-packages))
 
   (services
-   (cons*
+   (cons
     (service gnome-desktop-service-type)
-    my-desktop-services))
+    (add-my-desktop-services %desktop-services)))
 
   (bootloader (bootloader-configuration
                (bootloader grub-efi-bootloader)
