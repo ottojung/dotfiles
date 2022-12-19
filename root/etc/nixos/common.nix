@@ -20,6 +20,18 @@
 	services.xserver = {
 		enable = true;
 
+		# Enable touchpad support (enabled default in most desktopManagers).
+		libinput = {
+			enable = true;
+			touchpad = {
+				tapping = false;
+			};
+		};
+
+		# Configure keymap in X11
+		layout = "us";
+		xkbOptions = "ctrl:swapcaps"; # Swap CapsLock and Ctrl
+
 		# displayManager.sddm.enable = true; # optional as one can simply use `startx'
 		# displayManager.gdm.enable = true; # NOTE: need for gnome?
 		displayManager.startx.enable = true;
@@ -32,18 +44,6 @@
 
 		# desktopManager.gnome3.enable = true; # discouraged
 		# desktopManager.plasma5.enable = true; # optional
-
-		# Configure keymap in X11
-		layout = "pl,ru";
-		xkbOptions = "ctrl:swapcaps,grp:win_space_toggle"; # Swap CapsLock and Ctrl, switch language on win+space
-
-		# Enable touchpad support (enabled default in most desktopManagers).
-		libinput = {
-			enable = true;
-			touchpad = {
-				tapping = false;
-			};
-		};
 	};
 
 	# Enable Trash folder in Gnome apps.

@@ -15,27 +15,21 @@
   ssh
   xorg)
 
-(define my-desktop-keyboard
-  (keyboard-layout "us,ru" #:options (list "ctrl:swapcaps" "grp:win_space_toggle")))
-
-(define my-console-keyboard
-  (keyboard-layout "us" #:options (list "ctrl:swapcaps")))
-
-(define my-xorg-config
-  (xorg-configuration (keyboard-layout my-desktop-keyboard)))
-
 (define (set-in-alist alist . key-values)
   "Removes relevant keys and sets the values back."
   (define keys (map car key-values))
   (append key-values (remove (lambda (p) (member (car p) keys)) alist)))
 
+(define my-desktop-keyboard
+  (keyboard-layout "us" #:options (list "ctrl:swapcaps")))
 
-
-
-
+(define my-console-keyboard
+  (keyboard-layout "us" #:options (list "ctrl:swapcaps")))
 
 (define (set-display-manager services)
   (define display-manager-types (list gdm-service-type slim-service-type))
+  (define my-xorg-config
+    (xorg-configuration (keyboard-layout my-desktop-keyboard)))
 
   (cons* (service
           slim-service-type (slim-configuration
