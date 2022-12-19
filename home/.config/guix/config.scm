@@ -153,6 +153,9 @@
 
 (define-packages fonts
   fontconfig
+  font-google-noto
+  font-google-noto-serif-cjk
+  font-google-noto-sans-cjk
   font-gnu-unifont
   font-awesome
   font-microsoft-web-core-fonts
