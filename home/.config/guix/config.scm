@@ -69,6 +69,7 @@
   youtube-dl ;; need newest version
   texlive ;; distribution of TeX programs (nix: texlive.combined.scheme-full)
   imagemagick ;; CLI tool to edit images
+  lynx ;; CLI browser
   )
 
 (define-packages compilers
