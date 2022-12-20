@@ -3,7 +3,8 @@
 
 (use-modules (gnu))
 (use-modules ((gnu packages shells) #:select (dash)))
-(use-modules (guix packages))
+(use-modules ((gnu system setuid) #:select (setuid-program-program)))
+(use-modules ((guix packages) #:select (package-name)))
 (use-modules (nongnu packages linux)) ;; propriatary channels
 (use-modules (srfi srfi-1))
 ;; (use-modules (ice-9 pretty-print))
@@ -109,6 +110,16 @@
 
   (append my-packages packages))
 
+(define (sudo-setuid-program? prog)
+  (define name
+    ((compose package-name file-append-base setuid-program-program)
+     prog))
+
+  (equal? name "sudo"))
+
+(define (remove-sudo-setuid-program progs)
+  (filter (negate sudo-setuid-program?) progs))
+
 (operating-system
   ;; propriatary kernel + firmware
   (kernel linux)
@@ -134,6 +145,10 @@
    (add-my-packages
     (remove-sudo-package
      %base-packages)))
+
+  (setuid-programs
+   (remove-sudo-setuid-program
+    %setuid-programs))
 
   (services
    (cons
