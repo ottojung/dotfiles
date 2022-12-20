@@ -145,6 +145,7 @@
   flatpak
   okular ;; pdf-reader
   zathura ;; pdf-reader
+  zathura-pdf-poppler ;; plugin for zathura that makes it actually work for pdfs
   vlc ;; video-player. Use mpv instead
   libreoffice
   ;; krita ;; paint program
