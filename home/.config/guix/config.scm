@@ -70,6 +70,7 @@
   texlive ;; distribution of TeX programs (nix: texlive.combined.scheme-full)
   imagemagick ;; CLI tool to edit images
   lynx ;; CLI browser
+  weechat ;; CLI IRC client
   )
 
 (define-packages compilers
