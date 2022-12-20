@@ -3,9 +3,10 @@
 
 (use-modules (gnu))
 (use-modules ((gnu packages shells) #:select (dash)))
+(use-modules (guix packages))
 (use-modules (nongnu packages linux)) ;; propriatary channels
 (use-modules (srfi srfi-1))
-(use-modules (ice-9 pretty-print))
+;; (use-modules (ice-9 pretty-print))
 
 (use-service-modules
   cups
@@ -68,6 +69,46 @@
 (define add-my-desktop-services
   (compose add-libvirt-services set-display-manager modify-special-files))
 
+(define my-system-package-names
+  '("dash"
+    "nss-certs"
+    "fontconfig"
+    "font-google-noto"
+    "font-google-noto-serif-cjk"
+    "font-google-noto-sans-cjk"
+    "font-gnu-unifont"
+    "font-awesome"
+    "font-microsoft-web-core-fonts"
+    "font-gnu-freefont"
+    "font-dejavu"
+    "font-liberation"
+    "font-awesome"
+    "font-ghostscript"
+    "font-jetbrains-mono"
+    "font-wqy-microhei"
+    "font-ibm-plex"
+    "font-iosevka-aile"
+    "font-iosevka"
+    "font-inconsolata"
+    "font-openmoji"
+    "font-fira-code"
+    "font-fira-go"
+    "font-fira-sans"
+    "font-fira-mono"
+    ))
+
+(define (remove-sudo-package packages)
+  (define (sudo-package? package)
+    (equal? "sudo" (package-name package)))
+
+  (filter (negate sudo-package?) packages))
+
+(define (add-my-packages packages)
+  (define my-packages
+    (map specification->package my-system-package-names))
+
+  (append my-packages packages))
+
 (operating-system
   ;; propriatary kernel + firmware
   (kernel linux)
@@ -90,35 +131,9 @@
                 %base-user-accounts))
 
   (packages
-   (append
-    (map specification->package
-         '("dash"
-           "nss-certs"
-           "fontconfig"
-           "font-google-noto"
-           "font-google-noto-serif-cjk"
-           "font-google-noto-sans-cjk"
-           "font-gnu-unifont"
-           "font-awesome"
-           "font-microsoft-web-core-fonts"
-           "font-gnu-freefont"
-           "font-dejavu"
-           "font-liberation"
-           "font-awesome"
-           "font-ghostscript"
-           "font-jetbrains-mono"
-           "font-wqy-microhei"
-           "font-ibm-plex"
-           "font-iosevka-aile"
-           "font-iosevka"
-           "font-inconsolata"
-           "font-openmoji"
-           "font-fira-code"
-           "font-fira-go"
-           "font-fira-sans"
-           "font-fira-mono"
-           ))
-    %base-packages))
+   (add-my-packages
+    (remove-sudo-package
+     %base-packages)))
 
   (services
    (cons
