@@ -50,7 +50,7 @@
   ;; cmus ;; terminal music player
   mpd mpd-mpc ncmpcpp ;; terminal music player suite
   ;; cordless ;; discord CLI client
-  neofetch ;; to look cool on the internet
+  ;; neofetch ;; to look cool on the internet
   p7zip ;; .7z archive manager
   unzip ;; .zip archive extractor
   zip ;; .zip archive creator
