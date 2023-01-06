@@ -438,8 +438,8 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
      ("M-h"   my-git-status)
 
      ("M-c"   shell-command)
-     ("c"     my-term-exe)
-     ("M-t"   my-term)
+     ("c"     my-term-new)
+     ("M-t"   my-term-open-last)
      ("M-l"   my-translate)
      ("M-y"   my-term-taged)
      ("M-u"   my-rerun-compile)
@@ -876,7 +876,7 @@ The buffer is in Term mode;"
   "Start or open a term indexed by self-id"
   (my-term-unsafe self-id))
 
-(defun my-term ()
+(defun my-term-new ()
   "Start a new term indexed by unique index"
   (interactive)
   (my-term-unsafe (my-term-get-free-index)))
@@ -893,6 +893,12 @@ The buffer is in Term mode;"
    (format "exe-%d" my-term-exe-unique-counter)
    "/bin/sh" "-c" cmd))
 
+(defun my-term-open-last ()
+  "Focuses on the last opened terminal, or creates a new one, if there are not open terminals."
+  (interactive)
+  (if (null my-term-open-list)
+      (my-term-new)
+    (my-term-indexed (car my-term-open-list))))
 
 ;;;;;;;;;;;;;
 ;; WT-MODE ;;
