@@ -805,6 +805,9 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 (defun term-mode () nil) ;; SUPRESS WARNING
 (defun term-char-mode () nil) ;; SUPRESS WARNING
 
+(defvar my-term-self-id nil)
+(defvar my-term-open-list (list))
+
 (defun my-term-load ()
   "Load ansi-terminal and redefine some variables for it."
   (unless my-term-loaded-p
@@ -831,8 +834,6 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
     (term-char-mode)
     (switch-to-buffer (concat "*" bufname "*"))))
 
-(defvar my-term-self-id nil)
-
 (defun my-term-sentinel-advice
     (orig-fun &rest args)
   "Kill buffer on terminal close"
@@ -840,9 +841,10 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
   (apply orig-fun args)
   (let* ((proc (car args))
          (buffer (process-buffer proc)))
-    (unless (eq 0 my-term-self-id)
-      (my-term-put-unique my-term-self-id)
+    (when (numberp my-term-self-id)
+      (setq my-term-open-list (delete my-term-self-id my-term-open-list))
       (kill-buffer buffer))))
+
 (advice-add 'term-sentinel :around
             #'my-term-sentinel-advice)
 
@@ -852,54 +854,32 @@ The buffer is in Term mode;"
   (interactive (list (read-from-minibuffer "tag: ")))
   (my-term-base name my-term-shell-program))
 
-(defvar my-term-unique-free (list 1 2 3 4 5 6 7 8 9))
-(defvar my-term-unique-max (car (last my-term-unique-free)))
-(defvar my-term-self-id 0)
-
-(defun my-term-get-unique ()
-  (when (null my-term-unique-free)
-    (setq my-term-unique-max (1+ my-term-unique-max))
-    (push my-term-unique-max my-term-unique-free))
-  (pop my-term-unique-free))
-
-(defun my-term-put-unique (i)
-  "Say that index `i' is free for use
-This is optimized for `get-` not `put-`
-because noone cares how long does the terminal take to close
-"
-  (if (null my-term-unique-free)
-      (push i my-term-unique-free)
-    (let ((lst my-term-unique-free)
-          (going t))
-      (while going
-        (let ((cur (car lst)))
-          (if (<= i cur)
-              (progn
-                (setcar lst i)
-                (setcdr lst (cons cur (cdr lst)))
-                (setq going nil))
-            (if (null (cdr lst))
-                (progn
-                  (setcdr lst (list i))
-                  (setq going nil))
-              (setq lst (cdr lst)))))))))
-
 (defun my-term-unsafe (self-id)
   "Unsafely start or open a term indexed by self-id"
   (let* ((name (number-to-string self-id))
          (bufname (concat my-term-prefix name)))
     (my-term-taged bufname)
+    (setq my-term-open-list (cons self-id my-term-open-list))
     (setq-local my-term-self-id self-id)))
+
+(defun my-smallest-missing (L1)
+  "Return the smallest number that is not in L1 and is greater than 0."
+  (let ((n 1))
+    (while (member n L1)
+      (setq n (+ 1 n)))
+    n))
+
+(defun my-term-get-free-index ()
+  (my-smallest-missing my-term-open-list))
 
 (defun my-term-indexed (self-id)
   "Start or open a term indexed by self-id"
-  (delete self-id my-term-unique-free)
   (my-term-unsafe self-id))
 
 (defun my-term ()
   "Start a new term indexed by unique index"
   (interactive)
-  (my-term-unsafe (my-term-get-unique)))
+  (my-term-unsafe (my-term-get-free-index)))
 
 (defvar my-term-exe-unique-counter 0)
 
