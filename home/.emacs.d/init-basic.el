@@ -61,6 +61,8 @@ Bcc:
          kill-buffer-query-functions))
 
 (setq delete-by-moving-to-trash t)
+(setq-default indent-tabs-mode nil)
+(setq indent-tabs-mode nil)
 
 ;;;;;;;;;;;;;;;;;;;;
 ;;; set up unicode
