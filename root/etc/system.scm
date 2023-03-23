@@ -23,7 +23,7 @@
    (firmware (list linux-firmware))
 
    (locale "en_US.UTF-8")
-   (timezone "Europe/Warsaw")
+   (timezone "US/Pacific")
    (keyboard-layout my-console-keyboard)
 
    (host-name "pc")
