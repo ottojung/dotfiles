@@ -1,5 +1,4 @@
 
-include root.make
 
 SFLAGS =
 
@@ -33,3 +32,6 @@ check-user:
 	fi
 
 .PHONY: all home finalize_home initialize_home root dirs check-user
+
+include root.make
+
