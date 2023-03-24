@@ -896,7 +896,8 @@ The buffer is in Term mode;"
    "/bin/sh" "-c" cmd))
 
 (defun my-term-open-last ()
-  "Focuses on the last opened terminal, or creates a new one, if there are not open terminals."
+  "Focuses on the last opened terminal,
+ or creates a new one, if there are not open terminals."
   (interactive)
   (if (null my-term-open-list)
       (my-term-new)
