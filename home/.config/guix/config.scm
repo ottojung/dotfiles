@@ -151,7 +151,7 @@
   ;; krita ;; paint program
   gimp ;; image editor
   mypaint ;; simple paint program
-  element-desktop ;; default matrix client
+  ;; element-desktop ;; default matrix client
   )
 
 (define-packages fonts
@@ -161,7 +161,7 @@
   font-google-noto-sans-cjk
   font-gnu-unifont
   font-awesome
-  font-microsoft-web-core-fonts
+  ;; font-microsoft-web-core-fonts
   font-gnu-freefont
   font-dejavu
   font-liberation
