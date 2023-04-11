@@ -279,8 +279,8 @@
         (load-file
          (let ((coding-system-for-read 'utf-8))
            (shell-command-to-string "agda-mode locate")))
-      (error (message "could not load agda-mode")))
-    (print "agda-mode is not installed"))
+      (error (message "Could not load agda-mode")))
+    (message "%s" "Skipping `agda-mode' as it is not installed"))
 
 (defvar company-active-map)
 (with-eval-after-load 'company
