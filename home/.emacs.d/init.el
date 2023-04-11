@@ -153,12 +153,14 @@
   :diminish flycheck-mode)
 
 
-(load "~/.emacs.d/custom/translate.el/translate.el")
-(setq translate-languages '("English"))
-(defun my-translate ()
-  (interactive)
-  (let ((current-prefix-arg '(4)))
-    (call-interactively 'translate)))
+(let ((translate-path (emacs-root-join "custom" "translate.el" "translate.el")))
+  (when (file-exists-p translate-path)
+    (load translate-path)
+    (setq translate-languages '("English"))
+    (defun my-translate ()
+      (interactive)
+      (let ((current-prefix-arg '(4)))
+        (call-interactively 'translate)))))
 
 (defun my-prolog-consult-file-advice (orig-fun)
   "Saves file before evaluating it."
