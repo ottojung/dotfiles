@@ -42,6 +42,7 @@ Bcc:
  '(tool-bar-mode nil)
  '(truncate-lines t)
  '(vc-follow-symlinks t)
+ '(warning-suppress-types '((comp)))
  '(whitespace-style '(face trailing tab-mark)))
 
 (custom-set-faces
