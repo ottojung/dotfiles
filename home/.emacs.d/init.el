@@ -1,6 +1,6 @@
 
-(setq custom-file "~/.emacs.d/init-basic.el")
-(load "~/.emacs.d/init-basic")
+(setq custom-file (emacs-root-join "init-basic.el"))
+(load (emacs-root-join "init-basic"))
 (defvar my-window-map)
 
 (customize-set-variable 'grep-command "grep --color -HRIn")
@@ -21,7 +21,7 @@
 (package-initialize)
 
 (eval-when-compile
-  (add-to-list 'load-path "~/.emacs.d/custom/use-package")
+  (add-to-list 'load-path (emacs-root-join "custom" "use-package"))
   (require 'use-package))
 (require 'subr-x) ;; for "string-trim" and other string operations
 (require 'face-remap) ;; for custom face mode
@@ -130,9 +130,9 @@
 
 ;; (customize-set-variable 'custom-enabled-themes '(abyss))
 (eval-when-compile
-  (add-to-list 'load-path "~/.emacs.d/custom/modus-themes"))
+  (add-to-list 'load-path (emacs-root-join "custom" "modus-themes")))
 
-(add-to-list 'load-path "~/.emacs.d/custom/modus-themes")
+(add-to-list 'load-path (emacs-root-join "custom" "modus-themes"))
 (require 'modus-themes)
 (setq modus-themes-diffs 'deuteranopia)
 (modus-themes-load-vivendi)
