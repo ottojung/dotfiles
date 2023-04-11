@@ -1,6 +1,6 @@
 
-(setq custom-file (emacs-root-join "init-basic.el"))
-(load (emacs-root-join "init-basic"))
+(setq custom-file "~/.emacs.d/init-basic.el")
+(load "~/.emacs.d/init-basic")
 (defvar my-window-map)
 
 (customize-set-variable 'grep-command "grep --color -HRIn")
