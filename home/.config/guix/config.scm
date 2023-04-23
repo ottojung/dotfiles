@@ -112,6 +112,7 @@
   stalonetray ;; tray manager
   ;; trayer ;; tray manager ;; TODO: port to guix
   ;; xfce ;; desktop environment
+  slock ;; simple screen locking
   )
 
 (define-packages gui-small
