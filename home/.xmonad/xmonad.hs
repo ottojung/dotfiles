@@ -1,4 +1,5 @@
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# OPTIONS_GHC -Wno-tabs #-}
 
     -- Base
 import XMonad
