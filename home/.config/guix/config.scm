@@ -113,6 +113,7 @@
   ;; trayer ;; tray manager ;; TODO: port to guix
   ;; xfce ;; desktop environment
   slock ;; simple screen locking
+  xmessage ;; for displaying user messages
   )
 
 (define-packages gui-small
