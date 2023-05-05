@@ -18,7 +18,7 @@ import XMonad.Util.SpawnOnce
 import XMonad.Util.NamedWindows (getName)
 
     -- Hooks
-import XMonad.Hooks.DynamicLog (dynamicLogWithPP, defaultPP, wrap, pad, xmobarPP, xmobarColor, shorten, PP(..))
+import XMonad.Hooks.DynamicLog (dynamicLogWithPP, wrap, pad, xmobarPP, xmobarColor, shorten, PP(..))
 -- import XMonad.Hooks.ManageDocks (avoidStruts, docksStartupHook, manageDocks, ToggleStruts(..)) -- error
 import XMonad.Hooks.ManageHelpers (isFullscreen, isDialog,  doFullFloat, doCenterFloat)
 import XMonad.Hooks.Place (placeHook, withGaps, smart)
@@ -74,7 +74,7 @@ import XMonad.Layout.ZoomRow (zoomRow, zoomIn, zoomOut, zoomReset, ZoomMessage(Z
 import XMonad.Layout.IM (withIM, Property(Role))
 
     -- Prompts
-import XMonad.Prompt (defaultXPConfig, XPConfig(..), XPPosition(Top), Direction1D(..))
+import XMonad.Prompt (XPConfig(..), XPPosition(Top), Direction1D(..))
 
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
