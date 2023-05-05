@@ -523,13 +523,13 @@ main = do
 
 myConfig = ewmh . docks $ def
 	{
-		layoutHook		 = myLayout
-		, manageHook		 = myManageHook <+> manageDocks <+> manageHook def
-		, startupHook = myStartupHook
-		, modMask = myModMask
-		, workspaces = myWorkspaces
-		, borderWidth = 0
-		, logHook = myLogHook
+		  layoutHook    = myLayout
+		, manageHook    = myManageHook <+> manageDocks <+> manageHook def
+		, startupHook   = myStartupHook
+		, modMask       = myModMask
+		, workspaces    = myWorkspaces
+		, borderWidth   = 0
+		, logHook       = myLogHook
 	}
 	`additionalKeys`  dynamicKeys
 	`additionalKeysP` dynamicKeysP
