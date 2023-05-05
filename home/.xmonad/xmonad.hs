@@ -521,11 +521,10 @@ main = do
 	xmproc <- spawnPipe myBar
 	xmonad $ (addxmobar xmproc) myConfig
 
-myConfig = ewmh $ def
+myConfig = ewmh . docks $ def
 	{
 		layoutHook		 = myLayout
 		, manageHook		 = myManageHook <+> manageDocks <+> manageHook def
-		, handleEventHook = handleEventHook def <+> docksEventHook
 		, startupHook = myStartupHook
 		, modMask = myModMask
 		, workspaces = myWorkspaces
