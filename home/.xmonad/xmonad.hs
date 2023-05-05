@@ -2,6 +2,7 @@
 
     -- Base
 import XMonad
+import XMonad (asks)
 import XMonad.Config.Desktop
 import Data.Maybe (isJust)
 import Data.List (isPrefixOf)
@@ -536,7 +537,7 @@ myConfig = ewmh $ def
 	`removeKeysP` unsetKeys
 
 myStartupHook = do
-	xdir <- getXMonadDir
+	xdir <- asks (cfgDir . directories)
 	setWMName "LG3D"
 
 debugFile = unsafePerformIO $ openFile "xmonadlog.txt" AppendMode
