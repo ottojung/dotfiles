@@ -81,12 +81,14 @@ function cd
 	if [ "$argv" = "" ]
 		if [ "$HOME" = "" ]
 			echo "BAD HOME"
+			return 1
 		else
 			cd "$HOME"
 		end
 	else if [ "$argv" = "-" ]
 		if [ "$LPWD" = "-" ]
 			echo "BAD LPWD"
+			return 1
 		else
 			cd "$LPWD"
 		end
@@ -95,6 +97,7 @@ function cd
 			true
 		else
 			set LPWD $PPWD
+			true
 		end
 	end
 end
