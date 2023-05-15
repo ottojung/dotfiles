@@ -62,7 +62,24 @@ function mvcd
 
 	# Moving everything to directory just made
 	for i in (seq 1 $last_index)
-		mv -v "$argv[$i]" "$dest"
+		mv -v -- "$argv[$i]" "$dest"
+	end
+
+	# CD into created directory
+	cd "$dest"
+end
+
+function cpcd
+	set len (count $argv)
+	set last_index (math $len - 1)
+	set dest "$argv[$len]"
+
+	# Making directory using last argument
+	mkdir -p "$dest" ; or return 1
+
+	# Moving everything to directory just made
+	for i in (seq 1 $last_index)
+		cp -v -- "$argv[$i]" "$dest"
 	end
 
 	# CD into created directory
