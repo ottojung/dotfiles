@@ -35,7 +35,7 @@
                   (group "user1g")
                   (home-directory "/home/user1")
                   (supplementary-groups
-                   '("wheel" "netdev" "audio" "video" "libvirt" "lp" "tty" "input" "kvm")))
+                   '("wheel" "netdev" "audio" "video" "libvirt" "lp" "tty" "input" "kvm" "docker")))
                  (user-account
                   (name "user2")
                   (comment "user2")
@@ -46,6 +46,7 @@
                  %base-user-accounts))
    (groups (cons* (user-group (name "user1g"))
                   (user-group (name "user2g"))
+                  (user-group (name "docker"))
                   %base-groups))
 
    (packages
