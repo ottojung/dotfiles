@@ -16,6 +16,9 @@ window:
     x: 1
     y: 1
 
+  # Background opacity
+  opacity: 0.95
+
   # Spread additional padding evenly around the terminal content.
   dynamic_padding: false
 
@@ -179,9 +182,6 @@ bell:
   animation: EaseOutExpo
   color: '0xffffff'
   duration: 0
-
-# # Background opacity
-background_opacity: 0.95
 
 # # Key bindings
 # #
