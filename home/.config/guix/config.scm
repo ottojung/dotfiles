@@ -205,6 +205,9 @@
 (define xmonad-packages
   (list gcc-toolchain ghc ghc-hostname ghc-xmonad-contrib xmonad xmobar))
 
+(define other
+  (list glibc-locales))
+
 (packages->manifest
  (append
   cli-tools
@@ -219,4 +222,6 @@
 
   guix-packages
   xmonad-packages
+
+  other
   ))

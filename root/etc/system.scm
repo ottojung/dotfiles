@@ -143,6 +143,7 @@
 
 (define my-system-package-names
   '("dash"
+    "glibc-locales"
     "nss-certs"
     "fontconfig"
     "font-google-noto"
