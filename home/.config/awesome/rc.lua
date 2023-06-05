@@ -968,13 +968,13 @@ awful.rules.rules = {
 	{ rule = { },
 		properties = {
 			titlebars_enabled = false,
-			border_width	  = 2,
-			border_color	  = beautiful.border_normal,
+			border_width      = 2,
+			border_color      = beautiful.border_normal,
 			size_hints_honor  = false, -- fixes empty space at bottom of the screen
-			keys			  = awful_clientkeys,
-			buttons			= clientbuttons,
-			screen			= awful.screen.preferred,
-			placement		 = awful.placement.no_overlap + awful.placement.no_offscreen,
+			keys              = awful_clientkeys,
+			buttons           = clientbuttons,
+			screen            = awful.screen.preferred,
+			placement         = awful.placement.no_overlap + awful.placement.no_offscreen,
 		},
 	},
 }
