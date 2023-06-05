@@ -62,6 +62,26 @@ function table_map(t, fn)
 	return ret
 end
 
+function table_get_keys(t, fn)
+	local ret = {}
+	local index = 1
+	for i, v in pairs(t) do
+		ret[index] = i
+		index = index + 1
+	end
+	return ret
+end
+
+function table_get_values(t, fn)
+	local ret = {}
+	local index = 1
+	for i, v in pairs(t) do
+		ret[index] = v
+		index = index + 1
+	end
+	return ret
+end
+
 function table_find_index(t, element)
 	local ret = {}
 	for i, v in pairs(t) do
