@@ -464,7 +464,7 @@ function append_sub_desktop_keys()
 end
 
 function append_groups_keys()
-	local r = alphabet
+	local r = group_names
 
 	function sw(i)
 		function switcher()
