@@ -957,7 +957,7 @@ append_table_keys(clientkeys,
 		{"m", minimize_client},
 		{{"Shift", "h"}, client_move_left},
 		{{"Shift", "l"}, client_move_right},
-		{"u", toggle_keep_on_top},
+		{"d", toggle_keep_on_top},
 		{{"Shift", "a"}, move_to_new_temporary_tag},
 		{{"Shift", "Tab"}, move_to_next_screen},
 	}
