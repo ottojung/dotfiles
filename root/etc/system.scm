@@ -143,8 +143,8 @@
 
 (define my-system-package-names
   '("dash"
-    ;; "glibc-locales"
-    ;; "glibc-utf8-locales-2.29"
+    "glibc-locales"
+    "glibc-utf8-locales-2.29"
     "localed"
     "nss-certs"
     "fontconfig"
