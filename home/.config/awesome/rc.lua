@@ -215,6 +215,20 @@ function client_toggle_fullscreen(c)
 	c:raise()
 end
 
+function get_last_notification()
+	last = nil
+	for screen, sc_bucket in pairs(naughty.notifications) do
+		for position, bucket in pairs(sc_bucket) do
+			for i, notification in pairs(bucket) do
+				if not last or notification.id > last.id then
+					last = notification
+				end
+			end
+		end
+	end
+	return last
+end
+
 function key_table_to_awful_key_table(t)
 	function get_awful(v)
 		return v.awfulkey
