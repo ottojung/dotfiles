@@ -301,7 +301,7 @@ end
 function next_screen(s)
 	local len = table_get_length(screens_table)
 	local current_index = table_find_index(screens_table, s)
-	if current_index >= len
+	if current_index > len
 	then return screens_table[1]
 	else return screens_table[current_index + 1]
 	end
