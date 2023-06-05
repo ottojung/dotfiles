@@ -201,16 +201,13 @@
   pinentry ;; needed for GPG for some reason
   ncurses ;; provides "clear" and "reset"
   dash ;; bash replacement
+  glibc-locales ;; provides locales
+  glibc-utf8-locales-2.29 ;; provides utf8 locales
+  ;; localed ;; provides systemd's localectl command
   )
 
 (define-packages xmonad-packages
   ghc-xmonad-contrib xmonad xmobar)
-
-(define-packages other-packages
-  glibc-locales
-  glibc-utf8-locales-2.29
-  localed
-  )
 
 (packages->manifest
  (append
@@ -226,6 +223,4 @@
 
   guix-packages
   xmonad-packages
-
-  other-packages
   ))
