@@ -205,7 +205,7 @@
   )
 
 (define-packages xmonad-packages
-  gcc-toolchain ghc ghc-hostname ghc-xmonad-contrib xmonad xmobar)
+  ghc-xmonad-contrib xmonad xmobar)
 
 (define-packages other-packages
   glibc-locales
@@ -226,7 +226,7 @@
   drivers
 
   guix-packages
-  ;; xmonad-packages
+  xmonad-packages
 
   other-packages
   ))
