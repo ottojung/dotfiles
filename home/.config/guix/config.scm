@@ -169,7 +169,6 @@
   font-gnu-freefont
   font-dejavu
   font-liberation
-  font-awesome
   font-ghostscript
   font-jetbrains-mono
   font-wqy-microhei
