@@ -442,13 +442,13 @@ function on_geometry_hook(client)
 end
 
 function append_sub_desktop_keys()
-	local r = table_range_inclusive(1, 9)
+	local r = sub_desktop_names
 
 	function sw(i)
 		function switcher()
 			switch_to_sub_desktop(i)
 		end
-		return {tostring(i), switcher}
+		return {{"Control", i}, switcher}
 	end
 	local smap = table_map(r, sw)
 	append_global_keys(smap)
@@ -457,7 +457,7 @@ function append_sub_desktop_keys()
 		function mover(c)
 			move_to_sub_desktop(c, i)
 		end
-		return {{"Shift", tostring(i)}, mover}
+		return {{"Control", "Shift", i}, mover}
 	end
 	local mmap = table_map(r, mv)
 	append_table_keys(clientkeys, mmap)
@@ -470,7 +470,7 @@ function append_groups_keys()
 		function switcher()
 			switch_to_group(i)
 		end
-		return {{"Control", i}, switcher}
+		return {i, switcher}
 	end
 	local gmap = table_map(r, sw)
 	append_global_keys(gmap)
@@ -479,7 +479,7 @@ function append_groups_keys()
 		function mover(c)
 			move_to_group(c, i)
 		end
-		return {{"Control", "Shift", i}, mover}
+		return {{"Shift", i}, mover}
 	end
 	local cmap = table_map(r, mv)
 	append_table_keys(clientkeys, cmap)
@@ -744,16 +744,14 @@ function switch_to_tag_name(tag_name)
 	switch_to_tag(tag)
 end
 
-function switch_to_sub_desktop(i)
+function switch_to_sub_desktop(desktop_name)
 	local group_name   = get_current_group_name()
-	local desktop_name = tostring(i)
 	local fullname     = group_make_desktop_fullname(group_name, desktop_name)
 	switch_to_tag_name(fullname)
 end
 
-function move_to_sub_desktop(client, i)
+function move_to_sub_desktop(client, desktop_name)
 	local group_name   = get_current_group_name()
-	local desktop_name = tostring(i)
 	local fullname     = group_make_desktop_fullname(group_name, desktop_name)
 	local tag          = get_tag_by_name(fullname)
 	client_move_to_tag(client, tag)
