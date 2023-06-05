@@ -1,5 +1,8 @@
 -- Standard awesome library
-gears = require("gears")
+gears = nil
+pcall(function ()
+	  gears = require("gears")
+end)
 awful = require("awful")
 require("awful.autofocus")
 -- Widget and layout library
@@ -14,9 +17,12 @@ naughty = require("naughty")
 --------------------------
 
 function debug_notify(object)
-	naughty.notify({
-		 preset = naughty.config.presets.critical,
-		 text = gears.debug.dump_return(object) })
+	if gears ~= nil
+	then
+		naughty.notify({
+			preset = naughty.config.presets.critical,
+			text = gears.debug.dump_return(object) })
+	end
 end
 
 local terminal = "x-terminal-emulator"
