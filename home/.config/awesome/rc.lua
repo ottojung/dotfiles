@@ -910,13 +910,15 @@ local clientbuttons = awful.util.table.join(
 
 function switch_to_new_temporary_tag()
 	local temp_group        = get_current_group_name()
-	local tag               = group_make_desktop_fullname(temp_group, temp_group_name)
+	local name              = group_make_desktop_fullname(temp_group, temp_group_name)
+	local tag               = get_tag_by_name(name)
 	switch_to_tag(tag)
 end
 
 function move_to_new_temporary_tag(client)
 	local temp_group        = get_current_group_name()
-	local tag               = group_make_desktop_fullname(temp_group, temp_group_name)
+	local name              = group_make_desktop_fullname(temp_group, temp_group_name)
+	local tag               = get_tag_by_name(name)
 	client_move_to_tag(client, tag)
 	switch_to_tag(tag)
 end
