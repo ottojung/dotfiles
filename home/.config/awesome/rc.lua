@@ -874,25 +874,15 @@ local clientbuttons = awful.util.table.join(
 	awful.button({ modkey }, 1, awful.mouse.client.move),
 	awful.button({ modkey }, 3, awful.mouse.client.resize))
 
-function get_temporary_group()
-	return get_group_by_name(temp_group_name)
-end
-
-function switch_to_last_temporary_tag()
-	local temp_group        = get_temporary_group()
-	local tag               = group_last_tag(temp_group)
+function switch_to_new_temporary_tag()
+	local temp_group        = get_current_group_name()
+	local tag               = group_make_desktop_fullname(temp_group, temp_group_name)
 	switch_to_tag(tag)
 end
 
-function switch_to_new_temporary_tag()
-	local temp_group        = get_temporary_group()
-	local free_tag          = group_get_free_tag(temp_group)
-	switch_to_tag(free_tag)
-end
-
 function move_to_new_temporary_tag(client)
-	local temp_group        = get_temporary_group()
-	local tag               = group_get_free_tag(temp_group)
+	local temp_group        = get_current_group_name()
+	local tag               = group_make_desktop_fullname(temp_group, temp_group_name)
 	client_move_to_tag(client, tag)
 	switch_to_tag(tag)
 end
