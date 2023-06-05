@@ -834,7 +834,7 @@ function move_to_group(client, group_name)
 end
 
 function reset_theme_defaults()
-	theme.font = "monospace 11"
+	theme.font = "monospace 15"
 
 	-- Note: breaks notifications on some awesome versions
 	-- theme.bg_normal	 = "#000000"
