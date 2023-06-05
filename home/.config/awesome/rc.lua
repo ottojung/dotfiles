@@ -221,8 +221,8 @@ end
 local digits = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" }
 local alphabet = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" }
 local alphanum = join_two_tables(digits, alphabet)
-local sub_desktop_names = { "1", "2", "3", "4", "5", "6", "7", "8", "9" }
-local group_names = alphabet
+local sub_desktop_names = alphabet
+local group_names = digits
 
 local special_keys =
 	{ "equal", "minus", "Up", "Down", "Left", "Right", "KP_Add", "KP_Subtract", "Delete", "Print", "Return" }
@@ -233,7 +233,7 @@ local groups_table =
 		for i, a in pairs(group_names) do
 			local obj = {
 				name = a,
-				last_subdesktop = "1",
+				last_subdesktop = sub_desktop_names[0],
 			}
 			ret[a] = obj
 		end
@@ -245,7 +245,7 @@ local taglist =
 		local ret = {}
 		for i, a in pairs(group_names) do
 			for k, v in pairs(sub_desktop_names) do
-				if v == "1" then
+				if v == sub_desktop_names[0] then
 					table.insert(ret, a)
 				else
 					table.insert(ret, a .. "/" .. v)
@@ -665,7 +665,7 @@ end
 function destructure_tag_name(tag_name)
 	local len = string.len(tag_name)
 	local group = string.sub(tag_name, 1, 1)
-	local sub_desktop = "1"
+	local sub_desktop = sub_desktop_names[0]
 
 	if len == 3
 	then sub_desktop = string.sub(tag_name, 3, 3)
@@ -755,7 +755,7 @@ function move_to_sub_desktop(client, i)
 end
 
 function group_make_desktop_fullname(group_name, desktop_name)
-	if desktop_name == "1"
+	if desktop_name == sub_desktop_names[0]
 	then return group_name
 	else return (group_name .. "/" .. desktop_name)
 	end
