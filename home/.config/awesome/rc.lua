@@ -239,7 +239,7 @@ local groups_table =
 		for i, a in pairs(group_names) do
 			local obj = {
 				name = a,
-				last_subdesktop = sub_desktop_names[0],
+				last_subdesktop = sub_desktop_names[1],
 			}
 			ret[a] = obj
 		end
@@ -251,7 +251,7 @@ local taglist =
 		local ret = {}
 		for i, a in pairs(group_names) do
 			for k, v in pairs(sub_desktop_names) do
-				if v == sub_desktop_names[0] then
+				if v == sub_desktop_names[1] then
 					table.insert(ret, a)
 				else
 					table.insert(ret, a .. "/" .. v)
@@ -671,7 +671,7 @@ end
 function destructure_tag_name(tag_name)
 	local len = string.len(tag_name)
 	local group = string.sub(tag_name, 1, 1)
-	local sub_desktop = sub_desktop_names[0]
+	local sub_desktop = sub_desktop_names[1]
 
 	if len == 3
 	then sub_desktop = string.sub(tag_name, 3, 3)
@@ -761,7 +761,7 @@ function move_to_sub_desktop(client, i)
 end
 
 function group_make_desktop_fullname(group_name, desktop_name)
-	if desktop_name == sub_desktop_names[0]
+	if desktop_name == sub_desktop_names[1]
 	then return group_name
 	else return (group_name .. "/" .. desktop_name)
 	end
