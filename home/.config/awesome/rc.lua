@@ -938,6 +938,11 @@ function scroll_layout()
 	adjust_border_sizes()
 end
 
+function kill_last_notification()
+	x = get_last_notification()
+	if x then x.die() end
+end
+
 --------------------------
 -- Procedural           --
 --------------------------
@@ -971,6 +976,7 @@ append_global_keys({
 	{"[", function () awful.tag.incmwfact(-0.05) end},
 	{{"Shift", "m"}, restore_minimized},
 	{"a", switch_to_new_temporary_tag},
+	{"q", kill_last_notification},
 	{"F2", toggle_panel},
 	{{"Shift", "F12"}, kill_awesome},
 })
