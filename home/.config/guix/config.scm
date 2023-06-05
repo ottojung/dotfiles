@@ -209,7 +209,7 @@
 
 (define-packages other-packages
   glibc-locales
-  glibc-utf8-locales
+  glibc-utf8-locales-2.29
   localed
   )
 
@@ -228,5 +228,5 @@
   guix-packages
   ;; xmonad-packages
 
-  other
+  other-packages
   ))
