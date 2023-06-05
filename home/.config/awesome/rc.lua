@@ -318,6 +318,13 @@ function move_to_next_screen(c)
 	awful.screen.focus(s)
 end
 
+function focus_previous_window()
+	awful.client.focus.history.previous()
+	if client.focus then
+		client.focus:raise()
+	end
+end
+
 function get_foreach_screen_fn()
 	local index = 1
 
