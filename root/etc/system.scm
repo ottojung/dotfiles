@@ -22,7 +22,7 @@
    (kernel linux)
    (firmware (list linux-firmware))
 
-   (locale "en_US.UTF-8")
+   ;; (locale "en_US.UTF-8")
    (timezone "US/Pacific")
    (keyboard-layout my-console-keyboard)
 
@@ -143,7 +143,9 @@
 
 (define my-system-package-names
   '("dash"
-    "glibc-locales"
+    ;; "glibc-locales"
+    ;; "glibc-utf8-locales-2.29"
+    "localed"
     "nss-certs"
     "fontconfig"
     "font-google-noto"

@@ -5,6 +5,7 @@
 
 (use-modules (gnu))
 (use-modules (gnu packages))
+(use-modules ((gnu packages freedesktop) :select (localed)))
 (use-modules (gnu packages commencement))
 (use-modules (guix profiles))
 (use-modules (my helpers))
@@ -114,6 +115,7 @@
   ;; xfce ;; desktop environment
   slock ;; simple screen locking
   xmessage ;; for displaying user messages
+  awesome ;; the awesome window manager
   )
 
 (define-packages gui-small
@@ -202,11 +204,14 @@
   dash ;; bash replacement
   )
 
-(define xmonad-packages
-  (list gcc-toolchain ghc ghc-hostname ghc-xmonad-contrib xmonad xmobar))
+(define-packages xmonad-packages
+  gcc-toolchain ghc ghc-hostname ghc-xmonad-contrib xmonad xmobar)
 
-(define other
-  (list glibc-locales))
+(define-packages other-packages
+  glibc-locales
+  glibc-utf8-locales
+  localed
+  )
 
 (packages->manifest
  (append
@@ -221,7 +226,7 @@
   drivers
 
   guix-packages
-  xmonad-packages
+  ;; xmonad-packages
 
   other
   ))
