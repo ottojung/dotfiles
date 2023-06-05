@@ -583,13 +583,13 @@ end
 function tag_get_left_name(tag)
 	local name = tag.name
 	local group_name, desktop_name = destructure_tag_name(name)
-	local index = tonumber(desktop_name)
+	local index = table_find_index(sub_desktop_names, desktop_name)
 	local left_index = index - 1
 	if left_index < 1
-	then left_index = 9
+	then left_index = table_get_length(sub_desktop_names)
 	end
 
-	local left = tostring(left_index)
+	local left = sub_desktop_names[left_index]
 	return group_make_desktop_fullname(group_name, left)
 end
 
@@ -602,13 +602,13 @@ end
 function tag_get_right_name(tag)
 	local name = tag.name
 	local group_name, desktop_name = destructure_tag_name(name)
-	local index = tonumber(desktop_name)
+	local index = table_find_index(sub_desktop_names, desktop_name)
 	local right_index = index + 1
-	if right_index > 9
+	if right_index > table_get_length(sub_desktop_names)
 	then right_index = 1
 	end
 
-	local right = tostring(right_index)
+	local right = sub_desktop_names[right_index]
 	return group_make_desktop_fullname(group_name, right)
 end
 
