@@ -696,6 +696,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 (set-in-alist! auto-mode-alist "\\.ts\\'" 'typescript-mode)
 (set-in-alist! auto-mode-alist "\\.tsx\\'" 'typescript-mode)
 (set-in-alist! auto-mode-alist "\\.pl\\'" 'prolog-mode)
+(set-in-alist! auto-mode-alist "\\.sld\\'" 'scheme-mode)
 
 ;; (mode (latex
 
