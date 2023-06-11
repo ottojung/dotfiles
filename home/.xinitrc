@@ -8,5 +8,5 @@ dbus-launch --sh-syntax | sed 's/^/export /' > "$TMP"
 . "$TMP"
 
 # exec (gnome-session ; true) || gnome-shell
-# exec xmonad
-exec awesome
+exec xmonad
+# exec awesome
