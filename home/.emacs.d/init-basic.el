@@ -21,7 +21,6 @@
  '(dired-hide-details-hide-symlink-targets nil)
  '(dired-listing-switches "-alFhgG")
  '(inhibit-startup-screen t)
- '(mail-host-address "tickle-tickle")
  '(menu-bar-mode nil)
  '(message-default-mail-headers "Cc:
 Bcc:
@@ -34,10 +33,16 @@ Bcc:
  '(package-selected-packages
    '(esxml consult plz magit projectile maxima yaml-mode web-mode tide typescript-mode proof-general csharp-mode ess nix-mode json-mode elfeed gnus-alias rust-mode lua-mode buffer-flip notmuch lean-mode ample-theme abyss-theme live-py-mode racket-mode popup magit-todos idris-mode company-tabnine company-ghc))
  '(scroll-bar-mode nil)
- '(send-mail-function 'smtpmail-send-it)
  '(shell-file-name "/bin/sh")
- '(smtpmail-smtp-server "smtp.office365.com")
- '(smtpmail-smtp-service 25)
+ '(sendmail-program "msmtp")
+ '(mail-specify-envelope-from t)
+ '(mail-host-address "vauplace.com")
+ '(mail-envelope-from 'header)
+ '(send-mail-function 'sendmail-send-it)
+ '(message-send-mail-function 'message-send-mail-with-sendmail)
+ '(message-sendmail-envelope-from 'header)
+ '(message-sendmail-f-is-evil 't)
+ '(message-sendmail-extra-arguments '("--read-envelope-from"))
  '(tab-width 4)
  '(tool-bar-mode nil)
  '(truncate-lines t)
