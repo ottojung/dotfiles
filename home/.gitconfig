@@ -2,3 +2,8 @@
 	excludesfile = ~/.gitignore_global
 [credential]
 	helper = cache --timeout=686400
+[sendmail]
+	smtpserver = "msmtp"
+	smtpencryption = tls
+	chainreplyto = false
+	confirm = auto
