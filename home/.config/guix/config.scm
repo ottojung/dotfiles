@@ -116,6 +116,7 @@
   slock ;; simple screen locking
   xmessage ;; for displaying user messages
   awesome ;; the awesome window manager
+  xdg-user-dirs ;; for xdg-user-dir command that is used by various programs
   )
 
 (define-packages gui-small
