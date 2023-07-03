@@ -157,6 +157,8 @@
   gimp ;; image editor
   mypaint ;; simple paint program
   ;; element-desktop ;; default matrix client
+  openttd ;; game called Open Transport Tycoon Delux, economic simulator
+  cataclysm-dda ;; game called Cataclysm: Dark Days Ahead, zombie survival
   )
 
 (define-packages fonts
