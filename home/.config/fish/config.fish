@@ -11,12 +11,10 @@ function fish_greeting
 end
 
 if [ -z "$MY_HOSTNAME" ]
-	set MY_HOSTNAME (cat /etc/hostname)
+	set MY_HOSTNAME "$(cat /etc/hostname)"
 end
 
-function fish_prompt
-	set -l display_status $status
-
+function get_prompt_header
 	set_color purple
 	printf "\n%s" "$PWD" | sed "s#^$HOME#~#"
 
@@ -33,6 +31,7 @@ function fish_prompt
 		printf "%s" " [env]"
 	end
 
+	set -l display_status $status
 	if [ "$display_status" = 0 ]
 		set_color green
 	else
@@ -41,6 +40,18 @@ function fish_prompt
 
 	printf '\n> '
 	set_color normal
+end
+
+set PPROM
+
+function recalculate_prompt
+	set PPROM "$(get_prompt_header)"
+end
+
+recalculate_prompt
+
+function fish_prompt
+	printf "%s" "$PPROM"
 end
 
 function mkcd
@@ -90,7 +101,7 @@ function mvtemp
 	cd (my-move-to-temporary $argv) && ls
 end
 
-set LPWD $PWD
+set LPWD "$PWD"
 
 function cd
 	set PPWD "$PWD"
@@ -101,6 +112,7 @@ function cd
 			return 1
 		else
 			cd "$HOME"
+			recalculate_prompt
 		end
 	else if [ "$argv" = "-" ]
 		if [ "$LPWD" = "-" ]
@@ -108,12 +120,14 @@ function cd
 			return 1
 		else
 			cd "$LPWD"
+			recalculate_prompt
 		end
 	else if builtin cd "$argv"
 		if [ "$LPWD" = "$PPWD" ]
 			true
 		else
 			set LPWD $PPWD
+			recalculate_prompt
 			true
 		end
 	end
