@@ -11,7 +11,7 @@ function fish_greeting
 end
 
 if [ -z "$MY_HOSTNAME" ]
-	set MY_HOSTNAME "$(cat /etc/hostname)"
+	set MY_HOSTNAME (cat /etc/hostname | string collect -N)
 end
 
 function get_prompt_header
@@ -45,7 +45,7 @@ end
 set PPROM
 
 function recalculate_prompt
-	set PPROM "$(get_prompt_header)"
+	set PPROM (get_prompt_header | string collect -N)
 end
 
 recalculate_prompt
