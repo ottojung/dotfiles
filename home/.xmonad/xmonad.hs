@@ -537,7 +537,7 @@ myConfig = ewmh . docks $ def
 	`removeKeysP` unsetKeys
 
 myStartupHook = do
-	xdir <- asks (cfgDir . directories)
+	-- xdir <- asks (cfgDir . directories)
 	setWMName "LG3D"
 
 debugFile = unsafePerformIO $ openFile "xmonadlog.txt" AppendMode
