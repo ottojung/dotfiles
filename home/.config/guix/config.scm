@@ -1,4 +1,5 @@
 
+
 (eval-when
  (expand load eval)
  (add-to-load-path (dirname (current-filename))))
@@ -8,6 +9,7 @@
 (use-modules ((gnu packages freedesktop) :select (localed)))
 (use-modules (gnu packages commencement))
 (use-modules (guix profiles))
+(use-modules (ice-9 match))
 (use-modules (my helpers))
 
 (use-package-modules haskell haskell-xyz wm gcc)
@@ -212,18 +214,43 @@
 (define-packages xmonad-packages
   ghc-xmonad-contrib xmonad xmobar)
 
-(packages->manifest
- (append
-  cli-tools
-  cli-programs
-  compilers
-  x-server
-  gui-small
-  gui-big
-  fonts
-  e-mail
-  drivers
 
-  guix-packages
-  xmonad-packages
-  ))
+(define base
+  (patch-pkglist
+   + cli-tools
+   + cli-programs
+   + compilers
+   + x-server
+   + gui-small
+   + gui-big
+   + fonts
+   + e-mail
+   + drivers
+   + guix-packages
+   + xmonad-packages))
+
+
+(define marceline
+  (patch-pkglist
+   + base
+   + ruby
+   - texlive
+   - x-server
+   + arandr
+   - gui-small
+   - gui-big
+   - fonts
+   - e-mail
+   - drivers
+   - guix-packages
+   - xmonad-packages))
+
+
+(define to-install
+  (let ((system (gethostname)))
+    (match
+     system
+     ("marceline" marceline)
+     (else total))))
+
+(symbols->manifest to-install)

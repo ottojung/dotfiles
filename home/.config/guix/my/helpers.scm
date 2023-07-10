@@ -1,22 +1,53 @@
 
 (define-module (my helpers)
   :export (
+           patch-pkglist
            ~a
-           package-list
            fail-if-package-not-found?
            get-package+output
            define-packages
            filter-func
+           symbols->manifest
            )
+
+  :use-module (gnu)
+  :use-module (gnu packages)
+  :use-module (gnu packages commencement)
+  :use-module (guix profiles)
   )
 
-(use-modules (gnu))
-(use-modules (gnu packages))
-(use-modules (gnu packages commencement))
-(use-modules (guix profiles))
 
 (define fail-if-package-not-found?
   (make-parameter #t))
+
+(define (package-group? quoted-name)
+  (hash-ref package-groups quoted-name #f))
+
+(define-syntax patch-pkglist
+  (syntax-rules (+ -)
+    ((_ + pkgname . rest)
+     (patch-pkglist pkgname . rest))
+    ((_ original + pkgname . rest)
+     (patch-pkglist
+      (let ((pkgname* (quote pkgname)))
+        (if (package-group? pkgname*)
+            (append pkgname original)
+            (cons pkgname* original)))
+      . rest))
+    ((_ original - pkgname . rest)
+     (let ((pkgname* (quote pkgname)))
+       (patch-pkglist
+        (if (package-group? pkgname*)
+            (delete-list pkgname original)
+            (delete pkgname* original))
+        . rest)))
+    ((_ original) original)))
+
+(define (delete-list to-remove original)
+  (filter
+   (lambda (elem)
+     (not (member elem to-remove)))
+   original))
 
 (define (~a x)
   (cond
@@ -38,6 +69,8 @@
         (and (car p) p))))
 
 (define (get-package+output name)
+  (write name) (newline)
+
   (catch #t
          (lambda _ (specification->package+output name))
          (lambda err
@@ -51,10 +84,25 @@
             (current-error-port))
            (values #f #f))))
 
-(define-syntax-rule (package-list . args)
+
+(define (symbols->packages symboled-names)
+  (parameterize ((current-output-port (current-error-port)))
+    (write symboled-names) (newline))
+
   (filter filter-func
           (map (compose list get-package+output symbol->string)
-               (quote args))))
+               symboled-names)))
+
+
+(define (symbols->manifest symboled-names)
+  (packages->manifest (symbols->packages symboled-names)))
+
+
+(define package-groups
+  (make-hash-table))
+
 
 (define-syntax-rule (define-packages name . pkgs)
-  (define name (package-list . pkgs)))
+  (begin
+    (hash-set! package-groups (quote name) (quote pkgs))
+    (define name (quote pkgs))))
