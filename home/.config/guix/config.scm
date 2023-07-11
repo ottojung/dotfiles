@@ -251,6 +251,6 @@
     (match
      system
      ("marceline" marceline)
-     (else total))))
+     (else base))))
 
 (symbols->manifest to-install)
