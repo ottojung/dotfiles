@@ -233,16 +233,20 @@
 (define marceline
   (patch-pkglist
    + base
+   - man-db ;; missing lost of manual entries
    + ruby
    - texlive
    - x-server
    + arandr
-   - gui-small
+   + gui-small
    - gui-big
+   + ungoogled-chromium
+   + firefox-esr
    - fonts
    - e-mail
    - drivers
    - guix-packages
+   + glibc-locales
    - xmonad-packages))
 
 

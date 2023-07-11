@@ -17,19 +17,24 @@ case $IN_NIX_SHELL in
 		return
 esac
 
-# # Breaks stuff on GuixSD, so.... yeah
-#if test -n "$MY_SHELL_INITIALIZED"
-#then return
-#fi
-
-if command -v my-safe-rm 1>/dev/null 2>/dev/null
-then alias rm=my-safe-rm
+if test -z "$GUIX_PROFILE" || ! test -d "$GUIX_PROFILE"
+then
+	if test -d "$HOME/.config/guix/current"
+	then export GUIX_PROFILE="$HOME/.config/guix/current"
+	else
+		if test -d "$HOME/.guix-profile"
+		then export GUIX_PROFILE="$HOME/.guix-profile"
+		fi
+	fi
+	. "$GUIX_PROFILE/etc/profile"
+	export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
 fi
 
 ###########
 ## PATHS ##
 ###########
 
+test -d "$HOME/.guix-profile/bin" && PATH="${HOME}/.guix-profile/bin:${PATH}"
 test -d "$HOME/.cabal/bin" && PATH="${HOME}/.cabal/bin:${PATH}"
 test -d "$HOME/.cargo/bin" && PATH="${HOME}/.cargo/bin:${PATH}"
 test -d "$HOME/.local/nodejs/bin" && PATH="${HOME}/.local/nodejs/bin:${PATH}"
@@ -59,6 +64,12 @@ fi
 PATH="${HOME}/.local/bin:${PATH}"
 
 export PATH
+
+# Chibi scheme load path
+if test -z "$CHIBI_MODULE_PATH"
+then export CHIBI_MODULE_PATH="$HOME/.local/share/chibi:$HOME/.local/lib/chibi"
+else export CHIBI_MODULE_PATH="$HOME/.local/share/chibi:$HOME/.local/lib/chibi"
+fi
 
 ###############
 ## VARIABLES ##
@@ -93,11 +104,7 @@ fi
 export PAGER=less
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-# Chibi scheme load path
-if test -z "$CHIBI_MODULE_PATH"
-then export CHIBI_MODULE_PATH="$HOME/.local/share/chibi:$HOME/.local/lib/chibi"
-else export CHIBI_MODULE_PATH="$HOME/.local/share/chibi:$HOME/.local/lib/chibi"
-fi
+export SHELL=$(command -v bash 2>/dev/null)
 
 if test -z "$FISH_SHELL"
 then export FISH_SHELL=$(command -v fish 2>/dev/null)
@@ -117,4 +124,5 @@ then
 	esac
 fi
 
-
+export NVM_DIR="$HOME/.nvm"
+test -s "$NVM_DIR/nvm.sh" && \. "$NVM_DIR/nvm.sh"  # This loads nvm

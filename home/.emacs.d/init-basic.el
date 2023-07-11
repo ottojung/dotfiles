@@ -72,9 +72,9 @@ Bcc:
 
 ;;;;;;;;;;;;;;;;;;;;
 ;;; set up unicode
-(unless (getenv "LC_ALL")
-  (setenv "LC_ALL" "en_US.UTF-8")
-  (setenv "LANG" "en_US.UTF-8"))
+;; (unless (getenv "LC_ALL")
+;;   (setenv "LC_ALL" "en_US.UTF-8")
+;;   (setenv "LANG" "en_US.UTF-8"))
 (prefer-coding-system       'utf-8)
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
