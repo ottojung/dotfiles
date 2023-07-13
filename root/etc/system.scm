@@ -91,10 +91,10 @@
   (append key-values (remove (lambda (p) (member (car p) keys)) alist)))
 
 (define my-desktop-keyboard
-  (keyboard-layout "us" #:options (list "ctrl:swapcaps")))
+  (keyboard-layout "us" #:options (list "ctrl:nocaps")))
 
 (define my-console-keyboard
-  (keyboard-layout "us" #:options (list "ctrl:swapcaps")))
+  (keyboard-layout "us" #:options (list "ctrl:nocaps")))
 
 (define (set-display-manager services)
   (define display-manager-types (list gdm-service-type slim-service-type))
