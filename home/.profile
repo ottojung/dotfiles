@@ -17,17 +17,20 @@ case $IN_NIX_SHELL in
 		return
 esac
 
-if test -z "$GUIX_PROFILE" || ! test -d "$GUIX_PROFILE"
+if command -v guix 1>/dev/null 2>/dev/null
 then
-	if test -d "$HOME/.config/guix/current"
-	then export GUIX_PROFILE="$HOME/.config/guix/current"
-	else
-		if test -d "$HOME/.guix-profile"
-		then export GUIX_PROFILE="$HOME/.guix-profile"
+	if test -z "$GUIX_PROFILE" || ! test -d "$GUIX_PROFILE"
+	then
+		if test -d "$HOME/.config/guix/current"
+		then export GUIX_PROFILE="$HOME/.config/guix/current"
+		else
+			if test -d "$HOME/.guix-profile"
+			then export GUIX_PROFILE="$HOME/.guix-profile"
+			fi
 		fi
+		. "$GUIX_PROFILE/etc/profile"
+		export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
 	fi
-	. "$GUIX_PROFILE/etc/profile"
-	export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
 fi
 
 ###########
@@ -39,6 +42,7 @@ test -d "$HOME/.cabal/bin" && PATH="${HOME}/.cabal/bin:${PATH}"
 test -d "$HOME/.cargo/bin" && PATH="${HOME}/.cargo/bin:${PATH}"
 test -d "$HOME/.local/nodejs/bin" && PATH="${HOME}/.local/nodejs/bin:${PATH}"
 test -d "/usr/local/go/bin" && PATH="/usr/local/go/bin:${PATH}"
+test -d "$HOME/go/bin" && PATH="$HOME/go/bin:${PATH}"
 
 # Some XDG hack to make flatpak unbug itself
 export XDG_DATA_DIRS="/usr/share/gnome:/usr/local/share/:/usr/share/:$XDG_DATA_DIRS"
