@@ -43,14 +43,22 @@ function get_prompt_header
 end
 
 set PPROM
+set PPROMUPDATED 1
 
 function recalculate_prompt
-	set PPROM (get_prompt_header | string collect -N)
+	set PPROMUPDATED 1
 end
 
-recalculate_prompt
+function actually_recalculate_prompt
+	set PPROM (get_prompt_header | string collect -N)
+	set PPROMUPDATED 0
+end
 
 function fish_prompt
+	if [ "$PPROMUPDATED" = 1 ]
+		actually_recalculate_prompt
+	end
+
 	printf "%s" "$PPROM"
 end
 
@@ -105,6 +113,7 @@ set LPWD "$PWD"
 
 function cd
 	set PPWD "$PWD"
+	recalculate_prompt
 
 	if [ "$argv" = "" ]
 		if [ "$HOME" = "" ]
@@ -112,7 +121,6 @@ function cd
 			return 1
 		else
 			cd "$HOME"
-			recalculate_prompt
 		end
 	else if [ "$argv" = "-" ]
 		if [ "$LPWD" = "-" ]
@@ -120,14 +128,12 @@ function cd
 			return 1
 		else
 			cd "$LPWD"
-			recalculate_prompt
 		end
 	else if builtin cd "$argv"
 		if [ "$LPWD" = "$PPWD" ]
 			true
 		else
 			set LPWD $PPWD
-			recalculate_prompt
 			true
 		end
 	end
