@@ -112,6 +112,10 @@ end
 set LPWD "$PWD"
 
 function cd
+	if [ -n "$INSIDE_EMACS" ]
+		printf "\eAnSiTc %s\n" "$argv"
+	end
+
 	set PPWD "$PWD"
 	recalculate_prompt
 
@@ -141,9 +145,6 @@ end
 
 # emacs dir tracking
 if [ -n "$INSIDE_EMACS" ]
-	function prompt_AnSiT -e fish_prompt
-		printf "\eAnSiTc %s\n" "$PWD"
-	end
 	printf "\eAnSiTu %s\n" "$USER"
 end
 
