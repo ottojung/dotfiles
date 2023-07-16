@@ -16,7 +16,12 @@ end
 
 function get_prompt_header
 	set_color purple
-	printf "\n%s" "$PWD" | sed "s#^$MY_SESSION_DIRECTORY#\$SESSION#" | sed "s#^$HOME#~#"
+
+	if [ -n "$MY_SESSION_DIRECTORY" ]
+		printf "\n%s" "$PWD" | sed "s#^$MY_SESSION_DIRECTORY#\$SESSION#" | sed "s#^$HOME#~#"
+	else
+		printf "\n%s" "$PWD" | sed "s#^$HOME#~#"
+	end
 
 	if [ -n "$SSH_CONNECTION" ]
 		set_color red
