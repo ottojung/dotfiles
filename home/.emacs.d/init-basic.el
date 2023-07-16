@@ -144,6 +144,10 @@ Bcc:
 ;; HELPERS ;;
 ;;;;;;;;;;;;;
 
+(defun get-last-line (multiline-string)
+  "Return the last line from the given MULTILINE-STRING."
+  (car (last (split-string multiline-string "\n"))))
+
 (defsubst string-empty-p (string)
   (string= string ""))
 
@@ -379,9 +383,9 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 (defun my-create-scheme-file (export-name)
   "Creates and initializes a new scheme source file."
   (interactive "sName of exported function or variable: ")
-  (let ((out (sh "sherry" "--quiet" "create-file" "--" export-name)))
+  (let ((out (sh "sherry" "create-file" "--" export-name)))
     (message "%s" out)
-    (find-file out)))
+    (find-file (get-last-line out))))
 
 ;;;;;;;;;;
 ;; KEYS ;;
