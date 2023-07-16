@@ -376,6 +376,13 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
       (message "%s" out)
       (revert-buffer t t t))))
 
+(defun my-create-scheme-file (export-name)
+  "Creates and initializes a new scheme source file."
+  (interactive "sName of exported function or variable: ")
+  (let ((out (sh "sherry" "--quiet" "create-file" "--" export-name)))
+    (message "%s" out)
+    (find-file out)))
+
 ;;;;;;;;;;
 ;; KEYS ;;
 ;;;;;;;;;;
@@ -453,6 +460,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
      ("M-u"   my-rerun-compile)
      ("t u"   my-run-last-term-command)
      ("f i"   my-fix-imports)
+     ("f c"   my-create-scheme-file)
      )
 
     ;; terminal for each number
