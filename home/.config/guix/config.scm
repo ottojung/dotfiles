@@ -41,6 +41,7 @@
   brightnessctl ;; program to control screen brightnessctl
   dbus ;; for communications
   transmission ;; torrent server
+  beep ;; makes sounds in the terminal
   )
 
 (define-packages cli-programs
