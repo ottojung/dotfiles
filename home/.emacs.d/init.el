@@ -96,34 +96,6 @@
       browse-url-generic-program "my-browser-open-link"
       browse-url-browser-function gnus-button-url)
 
-;;;;;;;;;;;;;;;;;;;;;;;;
-;;; RUN LAST IN TERM ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defconst my-is-mt-term-window-regexp
-  (concat
-   (regexp-quote "*my-term-mt")
-   "[[:alnum:]]+"
-   (regexp-quote "*")))
-(defun my-is-mt-term-window (win)
-  (string-match-p
-   my-is-mt-term-window-regexp
-   (buffer-name (window-buffer win))))
-
-(defun my-run-last-term-command ()
-  (interactive)
-  (let ((current-w (selected-window))
-        (term-w
-         (get-window-with-predicate #'my-is-mt-term-window)))
-    (if term-w
-        (progn
-          (my-save-current-buffer-sync)
-          (select-window term-w)
-          (execute-kbd-macro (kbd "<up>"))
-          (execute-kbd-macro (kbd "RET"))
-          (select-window current-w))
-      (error (format "Please open a terminal first")))))
-
 ;;;;;;;;;;;;;;;;
 ;; LOOK/THEME ;;
 ;;;;;;;;;;;;;;;;

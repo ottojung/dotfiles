@@ -457,7 +457,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
      ("M-h"   my-git-status)
 
      ("M-c"   shell-command)
-     ("c"     my-term-new)
+     ("c n"   my-term-new)
      ("M-t"   my-term-open-last)
      ("M-l"   my-translate)
      ("M-y"   my-term-taged)
@@ -840,20 +840,20 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 
     (setq my-term-loaded-p t)))
 
-(defun my-term-base (bufname &rest arguments)
+(defun my-term-base (name &rest arguments)
   (my-term-load)
   (let ((shell-file-name my-term-shell-program))
     (set-buffer
      (apply #'make-term
             (append
              (list
-              bufname
+              name
               (car arguments)
               nil)
              (cdr arguments))))
     (term-mode)
     (term-char-mode)
-    (switch-to-buffer (concat "*" bufname "*"))))
+    (switch-to-buffer (my-term-bufname name))))
 
 (defun my-term-sentinel-advice
     (orig-fun &rest args)
@@ -866,8 +866,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
       (setq my-term-open-list (delete my-term-self-id my-term-open-list))
       (kill-buffer buffer))))
 
-(advice-add 'term-sentinel :around
-            #'my-term-sentinel-advice)
+(advice-add 'term-sentinel :around #'my-term-sentinel-advice)
 
 (defun my-term-taged (name)
   "Start a terminal-emulator in a new buffer named `name'
@@ -875,11 +874,20 @@ The buffer is in Term mode;"
   (interactive (list (read-from-minibuffer "tag: ")))
   (my-term-base name my-term-shell-program))
 
+(defun my-term-indexed-name (self-id)
+  (concat my-term-prefix (number-to-string self-id)))
+
+(defun my-term-indexed-bufname (self-id)
+  (my-term-bufname
+   (my-term-indexed-name self-id)))
+
+(defun my-term-bufname (name)
+  (concat "*" name "*"))
+
 (defun my-term-unsafe (self-id)
-  "Unsafely start or open a term indexed by self-id"
-  (let* ((name (number-to-string self-id))
-         (bufname (concat my-term-prefix name)))
-    (my-term-taged bufname)
+  "Unsafely start a new term indexed by self-id"
+  (let ((name (my-term-indexed-name self-id)))
+    (my-term-taged name)
     (setq my-term-open-list (cons self-id my-term-open-list))
     (setq-local my-term-self-id self-id)))
 
@@ -895,12 +903,15 @@ The buffer is in Term mode;"
 
 (defun my-term-indexed (self-id)
   "Start or open a term indexed by self-id"
-  (my-term-unsafe self-id))
+  (if (member self-id my-term-open-list)
+      (switch-to-buffer (my-term-indexed-bufname self-id))
+    (my-term-unsafe self-id)))
 
 (defun my-term-new ()
   "Start a new term indexed by unique index"
   (interactive)
-  (my-term-unsafe (my-term-get-free-index)))
+  (let ((new (my-term-get-free-index)))
+    (my-term-unsafe new)))
 
 (defvar my-term-exe-unique-counter 0)
 
@@ -914,13 +925,54 @@ The buffer is in Term mode;"
    (format "exe-%d" my-term-exe-unique-counter)
    "/bin/sh" "-c" cmd))
 
+(defun my-term-buffname-comp (a b)
+  (or (< (length a) (length b)) (string-lessp a b)))
+
 (defun my-term-open-last ()
   "Focuses on the last opened terminal,
- or creates a new one, if there are not open terminals."
+ or creates a new one, if there are no open terminals."
   (interactive)
   (if (null my-term-open-list)
       (my-term-new)
-    (my-term-indexed (car my-term-open-list))))
+    (let* ((name (buffer-name (window-buffer (selected-window))))
+           (all-buffers (mapcar #'buffer-name (buffer-list)))
+           (only-terms (remove-if-not #'my-is-mt-term-bufname all-buffers))
+           (only-terms-sorted (sort only-terms #'my-term-buffname-comp))
+           (ind (position name only-terms-sorted :test #'string-equal)))
+
+      (if ind
+          (let ((nexti (+ ind 1)))
+            (if (< nexti (length only-terms-sorted))
+                (switch-to-buffer (nth nexti only-terms-sorted))
+              (my-term-new)))
+        (switch-to-buffer (car only-terms))))))
+
+(defconst my-is-mt-term-window-regexp
+  (concat
+   (regexp-quote "*my-term-mt")
+   "[[:alnum:]]+"
+   (regexp-quote "*")))
+
+(defun my-is-mt-term-bufname (bufname)
+  (string-match-p my-is-mt-term-window-regexp bufname))
+
+(defun my-is-mt-term-window (win)
+  (my-is-mt-term-bufname
+   (buffer-name (window-buffer win))))
+
+(defun my-run-last-term-command ()
+  (interactive)
+  (let ((current-w (selected-window))
+        (term-w
+         (get-window-with-predicate #'my-is-mt-term-window)))
+    (if term-w
+        (progn
+          (my-save-current-buffer-sync)
+          (select-window term-w)
+          (execute-kbd-macro (kbd "<up>"))
+          (execute-kbd-macro (kbd "RET"))
+          (select-window current-w))
+      (error (format "Please open a terminal first")))))
 
 ;;;;;;;;;;;;;
 ;; WT-MODE ;;
