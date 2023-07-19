@@ -274,13 +274,12 @@
 (defun agda-mode-exists? ()
   (= 0 (car (list (call-process "which" nil nil nil "agda-mode")))))
 
-(if (agda-mode-exists?)
-    (condition-case nil
-        (load-file
-         (let ((coding-system-for-read 'utf-8))
-           (shell-command-to-string "agda-mode locate")))
-      (error (message "Could not load agda-mode")))
-    (message "%s" "Skipping `agda-mode' as it is not installed"))
+(when (agda-mode-exists?)
+  (condition-case nil
+      (load-file
+       (let ((coding-system-for-read 'utf-8))
+         (shell-command-to-string "agda-mode locate")))
+    (error (message "Could not load agda-mode"))))
 
 (defvar company-active-map)
 (with-eval-after-load 'company
