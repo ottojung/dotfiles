@@ -709,7 +709,12 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 ;; org agend)
 
 ;; always use minimal dired
+;; (mode (dired
+(defun my-dired-config ()
+  (define-key dired-mode-map "S" 'dired-do-relsymlink))
 (add-hook 'dired-mode-hook 'dired-hide-details-mode)
+(add-hook 'dired-mode-hook 'my-dired-config)
+;; dired) mode)
 
 (set-in-alist! auto-mode-alist "\\.jsx\\'" 'javascript-mode)
 (set-in-alist! auto-mode-alist "\\.ts\\'" 'typescript-mode)
