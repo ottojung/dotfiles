@@ -42,6 +42,7 @@
   dbus ;; for communications
   transmission ;; torrent server
   beep ;; makes sounds in the terminal
+  file ;; provies information about files
   )
 
 (define-packages cli-programs
