@@ -459,7 +459,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
      ("M-h"   my-git-status)
 
      ("M-c"   shell-command)
-     ("c n"   my-term-new)
+     ("c"     my-term-new)
      ("M-t"   my-term-open-last)
      ("M-l"   my-translate)
      ("M-y"   my-term-taged)
