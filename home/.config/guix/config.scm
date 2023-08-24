@@ -117,7 +117,8 @@
   stalonetray ;; tray manager
   ;; trayer ;; tray manager ;; TODO: port to guix
   ;; xfce ;; desktop environment
-  slock ;; simple screen locking
+  ;; slock ;; simple screen locking ;; broken? Says ~"cannot disable OOM"~ as if I wanted that.
+  slim ;; provides `slimlock' screen locker
   xmessage ;; for displaying user messages
   awesome ;; the awesome window manager
   xdg-user-dirs ;; for xdg-user-dir command that is used by various programs
