@@ -82,6 +82,7 @@ fi
 export MY_HOSTNAME=$(cat /etc/hostname)
 export MY_ROOT="$HOME/my"
 export MY_MEDIA="$MY_ROOT/media"
+export MY_SESSIONS_ROOT="$MY_MEDIA/text/other/sessions"
 export MY_SERVER_NAME="vau.place"
 export MY_EMAIL_SERVER_NAME="vauplace.com"
 
