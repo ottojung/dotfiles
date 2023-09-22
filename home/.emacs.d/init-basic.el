@@ -343,16 +343,46 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 (defun my-git-save ()
   (interactive)
   (my-save-current-buffer-sync)
-  (let ((out (call-process-with-output "/bin/sh" "-c" "git add --all && git status --short && git commit --message 'save'")))
-    (message "%s" (string-trim (car out)))))
+  (let ((output-buffer "*my-git-save-output*"))
+    (when (get-buffer output-buffer)
+      (kill-buffer output-buffer))
+    (make-process
+     :name "my-git-save"
+     :buffer output-buffer
+     :command '("/bin/sh" "-c" "git add --no-verbose --all && git commit --all --message 'save' | head -n 10")
+     :sentinel (lambda (proc _event)
+                 (when (eq (process-status proc) 'exit)
+                   (with-current-buffer (process-buffer proc)
+                     (let ((output (string-trim (buffer-string))))
+                       (message "%s" output))))))))
+
+(defconst my-git-status:output-buffer
+  "*my-git-status-output*")
 
 (defun my-git-status ()
   (interactive)
   (my-save-current-buffer-sync)
-  (let ((out (sh "git" "status" "--short")))
-    (when (string-empty-p out)
-      (setq out (sh "git" "status")))
-    (message "%s" out)))
+  (when (get-buffer my-git-status:output-buffer)
+    (kill-buffer my-git-status:output-buffer))
+  (make-process
+   :name "my-git-status-short"
+   :buffer my-git-status:output-buffer
+   :command '("/bin/sh" "-c" "git status --short")
+   :sentinel (lambda (proc _event)
+               (when (eq (process-status proc) 'exit)
+                 (with-current-buffer (process-buffer proc)
+                   (let ((output (string-trim (buffer-string))))
+                     (if (string-empty-p output)
+                         (make-process
+                          :name "my-git-status-full"
+                          :buffer my-git-status:output-buffer
+                          :command '("/bin/sh" "-c" "git status")
+                          :sentinel (lambda (proc _event)
+                                      (when (eq (process-status proc) 'exit)
+                                        (with-current-buffer (process-buffer proc)
+                                          (let ((output (string-trim (buffer-string))))
+                                            (message "%s" output))))))
+                       (message "%s" output))))))))
 
 (defun my-revert-buffer ()
   (interactive)
