@@ -186,6 +186,13 @@
 (defun lua-indent-line (&rest args) nil)
 
 (use-package
+  gptel
+  :ensure nil
+  :config
+  (setq gptel-api-key my-openai-api-key))
+
+
+(use-package
  buffer-flip
  :ensure nil
  :config
