@@ -439,20 +439,20 @@ the OS keyboard is english or russian"
                     (my-path-join root "tmp"))
                   temporary-file-directory))
 
-         (dir-full (my-path-join dir "chat"))
-
-         (file-name (funcall get-file-name (directory-files dir-full nil "chat-.*")))
-
-         (path (my-path-join dir-full file-name))
-
-         )
+         (dir-full (my-path-join dir "chat")))
 
     (unless (file-exists-p dir-full)
       (make-directory dir-full t))
 
-    (let ((buf (find-file path)))
-      (with-current-buffer buf
-        (my-chatfile-insert-block content)))))
+    (let* ((file-name (funcall get-file-name (directory-files dir-full nil "chat-.*")))
+
+           (path (my-path-join dir-full file-name))
+
+           )
+
+      (let ((buf (find-file path)))
+        (with-current-buffer buf
+          (my-chatfile-insert-block content))))))
 
 (defun my-chatfile-new ()
   "Create a file in a specified or default directory and open it."
