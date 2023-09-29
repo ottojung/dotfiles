@@ -191,6 +191,16 @@
   :config
   (setq gptel-api-key my-openai-api-key))
 
+(use-package
+  org-ai
+  :ensure nil
+  :commands (org-ai-mode)
+  :init
+  (add-hook 'org-mode-hook #'org-ai-mode) ; enable org-ai in org-mode
+  :config
+  (setq org-ai-default-chat-model "gpt-4")
+  (setq org-ai-openai-api-token my-openai-api-key)
+  )
 
 (use-package
  buffer-flip
