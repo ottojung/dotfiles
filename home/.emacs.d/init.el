@@ -5,6 +5,8 @@
 
 (customize-set-variable 'grep-command "grep --color -HRIn")
 (customize-set-variable 'grep-use-null-device nil)
+(customize-set-variable 'org-ai-default-chat-model "gpt-4")
+(customize-set-variable 'markdown-fontify-code-blocks-natively t)
 
 (let ((private (emacs-root-join "private.el")))
   (when (file-exists-p private)
@@ -390,6 +392,254 @@ the OS keyboard is english or russian"
   (translate-keystrokes-ru->en))
 
 (support-cyrillic-layout)
+
+
+;;;;;;;;;;;;;;;;;;;
+;; MY AI HELPERS ;;
+;;;;;;;;;;;;;;;;;;;
+
+(require 'cl-lib)
+
+(require 'org-element)
+
+(defun my-inside-ai-org-block-p ()
+  (let ((element (org-element-context)))
+    (while (and element
+                (not (and (eq (car element) 'special-block)
+                          (string= (plist-get (nth 1 element) :type) "ai"))))
+      (setq element (plist-get (nth 1 element) :parent)))
+
+    (and element
+         (<= (point)
+             (plist-get (nth 1 element) :contents-end))
+         (>= (point)
+             (plist-get (nth 1 element) :contents-begin))
+         element)))
+
+(defun my-chatfile-insert-block (&optional content)
+  "Insert AI block with `content' and place cursor ready for input."
+  (interactive)
+
+  ;; Check if we're in a #+begin_ai block
+  (when-let ((ai-block (my-inside-ai-org-block-p)))
+    (goto-char (plist-get (nth 1 ai-block) :contents-end)))
+
+  (end-of-line)
+  (newline)
+  (insert
+   (format "
+#+begin_ai markdown
+%s
+#+end_ai" (or content "[ME]: ")))
+  (end-of-line)
+  (newline)
+
+  ;; Move back three lines to position cursor right after [ME]:
+  (forward-line -2)
+  (end-of-line)
+  )
+
+(defun my-chatfile-create-generic (get-file-name &optional content)
+  (let* ((dir (or (getenv "MY_SESSION_DIRECTORY")
+                  (when-let ((root (getenv "MY_ROOT")))
+                    (my-path-join root "tmp"))
+                  temporary-file-directory))
+
+         (dir-full (my-path-join dir "chat"))
+
+         (file-name (funcall get-file-name (directory-files dir-full nil "chat-.*")))
+
+         (path (my-path-join dir-full file-name))
+
+         )
+
+    (unless (file-exists-p dir-full)
+      (make-directory dir-full t))
+
+    (let ((buf (find-file path)))
+      (with-current-buffer buf
+        (my-chatfile-insert-block content)))))
+
+(defun my-chatfile-new ()
+  "Create a file in a specified or default directory and open it."
+  (interactive)
+  (my-chatfile-create-generic #'my-chatname-restart))
+
+(defun my-get-text-from-point-to-cursor (start-point)
+  "Get text from START-POINT to current cursor position"
+  (interactive "nStart Point: ")
+  (let ((end-point (point)))
+    (buffer-substring-no-properties start-point end-point)))
+
+(defun my-chatfile-fork ()
+  "Create a file in a specified or default directory and open it."
+  (interactive)
+
+  (let* ((ai-block (my-inside-ai-org-block-p))
+         (start (if ai-block (plist-get (nth 1 ai-block) :contents-begin)
+                  (point)))
+         (text0 (my-get-text-from-point-to-cursor start))
+         (text (if (string-empty-p text0) nil text0)))
+
+    (my-chatfile-create-generic
+     (lambda (existing)
+       (let ((full-name (buffer-file-name (current-buffer))))
+         (unless full-name
+           (error "This function must be called from a buffer associated with some file."))
+
+         (let ((current-name (file-name-nondirectory full-name)))
+           (unless (my-extract-numbers-from-filename current-name)
+             (error "This function must be called from a file called \"chat-something.org\"."))
+
+           (my-chatname-fork current-name existing))))
+
+     text)))
+
+
+(defun my-org-mode-keys-hook ()
+  (define-key org-mode-map
+    (kbd "M-o a b")
+    'my-chatfile-insert-block))
+
+(add-hook 'org-mode-hook 'my-org-mode-keys-hook)
+
+(defun my-extract-numbers-from-filename (filename)
+  "Extract numbers from the filename in the form of `chat-001.org`, `chat-002-003.org`"
+
+  ;; ; Use it like this:
+  ;; (extract-numbers-from-filename "chat-001.org") ; => (1)
+  ;; (extract-numbers-from-filename "chat-002-003.org") ; => (2 3)
+  ;; (extract-numbers-from-filename "chat-007.org") ; => (7)
+  ;; (extract-numbers-from-filename "chat-008-02-9374.org") ; => (8 2 9374)
+  ;; (extract-numbers-from-filename "chat.org") ; => nil
+  ;; (extract-numbers-from-filename "008-02-9374.org") ; => nil
+
+  (when (string-match "chat-.+[.]org" filename)
+    (let ((start 0)
+          numbers)
+      (while (string-match "\\([0-9]+\\)" filename start)
+        (setq start (match-end 0))
+        (push (string-to-number (match-string 1 filename)) numbers))
+      (nreverse numbers))))
+
+(defun my-chatname-parse-existing (existing)
+  (let* ((num-lists (mapcar #'my-extract-numbers-from-filename existing))
+         (nonnuls (delete nil num-lists))
+         (nums (mapcar #'car nonnuls)))
+    nums))
+
+(defun my-chatname-restart (existing)
+  ;; Example:
+  ;;
+  ;; (my-chatname-restart
+  ;;  '("chat-001.org"
+  ;;    "chat.org"
+  ;;    "whatever"
+  ;;    "chat-007.org"
+  ;;    "chat-015-002.org"
+  ;;    "chat-008.org"
+  ;;    ))
+  ;;   =>
+  ;; "chat-016.org"
+  ;;
+  ;; (my-chatname-restart '())
+  ;;   =>
+  ;; "chat-001.org
+
+  (let* ((nums (my-chatname-parse-existing existing))
+         (sorted (sort nums #'>))
+         (highest (if sorted (car sorted) 0)))
+
+    (format "chat-%03d.org" (+ 1 highest))))
+
+(defun my-is-prefix (lst1 lst2)
+  "Check if lst1 is a prefix of lst2."
+  (cond ((null lst1) t)
+        ((null lst2) nil)
+        ((not (equal (car lst1) (car lst2))) nil)
+        (t (my-is-prefix (cdr lst1) (cdr lst2)))))
+
+(defun my-increment-last-number (num-list)
+  (if (null num-list)
+      nil
+    (let ((last-num (car (last num-list))))
+      (setcar (last num-list) (+ 1 last-num))
+      num-list)))
+
+(defun my-list-drop-prefix (prefix list)
+  "Drop PREFIX from LIST."
+  (if (equal (length prefix) 0)
+      list
+    (if (equal (car prefix) (car list))
+        (my-list-drop-prefix (cdr prefix) (cdr list))
+      (error "Prefix list is not a prefix of the second one"))))
+
+(defun my-versions-fork (existing-nums current-nums)
+  (let* ((sameprefix-nums
+          (remove-if-not
+           (lambda (item)
+             (and (my-is-prefix current-nums item)
+                  (not (equalp current-nums item))))
+           existing-nums))
+
+         (without-prefix-nums
+          (delete
+           nil
+           (mapcar
+            (lambda (x)
+              (my-list-drop-prefix current-nums x))
+            sameprefix-nums)))
+
+         (max-existing-nums
+          (car
+           (if without-prefix-nums
+               (car
+                (sort without-prefix-nums
+                      (lambda (a b)
+                        (> (car a) (car b)))))
+
+             (list 0))))
+
+         )
+
+    (append current-nums (list (+ 1 max-existing-nums)))))
+
+(defun my-chatname-fork (current existing)
+
+  ;; Examples:
+  ;;
+  ;; (my-chatname-fork
+  ;;  "chat-015.org"
+  ;;  '("chat-001.org"
+  ;;    "chat.org"
+  ;;    "whatever"
+  ;;    "chat-007.org"
+  ;;    "chat-015-002.org"
+  ;;    "chat-008.org"))
+  ;;    =>
+  ;; "chat-015-003.org"
+  ;;
+  ;; (my-chatname-fork
+  ;;  "chat-007.org"
+  ;;  '("chat-001.org"
+  ;;    "chat.org"
+  ;;    "whatever"
+  ;;    "chat-007.org"
+  ;;    "chat-015-002.org"
+  ;;    "chat-008.org"))
+  ;;    =>
+  ;; "chat-007-001.org"
+
+  (let* ((existing-nums (delete nil (mapcar #'my-extract-numbers-from-filename existing)))
+         (current-nums (my-extract-numbers-from-filename current))
+         (new-nums (my-versions-fork existing-nums current-nums))
+         )
+
+    (format "chat-%s.org"
+            (string-join
+             (mapcar (lambda (x) (format "%03d" x))
+                     new-nums)
+             "-"))))
 
 ;;;;;;;;;;;;;
 ;; THE END ;;

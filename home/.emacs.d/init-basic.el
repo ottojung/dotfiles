@@ -497,6 +497,8 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
      ("t u"   my-run-last-term-command)
      ("f i"   my-fix-imports)
      ("f c"   my-create-scheme-file)
+     ("a n"   my-chatfile-new)
+     ("a f"   my-chatfile-fork)
      )
 
     ;; terminal for each number
