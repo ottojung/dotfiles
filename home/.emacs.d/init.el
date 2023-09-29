@@ -434,7 +434,8 @@ the OS keyboard is english or russian"
   )
 
 (defun my-chatfile-create-generic (get-file-name &optional content)
-  (let* ((dir (or (getenv "MY_SESSION_DIRECTORY")
+  (let* ((dir (or (when-let ((session (getenv "MY_SESSION_DIRECTORY")))
+                    (my-path-join session "wd"))
                   (when-let ((root (getenv "MY_ROOT")))
                     (my-path-join root "tmp"))
                   temporary-file-directory))
