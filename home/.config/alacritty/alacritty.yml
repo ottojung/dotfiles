@@ -278,6 +278,7 @@ bell:
 # #
 
 key_bindings:
+  - { key: B, mods: Control|Shift, action: None }
 #   - { key: V,        mods: Command,       action: Paste                        }
 #   - { key: C,        mods: Command,       action: Copy                         }
 #   - { key: Q,        mods: Command,       action: Quit                         }
