@@ -57,6 +57,20 @@
   (setq MY-EMACS-SERVER-STARTED t)
   (server-start))
 
+(defun my-get-server-file ()
+  (emacs-root-join "servers~" MY-EMACS-SERVER-NAME))
+
+(defun my-delete-server-file ()
+  (delete-file (my-get-server-file)))
+
+(defun my-create-server-file ()
+  (my-create-file
+   (my-get-server-file)
+   (format "%s" (emacs-pid))))
+
+(my-create-server-file)
+(add-hook 'kill-emacs-hook 'my-delete-server-file)
+
 ;;;;;;;;;;
 ;; MAIL ;;
 ;;;;;;;;;;

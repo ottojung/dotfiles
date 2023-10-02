@@ -154,6 +154,14 @@ Bcc:
         ((< num (expt 1024 6)) (format "%.2f PB" (/ num (expt 1024.0 5))))
         (t (format "%.2f EB" (/ num (expt 1024.0 6))))))
 
+(defun my-create-file (path content)
+  (let ((parent-directory (file-name-directory path)))
+    (make-directory parent-directory t)
+    (write-region content nil path)))
+
+(defun my-create-empty-file (path)
+  (my-create-file path ""))
+
 (defun get-last-line (multiline-string)
   "Return the last line from the given MULTILINE-STRING."
   (car (last (split-string multiline-string "\n"))))
