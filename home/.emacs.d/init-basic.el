@@ -144,6 +144,16 @@ Bcc:
 ;; HELPERS ;;
 ;;;;;;;;;;;;;
 
+(defun my-bytes-to-human-readable (num)
+  "Return a string representing NUM bytes in a human-readable way."
+  (cond ((< num 1024) (format "%d B" num))
+        ((< num (expt 1024 2)) (format "%.0f KB" (/ num 1024.0)))
+        ((< num (expt 1024 3)) (format "%.1f MB" (/ num (expt 1024.0 2))))
+        ((< num (expt 1024 4)) (format "%.2f GB" (/ num (expt 1024.0 3))))
+        ((< num (expt 1024 5)) (format "%.2f TB" (/ num (expt 1024.0 4))))
+        ((< num (expt 1024 6)) (format "%.2f PB" (/ num (expt 1024.0 5))))
+        (t (format "%.2f EB" (/ num (expt 1024.0 6))))))
+
 (defun get-last-line (multiline-string)
   "Return the last line from the given MULTILINE-STRING."
   (car (last (split-string multiline-string "\n"))))
@@ -814,6 +824,25 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
          (s (my-path-join dir name)))
     (mkdir s)
     (find-file (my-path-join s "main.scm"))))
+
+(defun my-file-metadata ()
+  (interactive)
+  (let* ((fname (buffer-file-name))
+         (data (file-attributes fname))
+         (access (current-time-string (nth 4 data)))
+         (mod (current-time-string (nth 5 data)))
+         (change (current-time-string (nth 6 data)))
+         (size (nth 7 data))
+         (sizeh (my-bytes-to-human-readable size))
+         (mode (nth 8 data)))
+    (message
+     "%s:
+  Accessed: %s
+  Modified: %s
+  Changed: %s
+  Size: %s
+  Mode: %s"
+     fname access mod change sizeh mode)))
 
 ;;;;;;;;;;;;;
 ;; COMPILE ;;
