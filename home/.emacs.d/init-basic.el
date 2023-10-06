@@ -144,6 +144,37 @@ Bcc:
 ;; HELPERS ;;
 ;;;;;;;;;;;;;
 
+(defun my-list-take (n lst)
+  ;; (my-list-take 2 '(1 2 3)) => '(1 2)
+  ;; (my-list-take 5 '(1 2 3)) => '(1 2 3)
+  ;; (my-list-take 0 '(1 2 3)) => '()
+
+  (subseq lst 0 (min n (length lst))))
+
+(defun my-lists-of-numbers-gt (a b)
+  (cond
+   ((null b) t)
+   ((> (length a) (length b)) t)
+   ((< (length a) (length b)) nil)
+   ((> (car a) (car b)) t)
+   ((< (car a) (car b)) nil)
+   (t (my-lists-of-numbers-gt (cdr a) (cdr b)))))
+
+(defun my-lists-of-numbers-lt (a b)
+  (cond
+   ((null b) nil)
+   ((< (length a) (length b)) t)
+   ((> (length a) (length b)) nil)
+   ((< (car a) (car b)) t)
+   ((> (car a) (car b)) nil)
+   (t (my-lists-of-numbers-lt (cdr a) (cdr b)))))
+
+(defun my-sort-numeric-lists (list-of-lists)
+  (sort list-of-lists #'my-lists-of-numbers-lt))
+
+(defun my-sort-numeric-lists/descending (list-of-lists)
+  (sort list-of-lists #'my-lists-of-numbers-gt))
+
 (defun my-bytes-to-human-readable (num)
   "Return a string representing NUM bytes in a human-readable way."
   (cond ((< num 1024) (format "%d B" num))

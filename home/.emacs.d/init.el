@@ -472,7 +472,13 @@ the OS keyboard is english or russian"
 (defun my-chatfile-new ()
   "Create a file in a specified or default directory and open it."
   (interactive)
-  (my-chatfile-create-generic #'my-chatname-restart))
+  (let* ((full-name (buffer-file-name (current-buffer)))
+         (current-name (and full-name (file-name-nondirectory full-name))))
+    (if (and full-name (my-extract-numbers-from-filename current-name))
+        (my-chatfile-create-generic
+         (lambda (existing)
+           (my-chatname-increment current-name existing)))
+        (my-chatfile-create-generic #'my-chatname-restart))))
 
 (defun my-get-text-from-point-to-cursor (start-point)
   "Get text from START-POINT to current cursor position"
@@ -574,6 +580,120 @@ the OS keyboard is english or russian"
     (let ((last-num (car (last num-list))))
       (setcar (last num-list) (+ 1 last-num))
       num-list)))
+
+(defun my-versions-increment (existing-nums current-nums)
+  (let* ((this-len (length current-nums))
+         (samelength-nums
+          (mapcar
+           (lambda (item) (my-list-take this-len item))
+           (cons current-nums existing-nums)))
+         (sorted (my-sort-numeric-lists/descending samelength-nums))
+         (highest (car sorted))
+         (new-nums (my-increment-last-number highest))
+         )
+
+    new-nums))
+
+(defun my-chatname-increment (current existing)
+
+  ;; (my-chatname-increment
+  ;;  "chat-015.org"
+  ;;  '("chat-001.org"
+  ;;    "chat.org"
+  ;;    "whatever"
+  ;;    "chat-007.org"
+  ;;    "chat-015-002.org"
+  ;;    "chat-008.org"))
+  ;; =>
+  ;; "chat-016.org"
+
+  ;; (my-chatname-increment
+  ;;  "chat-015.org"
+  ;;  '("chat-001.org"
+  ;;    "chat.org"
+  ;;    "whatever"
+  ;;    "chat-007.org"
+  ;;    "chat-015.org"
+  ;;    "chat-008.org"))
+  ;; =>
+  ;; "chat-016.org"
+
+  ;; (my-chatname-increment
+  ;;  "chat-015.org"
+  ;;  '("chat-001.org"
+  ;;    "chat.org"
+  ;;    "whatever"
+  ;;    "chat-007.org"
+  ;;    "chat-015-000.org"
+  ;;    "chat-008.org"))
+  ;; =>
+  ;; "chat-016.org"
+
+  ;; (my-chatname-increment
+  ;;  "chat-015.org"
+  ;;  '("chat-001.org"
+  ;;    "chat.org"
+  ;;    "whatever"
+  ;;    "chat-007.org"
+  ;;    "chat-015-000-13412.org"
+  ;;    "chat-008.org"))
+  ;; =>
+  ;; "chat-016.org"
+
+  ;; (my-chatname-increment
+  ;;  "chat-015-001.org"
+  ;;  '("chat-001.org"
+  ;;    "chat.org"
+  ;;    "whatever"
+  ;;    "chat-007.org"
+  ;;    "chat-015-002.org"
+  ;;    "chat-008.org"))
+  ;; =>
+  ;; "chat-015-003.org"
+
+  ;; (my-chatname-increment
+  ;;  "chat-015-001.org"
+  ;;  '("chat-001.org"
+  ;;    "chat.org"
+  ;;    "whatever"
+  ;;    "chat-007.org"
+  ;;    "chat-015.org"
+  ;;    "chat-008.org"))
+  ;; =>
+  ;; "chat-015-002.org"
+
+  ;; (my-chatname-increment
+  ;;  "chat-015-001.org"
+  ;;  '("chat-001.org"
+  ;;    "chat.org"
+  ;;    "whatever"
+  ;;    "chat-007.org"
+  ;;    "chat-015-000.org"
+  ;;    "chat-008.org"))
+  ;; =>
+  ;; "chat-015-002.org"
+
+  ;; (my-chatname-increment
+  ;;  "chat-015-001.org"
+  ;;  '("chat-001.org"
+  ;;    "chat.org"
+  ;;    "whatever"
+  ;;    "chat-007.org"
+  ;;    "chat-015-000-13412.org"
+  ;;    "chat-008.org"))
+  ;; =>
+  ;; "chat-015-002.org"
+
+  (let* ((existing-nums (delete nil (mapcar #'my-extract-numbers-from-filename existing)))
+         (current-nums (my-extract-numbers-from-filename current))
+         (new-nums (my-versions-increment existing-nums current-nums))
+         )
+
+    (format "chat-%s.org"
+            (string-join
+             (mapcar (lambda (x) (format "%03d" x))
+                     new-nums)
+             "-"))))
 
 (defun my-list-drop-prefix (prefix list)
   "Drop PREFIX from LIST."
