@@ -31,7 +31,7 @@ Bcc:
    '(("gnu" . "http://elpa.gnu.org/packages/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(seqel org-ai markdown-mode esxml consult plz magit projectile maxima yaml-mode web-mode tide typescript-mode proof-general csharp-mode ess nix-mode json-mode elfeed gnus-alias rust-mode lua-mode buffer-flip notmuch lean-mode ample-theme abyss-theme live-py-mode racket-mode popup magit-todos idris-mode company-tabnine company-ghc))
+   '(csv-mode seqel org-ai markdown-mode esxml consult plz magit projectile maxima yaml-mode web-mode tide typescript-mode proof-general csharp-mode ess nix-mode json-mode elfeed gnus-alias rust-mode lua-mode buffer-flip notmuch lean-mode ample-theme abyss-theme live-py-mode racket-mode popup magit-todos idris-mode company-tabnine company-ghc))
  '(scroll-bar-mode nil)
  '(shell-file-name "/bin/sh")
  '(sendmail-program "msmtp")
