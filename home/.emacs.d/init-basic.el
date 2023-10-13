@@ -144,6 +144,10 @@ Bcc:
 ;; HELPERS ;;
 ;;;;;;;;;;;;;
 
+(defun my-disable-linewrap ()
+  (visual-line-mode -1)
+  (toggle-truncate-lines 1))
+
 (defun my-list-take (n lst)
   ;; (my-list-take 2 '(1 2 3)) => '(1 2)
   ;; (my-list-take 5 '(1 2 3)) => '(1 2 3)

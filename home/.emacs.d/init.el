@@ -306,6 +306,14 @@
 
 (add-hook 'after-init-hook 'global-company-mode)
 
+(defun my-csv-hook ()
+  (my-disable-linewrap)
+  (csv-header-line)
+  (when (< (buffer-size) (* 2 1024 1024)) ; less than 2MB
+    (call-interactively 'csv-align-fields)))
+
+(add-hook 'csv-mode-hook 'my-csv-hook)
+
 (add-hook
  'coq-mode-hook
  (lambda ()
