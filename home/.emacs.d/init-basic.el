@@ -765,23 +765,23 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 (defvar js-indent-level) ;; SUPRESS WARNING
 (defvar typescript-indent-level) ;; SUPRESS WARNING
 
-(add-hook
- 'javascript-mode-hook
- (lambda ()
-   (setq tab-width 2)
-   (setq-local tab-width 2)
-   (setq js-indent-level 2)
-   (setq-local js-indent-level 2)
-   ))
+(defun my-javascript-hook ()
+  (setq tab-width 2)
+  (setq-local tab-width 2)
+  (setq js-indent-level 2)
+  (setq-local js-indent-level 2)
+  )
 
-(add-hook
- 'typescript-mode-hook
- (lambda ()
-   (setq tab-width 2)
-   (setq-local tab-width 2)
-   (setq typescript-indent-level 2)
-   (setq-local typescript-indent-level 2)
-   ))
+(add-hook 'javascript-mode-hook 'my-javascript-hook)
+
+(defun my-typescript-hook ()
+  (setq tab-width 2)
+  (setq-local tab-width 2)
+  (setq typescript-indent-level 2)
+  (setq-local typescript-indent-level 2)
+  )
+
+(add-hook 'typescript-mode-hook 'my-typescript-hook)
 
 ;; (org agenda
 (defconst MY-MEDIA-DIR (getenv "MY_MEDIA"))
@@ -797,8 +797,8 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 ;; always use minimal dired
 ;; (mode (dired
 (defun my-dired-config ()
+  (dired-hide-details-mode 1)
   (define-key dired-mode-map "S" 'dired-do-relsymlink))
-(add-hook 'dired-mode-hook 'dired-hide-details-mode)
 (add-hook 'dired-mode-hook 'my-dired-config)
 ;; dired) mode)
 
@@ -917,9 +917,10 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 
     (select-window current-w)))
 
-(add-hook 'compilation-mode-hook
-          #'(lambda ()
-              (local-set-key (kbd "C-c C-c") 'kill-compilation)))
+(defun my-compilation-hook ()
+  (local-set-key (kbd "C-c C-c") 'kill-compilation))
+
+(add-hook 'compilation-mode-hook 'my-compilation-hook)
 
 ;;;;;;;;;;
 ;; TERM ;;

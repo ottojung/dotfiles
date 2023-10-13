@@ -314,12 +314,12 @@
 
 (add-hook 'csv-mode-hook 'my-csv-hook)
 
-(add-hook
- 'coq-mode-hook
- (lambda ()
-   (defvar coq-mode-map) ;; SUPRESS WARNING
-   (define-key coq-mode-map (kbd "M-a") nil)
-   (define-key coq-mode-map (kbd "M-e") nil)))
+(defun my-coq-mode-hook ()
+  (defvar coq-mode-map) ;; SUPRESS WARNING
+  (define-key coq-mode-map (kbd "M-a") nil)
+  (define-key coq-mode-map (kbd "M-e") nil))
+
+(add-hook 'coq-mode-hook 'my-coq-mode-hook)
 
 (use-package company-tabnine
   :ensure nil)
