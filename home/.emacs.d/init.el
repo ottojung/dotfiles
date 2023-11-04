@@ -208,7 +208,7 @@
   :init
   (add-hook 'org-mode-hook #'org-ai-mode) ; enable org-ai in org-mode
   :config
-  (setq org-ai-default-chat-model "gpt-3.5-turbo")
+  (setq org-ai-default-chat-model "gpt-4")
   (setq org-ai-openai-api-token my-openai-api-key)
   )
 
@@ -444,7 +444,7 @@ the OS keyboard is english or russian"
   (newline)
   (insert
    (format "
-#+begin_ai markdown :model \"gpt-3.5-turbo\"
+#+begin_ai markdown :model \"gpt-4\"
 %s
 #+end_ai" (or content "[ME]: ")))
   (end-of-line)
