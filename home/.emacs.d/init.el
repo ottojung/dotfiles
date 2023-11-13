@@ -5,7 +5,7 @@
 
 (customize-set-variable 'grep-command "grep --color -HRIn")
 (customize-set-variable 'grep-use-null-device nil)
-(customize-set-variable 'org-ai-default-chat-model "gpt-4")
+(customize-set-variable 'org-ai-default-chat-model "gpt-4-1106-preview")
 (customize-set-variable 'markdown-fontify-code-blocks-natively t)
 
 (let ((private (emacs-root-join "private.el")))
@@ -208,7 +208,6 @@
   :init
   (add-hook 'org-mode-hook #'org-ai-mode) ; enable org-ai in org-mode
   :config
-  (setq org-ai-default-chat-model "gpt-4")
   (setq org-ai-openai-api-token my-openai-api-key)
   )
 
@@ -444,9 +443,11 @@ the OS keyboard is english or russian"
   (newline)
   (insert
    (format "
-#+begin_ai markdown :model \"gpt-4\"
+#+begin_ai markdown :model \"%s\"
 %s
-#+end_ai" (or content "[ME]: ")))
+#+end_ai"
+           org-ai-default-chat-model
+           (or content "[ME]: ")))
   (end-of-line)
   (newline)
 
