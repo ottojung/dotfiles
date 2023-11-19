@@ -381,9 +381,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
        'grep-mode))))
 
 (defun program-resolve-path (program)
-  (string-trim
-   (car
-    (call-process-with-output "which" program))))
+  (executable-find program))
 
 (defun call-process-with-output (proc &rest args)
   (let ((return-code -1))

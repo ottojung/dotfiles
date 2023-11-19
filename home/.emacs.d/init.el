@@ -270,7 +270,7 @@
             :around #'my-buffer-flip-skip-buffer-advice)
 
 (defun agda-mode-exists? ()
-  (= 0 (car (list (call-process "which" nil nil nil "agda-mode")))))
+  (program-resolve-path "agda-mode"))
 
 (when (agda-mode-exists?)
   (condition-case nil
