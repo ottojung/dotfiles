@@ -1,6 +1,14 @@
 {
     "editor.minimap.enabled": false,
     "window.menuBarVisibility": "toggle",
-    "window.zoomLevel": 0,
-    "workbench.colorTheme": "Visual Studio 2019 Dark"
+    "files.autoSave": "onFocusChange",
+    "dev.containers.defaultExtensions": [
+        "lfs.vscode-emacs-friendly",
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "ms-azuretools.vscode-docker",
+        "brokenprogrammer.paragraphjump"
+    ],
+    "git.openRepositoryInParentFolders": "never",
+    "window.zoomLevel": -1
 }

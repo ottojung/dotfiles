@@ -119,4 +119,5 @@ mvcd() {
 	cd "$dest"
 }
 
-
+# Something is setting this value, and makes emacs crash.
+unset EMACSLOADPATH
