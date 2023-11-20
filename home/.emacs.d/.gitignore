@@ -31,6 +31,9 @@ org-persist
 # magit shit
 transient
 
+# python stuff
+elpy
+
 # my private stuff
 private.el
 
