@@ -157,6 +157,17 @@
 
 (advice-add 'prolog-consult-file :around #'my-prolog-consult-file-advice)
 
+;;;;;;;;;;;;
+;; Python ;;
+;;;;;;;;;;;;
+
+(defun setup-python-mode ()
+  (interactive)
+  (disable-tabs)
+  (flycheck-mode +1))
+
+(add-hook 'python-mode-hook #'setup-python-mode)
+
 ;;;;;;;;;;;;;;;;
 ;; Typescript ;;
 ;;;;;;;;;;;;;;;;

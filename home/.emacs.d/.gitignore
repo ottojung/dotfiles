@@ -6,6 +6,7 @@
 .emacs.desktop
 .emacs.desktop.lock
 *-cache*
+elpy/
 
 auto-save-list/
 url/
@@ -30,9 +31,6 @@ org-persist
 
 # magit shit
 transient
-
-# python stuff
-elpy
 
 # my private stuff
 private.el

@@ -7,57 +7,49 @@
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
  '(ansi-color-names-vector
-   ["#454545" "#cd5542" "#6aaf50" "#baba36" "#5180b3" "#ab75c3" "#68a5e9"
-    "#bdbdb3"])
+   ["#454545" "#cd5542" "#6aaf50" "#baba36" "#5180b3" "#ab75c3" "#68a5e9" "#bdbdb3"])
  '(backward-delete-char-untabify-method 'hungry)
  '(blink-cursor-mode nil)
  '(compilation-disable-input t)
  '(compilation-scroll-output 'first-error)
  '(confirm-nonexistent-file-or-buffer nil)
  '(custom-safe-themes
-   '("ddff22007104a1317014e48ff3d4911a83771a4ccf57185ccebf7f91339dbfb8"
-     "36ca8f60565af20ef4f30783aa16a26d96c02df7b4e54e9900a5138fb33808da"
-     "bf798e9e8ff00d4bf2512597f36e5a135ce48e477ce88a0764cfb5d8104e8163"
-     "c9ddf33b383e74dac7690255dd2c3dfa1961a8e8a1d20e401c6572febef61045"
-     "d8dc153c58354d612b2576fea87fe676a3a5d43bcc71170c62ddde4a1ad9e1fb"
-     default))
+   '("ddff22007104a1317014e48ff3d4911a83771a4ccf57185ccebf7f91339dbfb8" "36ca8f60565af20ef4f30783aa16a26d96c02df7b4e54e9900a5138fb33808da" "bf798e9e8ff00d4bf2512597f36e5a135ce48e477ce88a0764cfb5d8104e8163" "c9ddf33b383e74dac7690255dd2c3dfa1961a8e8a1d20e401c6572febef61045" "d8dc153c58354d612b2576fea87fe676a3a5d43bcc71170c62ddde4a1ad9e1fb" default))
  '(default-input-method "TeX")
  '(dired-dwim-target t)
  '(dired-hide-details-hide-information-lines t)
  '(dired-hide-details-hide-symlink-targets nil)
  '(dired-listing-switches "-alFhgG")
  '(inhibit-startup-screen t)
- '(mail-envelope-from 'header)
- '(mail-host-address "vauplace.com")
- '(mail-specify-envelope-from t)
  '(menu-bar-mode nil)
- '(message-default-mail-headers "Cc:\12Bcc:\12")
- '(message-send-mail-function 'message-send-mail-with-sendmail)
- '(message-sendmail-envelope-from 'header)
- '(message-sendmail-extra-arguments '("--read-envelope-from"))
- '(message-sendmail-f-is-evil 't)
+ '(message-default-mail-headers "Cc:
+Bcc:
+")
  '(org-agenda-default-appointment-duration 90 t)
  '(org-startup-truncated nil)
  '(package-archives
    '(("gnu" . "http://elpa.gnu.org/packages/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(dired-narrow pylint flycheck elpy csv-mode seqel org-ai markdown-mode esxml
-                  consult plz magit projectile maxima yaml-mode web-mode
-                  tide typescript-mode proof-general csharp-mode ess
-                  nix-mode json-mode elfeed gnus-alias rust-mode lua-mode
-                  buffer-flip notmuch lean-mode ample-theme abyss-theme
-                  live-py-mode racket-mode popup magit-todos idris-mode
-                  company-tabnine company-ghc))
+   '(flycheck pylint elpy csv-mode seqel org-ai markdown-mode esxml consult plz magit projectile maxima yaml-mode web-mode tide typescript-mode proof-general csharp-mode ess nix-mode json-mode elfeed gnus-alias rust-mode lua-mode buffer-flip notmuch lean-mode ample-theme abyss-theme live-py-mode racket-mode popup magit-todos idris-mode company-tabnine company-ghc))
  '(scroll-bar-mode nil)
- '(send-mail-function 'sendmail-send-it)
- '(sendmail-program "msmtp")
  '(shell-file-name "/bin/sh")
+ '(sendmail-program "msmtp")
+ '(mail-specify-envelope-from t)
+ '(mail-host-address "vauplace.com")
+ '(mail-envelope-from 'header)
+ '(send-mail-function 'sendmail-send-it)
+ '(message-send-mail-function 'message-send-mail-with-sendmail)
+ '(message-sendmail-envelope-from 'header)
+ '(message-sendmail-f-is-evil 't)
+ '(message-sendmail-extra-arguments '("--read-envelope-from"))
  '(tab-width 4)
  '(tool-bar-mode nil)
  '(truncate-lines t)
  '(vc-follow-symlinks t)
  '(warning-suppress-types '((comp)))
+ '(global-auto-revert-mode t)
+ '(flycheck-temp-prefix "/tmp/temp-flycheck-")
  '(whitespace-style '(face trailing tab-mark)))
 
 (custom-set-faces
