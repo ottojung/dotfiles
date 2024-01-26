@@ -76,6 +76,7 @@
   imagemagick ;; CLI tool to edit images
   lynx ;; CLI browser
   weechat ;; CLI IRC client
+  docker docker-cli docker-compose ;; Docker stuff
   )
 
 (define-packages compilers
