@@ -61,6 +61,9 @@ then
 	export LOCALE_ARCHIVE=$(nix-build --no-out-link '<nixpkgs>' -A glibcLocales 2>/dev/null)/lib/locale/locale-archive
 fi
 
+export NVM_DIR="$HOME/.nvm"
+test -s "$NVM_DIR/nvm.sh" && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+
 ## Remove duplicates (disabled because bugged on nixos)
 # PATH=$(echo "$PATH" | awk -v 'RS=:' -v 'ORS=:' '!($0 in a) {a[$0]; print}')
 
@@ -83,23 +86,13 @@ export MY_HOSTNAME=$(cat /etc/hostname)
 export MY_ROOT="$HOME/my"
 export MY_MEDIA="$MY_ROOT/media"
 export MY_SESSIONS_ROOT="$MY_MEDIA/text/other/sessions"
-export MY_SERVER_NAME="vau.place"
-export MY_EMAIL_SERVER_NAME="vauplace.com"
+
+if test -f "$MY_ROOT/var/private-profile.sh"
+then . "$MY_ROOT/var/private-profile.sh"
+fi
 
 # Export locale so terminals and tmux are fancy
 # export LC_ALL='en_US.UTF-8'
-
-if test -z "$COLUMNS"
-then
-	if command -v tput 1>/dev/null 2>/dev/null
-	then
-		COLUMNS=$(tput cols 2>/dev/null)
-		if test "$?" = 0
-		then export COLUMNS
-		else unset COLUMNS
-		fi
-	fi
-fi
 
 if command -v ec 1>/dev/null 2>/dev/null && command -v emacs 1>/dev/null 2>/dev/null
 then export EDITOR=ec
@@ -128,6 +121,3 @@ then
 			;;
 	esac
 fi
-
-export NVM_DIR="$HOME/.nvm"
-test -s "$NVM_DIR/nvm.sh" && \. "$NVM_DIR/nvm.sh"  # This loads nvm
