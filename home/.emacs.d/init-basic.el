@@ -985,10 +985,10 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
   (apply orig-fun args)
   (let* ((proc (car args))
          (buffer (process-buffer proc)))
-
-    (when (assq (intern (buffer-name buffer))
-                my-term-open-alist)
-      (kill-buffer buffer))))
+    (when (equalp buffer (current-buffer))
+      (when (assq (intern (buffer-name buffer))
+                  my-term-open-alist)
+        (kill-buffer buffer)))))
 
 (advice-add 'term-sentinel :around #'my-term-sentinel-advice)
 
