@@ -92,7 +92,10 @@ Bcc:
 (defun my-path-join (&rest args)
   (my-path-join* args))
 
-(defconst emacs-root-init-dir (file-name-directory load-file-name))
+(unless (boundp 'emacs-root-init-dir)
+  (defconst emacs-root-init-dir
+    (file-name-directory load-file-name)))
+
 (defun emacs-root-join (&rest args)
   (apply 'my-path-join (cons emacs-root-init-dir args)))
 
