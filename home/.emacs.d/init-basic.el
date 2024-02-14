@@ -938,8 +938,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 (defun term-mode () nil) ;; SUPRESS WARNING
 (defun term-char-mode () nil) ;; SUPRESS WARNING
 
-(defvar my-term-self-id nil)
-(defvar my-term-open-list (list))
+(defvar my-term-open-alist (list))
 
 (defun my-term-load ()
   "Load ansi-terminal and redefine some variables for it."
@@ -965,7 +964,16 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
              (cdr arguments))))
     (term-mode)
     (term-char-mode)
-    (switch-to-buffer (my-term-bufname name))))
+    (switch-to-buffer (my-term-bufname name))
+    (add-hook 'kill-buffer-hook 'my-term-kill-hook nil t)))
+
+(defun my-term-kill-hook (&rest args)
+  "Remove buffer id on terminal close"
+
+  (setq my-term-open-alist
+        (assq-delete-all
+         (intern (buffer-name))
+         my-term-open-alist)))
 
 (defun my-term-sentinel-advice
     (orig-fun &rest args)
@@ -974,8 +982,9 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
   (apply orig-fun args)
   (let* ((proc (car args))
          (buffer (process-buffer proc)))
-    (when (numberp my-term-self-id)
-      (setq my-term-open-list (delete my-term-self-id my-term-open-list))
+
+    (when (assq (intern (buffer-name buffer))
+                my-term-open-alist)
       (kill-buffer buffer))))
 
 (advice-add 'term-sentinel :around #'my-term-sentinel-advice)
@@ -1000,8 +1009,9 @@ The buffer is in Term mode;"
   "Unsafely start a new term indexed by self-id"
   (let ((name (my-term-indexed-name self-id)))
     (my-term-taged name)
-    (setq my-term-open-list (cons self-id my-term-open-list))
-    (setq-local my-term-self-id self-id)))
+    (setq my-term-open-alist
+          (cons (cons (intern (my-term-bufname name)) self-id)
+                my-term-open-alist))))
 
 (defun my-smallest-missing (L1)
   "Return the smallest number that is not in L1 and is greater than 0."
@@ -1011,13 +1021,15 @@ The buffer is in Term mode;"
     n))
 
 (defun my-term-get-free-index ()
-  (my-smallest-missing my-term-open-list))
+  (my-smallest-missing
+   (mapcar #'cdr my-term-open-alist)))
 
 (defun my-term-indexed (self-id)
   "Start or open a term indexed by self-id"
-  (if (member self-id my-term-open-list)
-      (switch-to-buffer (my-term-indexed-bufname self-id))
-    (my-term-unsafe self-id)))
+  (let ((name (my-term-indexed-bufname self-id)))
+    (if (assq (intern name) my-term-open-alist)
+        (switch-to-buffer name)
+      (my-term-unsafe self-id))))
 
 (defun my-term-new ()
   "Start a new term indexed by unique index"
@@ -1044,7 +1056,7 @@ The buffer is in Term mode;"
   "Focuses on the last opened terminal,
  or creates a new one, if there are no open terminals."
   (interactive)
-  (if (null my-term-open-list)
+  (if (null my-term-open-alist)
       (my-term-new)
     (let* ((name (buffer-name (window-buffer (selected-window))))
            (all-buffers (mapcar #'buffer-name (buffer-list)))
