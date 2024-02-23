@@ -201,6 +201,7 @@
 
 (define-packages drivers
   xf86-input-wacom ;; wacom tablet driver
+  v4l2loopback-linux-module ;; virtual cameras module
   libwacom ;; wacom tablet library
   ;; wacomtablet ;; KDE thingy
   )

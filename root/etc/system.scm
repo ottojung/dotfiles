@@ -3,10 +3,13 @@
 
 (use-modules (gnu))
 (use-modules ((gnu packages shells) #:select (dash)))
+(use-modules ((gnu packages linux) #:select (v4l2loopback-linux-module)))
 (use-modules ((gnu system setuid) #:select (setuid-program-program)))
 (use-modules ((guix packages) #:select (package-name)))
 (use-modules (nongnu packages linux)) ;; propriatary channels
 (use-modules (srfi srfi-1))
+(use-package-modules linux)
+(use-service-modules linux)
 
 (use-service-modules
   cups
@@ -21,6 +24,7 @@
    ;; propriatary kernel + firmware
    (kernel linux)
    (firmware (list linux-firmware))
+   (kernel-loadable-modules (list v4l2loopback-linux-module))
 
    ;; (locale "en_US.UTF-8")
    (timezone "US/Pacific")
@@ -138,8 +142,13 @@
 (define (add-gnome-service packages)
   (cons (service gnome-desktop-service-type) packages))
 
+(define (add-kernel-modules packages)
+  (cons
+   (service kernel-module-loader-service-type '("v4l2loopback"))
+   packages))
+
 (define add-my-desktop-services
-  (compose add-gnome-service add-libvirt-services set-display-manager modify-special-files))
+  (compose add-gnome-service add-libvirt-services set-display-manager modify-special-files add-kernel-modules))
 
 (define my-system-package-names
   '("dash"
@@ -147,6 +156,7 @@
     "glibc-utf8-locales-2.29"
     "localed"
     "nss-certs"
+    "v4l2loopback-linux-module"
     "fontconfig"
     "font-google-noto"
     "font-google-noto-serif-cjk"
