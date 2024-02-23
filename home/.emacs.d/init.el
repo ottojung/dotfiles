@@ -5,7 +5,7 @@
 
 (customize-set-variable 'grep-command "grep --color -HRIn")
 (customize-set-variable 'grep-use-null-device nil)
-(customize-set-variable 'org-ai-default-chat-model "gpt-4-1106-preview")
+(customize-set-variable 'org-ai-default-chat-model "gpt-4")
 (customize-set-variable 'markdown-fontify-code-blocks-natively t)
 
 (let ((private (emacs-root-join "private.el")))
