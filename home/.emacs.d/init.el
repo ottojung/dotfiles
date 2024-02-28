@@ -141,11 +141,6 @@
   :diminish flycheck-mode)
 
 
-(use-package flymake-ruff
-  :ensure t
-  :hook (python-mode . flymake-ruff-load))
-
-
 (let ((translate-path (emacs-root-join "custom" "translate.el" "translate.el")))
   (when (file-exists-p translate-path)
     (load translate-path)
