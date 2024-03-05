@@ -7,6 +7,7 @@
 (customize-set-variable 'grep-use-null-device nil)
 (customize-set-variable 'org-ai-default-chat-model "gpt-4")
 (customize-set-variable 'markdown-fontify-code-blocks-natively t)
+(customize-set-variable 'global-auto-revert-mode t)
 
 (let ((private (emacs-root-join "private.el")))
   (when (file-exists-p private)

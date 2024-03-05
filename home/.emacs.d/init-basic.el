@@ -47,7 +47,6 @@ Bcc:
  '(truncate-lines t)
  '(vc-follow-symlinks t)
  '(warning-suppress-types '((comp)))
- '(global-auto-revert-mode t)
  '(whitespace-style '(face trailing tab-mark)))
 
 (custom-set-faces
