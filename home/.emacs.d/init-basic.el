@@ -984,7 +984,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
   (apply orig-fun args)
   (let* ((proc (car args))
          (buffer (process-buffer proc)))
-    (when (equalp buffer (current-buffer))
+    (when (equal buffer (current-buffer))
       (when (assq (intern (buffer-name buffer))
                   my-term-open-alist)
         (kill-buffer buffer)))))
