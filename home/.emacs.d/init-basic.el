@@ -94,6 +94,17 @@ Bcc:
   (defconst emacs-root-init-dir
     (file-name-directory load-file-name)))
 
+(unless (boundp 'MY-EMACS-START-TIME)
+  (defconst MY-EMACS-START-TIME
+    (string-to-number
+     (format-time-string "%s" (current-time)))))
+
+(defconst my-command-line-command
+  (mapconcat 'shell-quote-argument command-line-args " "))
+
+(defconst my-starting-working-directory
+  default-directory)
+
 (defun emacs-root-join (&rest args)
   (apply 'my-path-join (cons emacs-root-init-dir args)))
 

@@ -45,7 +45,8 @@
 
 (defconst MY-EMACS-SERVER-NAME
   (or (getenv "EMACS_SERVER_NAME")
-      (concat "emacs-server-" (number-to-string (random)))))
+      (concat "my-emacs-server-"
+              (number-to-string MY-EMACS-START-TIME))))
 
 (setenv "EMACS_SERVER_NAME" MY-EMACS-SERVER-NAME)
 
@@ -67,7 +68,9 @@
 (defun my-create-server-file ()
   (my-create-file
    (my-get-server-file)
-   (format "%s" (emacs-pid))))
+   (format
+    "%s\n%s\n%d\n%s\n%s\n"
+    (emacs-pid) MY-EMACS-SERVER-NAME MY-EMACS-START-TIME my-command-line-command my-starting-working-directory)))
 
 (my-create-server-file)
 (add-hook 'kill-emacs-hook 'my-delete-server-file)
