@@ -19,7 +19,7 @@ initialize_home: $(DIRECTORIES)
 	./stowy $(STOWYFLAGS) run home $(HOME)
 
 compile_emacs:
-	git -C home/.emacs.d clean -x -- '**/*.elc'
+	git -C home/.emacs.d clean -x -f -- '**/*.elc'
 	emacs --batch --eval '(byte-recompile-directory "home/.emacs.d/" 0 t)' || true
 
 $(DIRECTORIES):
