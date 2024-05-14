@@ -16,7 +16,7 @@ recentf
 recentf~
 eshell/history
 eshell/lastdir
-
+tramp
 
 # lisp compiled
 *.elc
@@ -34,4 +34,3 @@ transient
 
 # my private stuff
 private.el
-
