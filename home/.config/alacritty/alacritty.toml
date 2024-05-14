@@ -1,0 +1,93 @@
+live_config_reload = false
+
+[bell]
+animation = "EaseOutExpo"
+color = "0xffffff"
+duration = 0
+
+[colors]
+draw_bold_text_with_bright_colors = false
+
+[colors.bright]
+black = "0x545454"
+blue = "0x64b5f6"
+cyan = "0x26c6da"
+green = "0x8bc34a"
+magenta = "0xba68c8"
+red = "0xef5350"
+white = "0xe0e0e0"
+yellow = "0xffeb3b"
+
+[colors.dim]
+black = "0x333333"
+blue = "0x6699cc"
+cyan = "0x66cccc"
+green = "0x99cc99"
+magenta = "0xcc99cc"
+red = "0xf2777a"
+white = "0xdddddd"
+yellow = "0xffcc66"
+
+[colors.normal]
+black = "0x000000"
+blue = "0x1565c0"
+cyan = "0x00838f"
+green = "0x558b2f"
+magenta = "0x6a1e9a"
+red = "0xc62828"
+white = "0xf2f2f2"
+yellow = "0xf9a825"
+
+[colors.primary]
+background = "0x000000"
+
+[cursor]
+style = "Block"
+unfocused_hollow = true
+
+[font]
+size = 14.0
+
+[[hints.enabled]]
+command = "xdg-open"
+post_processing = true
+regex = "(ipfs:|ipns:|magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)[^\u0000-\u001F\u007F-<>\"\\s{-}\\^⟨⟩`]+"
+
+[hints.enabled.binding]
+key = "U"
+mods = "Control|Shift"
+
+[hints.enabled.mouse]
+enabled = true
+mods = "Control|Shift"
+
+[[keyboard.bindings]]
+action = "None"
+key = "B"
+mods = "Control|Shift"
+
+[[keyboard.bindings]]
+action = "IncreaseFontSize"
+key = "Equals"
+mods = "Command"
+
+[[keyboard.bindings]]
+action = "DecreaseFontSize"
+key = "Minus"
+mods = "Command"
+
+[mouse]
+hide_when_typing = true
+
+[selection]
+save_to_clipboard = false
+semantic_escape_chars = " "
+
+[window]
+dynamic_padding = false
+dynamic_title = true
+opacity = 0.95
+
+[window.padding]
+x = 1
+y = 1
