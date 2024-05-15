@@ -78,6 +78,7 @@
   weechat ;; CLI IRC client
   docker docker-cli docker-compose ;; Docker stuff
   ;; podman ;; podman stuff. NOTE: does not work on Guix at the moment.
+  restic ;; backup program with deduplication and incrementality.
   )
 
 (define-packages compilers
