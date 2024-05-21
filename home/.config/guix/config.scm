@@ -15,6 +15,7 @@
 (use-package-modules haskell haskell-xyz wm gcc)
 
 (define-packages cli-tools
+  findutils ;; literally the "find" command
   time ;; measure time taken by programs
   pv ;; measures progress of the unix pipe
   man-db ;; default manual
