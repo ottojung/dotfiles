@@ -16,6 +16,7 @@
 
 (define-packages cli-tools
   findutils ;; literally the "find" command
+  less ;; literally the "less" command
   time ;; measure time taken by programs
   pv ;; measures progress of the unix pipe
   man-db ;; default manual
