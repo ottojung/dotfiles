@@ -2,8 +2,10 @@
 
 SFLAGS =
 
+TARGET = $(HOME)
+
 ROOT =
-DIRECTORIES = $(HOME)/my $(HOME)/.config $(HOME)/.local/share $(HOME)/Downloads $(HOME)/Pictures $(HOME)/.config/fish
+DIRECTORIES = $(TARGET)/my $(TARGET)/.config $(TARGET)/.local/share $(TARGET)/Downloads $(TARGET)/Pictures $(TARGET)/.config/fish
 
 all:
 	@ echo "run '$(MAKE) root' as root followed by '$(MAKE) home' as a regular user"
@@ -16,11 +18,14 @@ check_requisites:
 	command -v emacs || ( echo '"emacs" is needed to configure emacs' ; exit 1 )
 
 initialize_home: $(DIRECTORIES)
-	./stowy $(STOWYFLAGS) run home $(HOME)
+	./stowy $(STOWYFLAGS) run home $(TARGET)
 
 compile_emacs:
 	git -C home/.emacs.d clean -x -f -- '**/*.elc'
 	emacs --batch --eval '(byte-recompile-directory "home/.emacs.d/" 0 t)' || true
+
+miyka-initialize:
+	$(MAKE) TARGET=$(MIYKA_REPO_HOME) initialize_home
 
 $(DIRECTORIES):
 	mkdir -p $@
