@@ -26,7 +26,7 @@ compile_emacs:
 
 miyka-initialize:
 	$(MAKE) TARGET=$(MIYKA_REPO_HOME) directories
-	STOWY_LINK_CMD="scripts/miyka-link.sh" ./stowy --overwrite --unsafe run home $(MIYKA_REPO_HOME)
+	STOWY_RECURSE_CMD="scripts/miyka-recurse.sh" ./stowy --keep-going run home $(MIYKA_REPO_HOME)
 
 directories: $(DIRECTORIES)
 
