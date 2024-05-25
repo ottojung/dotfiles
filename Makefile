@@ -31,7 +31,8 @@ miyka-initialize:
 	$(MAKE) TARGET=$(MIYKA_REPO_HOME) directories
 	STOWY_RECURSE_CMD="scripts/miyka-recurse.sh" ./stowy --keep-going run home $(MIYKA_REPO_HOME)
 
-miyka-uninitialize: uninitialize_home
+miyka-uninitialize:
+	$(MAKE) STOWY_RECURSE_CMD="scripts/miyka-recurse.sh" uninitialize_home
 
 directories: $(DIRECTORIES)
 
