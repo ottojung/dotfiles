@@ -25,7 +25,7 @@ compile_emacs:
 	emacs --batch --eval '(byte-recompile-directory "home/.emacs.d/" 0 t)' || true
 
 miyka-initialize:
-	$(MAKE) TARGET=$(MIYKA_REPO_HOME) initialize_home
+	$(MAKE) TARGET=$(MIYKA_REPO_HOME) STOWY_LINK_CMD="scripts/miyka-link.sh" initialize_home
 
 $(DIRECTORIES):
 	mkdir -p $@
