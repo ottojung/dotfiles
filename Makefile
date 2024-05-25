@@ -20,6 +20,9 @@ check_requisites:
 initialize_home: directories
 	./stowy $(STOWYFLAGS) run home $(TARGET)
 
+uninitialize_home: directories
+	STOWY_LINK_CMD="scripts/unlink.sh" ./stowy $(STOWYFLAGS) --quiet --overwrite --keep-going run home $(TARGET)
+
 compile_emacs:
 	git -C home/.emacs.d clean -x -f -- '**/*.elc'
 	emacs --batch --eval '(byte-recompile-directory "home/.emacs.d/" 0 t)' || true
@@ -27,6 +30,8 @@ compile_emacs:
 miyka-initialize:
 	$(MAKE) TARGET=$(MIYKA_REPO_HOME) directories
 	STOWY_RECURSE_CMD="scripts/miyka-recurse.sh" ./stowy --keep-going run home $(MIYKA_REPO_HOME)
+
+miyka-uninitialize: uninitialize_home
 
 directories: $(DIRECTORIES)
 
