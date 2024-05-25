@@ -17,7 +17,7 @@ home: check_requisites check-user initialize_home compile_emacs
 check_requisites:
 	command -v emacs || ( echo '"emacs" is needed to configure emacs' ; exit 1 )
 
-initialize_home: $(DIRECTORIES)
+initialize_home: directories
 	./stowy $(STOWYFLAGS) run home $(TARGET)
 
 compile_emacs:
@@ -25,7 +25,10 @@ compile_emacs:
 	emacs --batch --eval '(byte-recompile-directory "home/.emacs.d/" 0 t)' || true
 
 miyka-initialize:
-	$(MAKE) TARGET=$(MIYKA_REPO_HOME) STOWY_LINK_CMD="scripts/miyka-link.sh" initialize_home
+	$(MAKE) TARGET=$(MIYKA_REPO_HOME) directories
+	STOWY_LINK_CMD="scripts/miyka-link.sh" ./stowy --overwrite --unsafe run home $(MIYKA_REPO_HOME)
+
+directories: $(DIRECTORIES)
 
 $(DIRECTORIES):
 	mkdir -p $@
@@ -36,7 +39,7 @@ check-user:
 	else echo Ok, you are a regular user 1>&2 ; \
 	fi
 
-.PHONY: all home finalize_home initialize_home root dirs check-user
+.PHONY: all home finalize_home initialize_home root dirs check-user directories
 
 include root.make
 
