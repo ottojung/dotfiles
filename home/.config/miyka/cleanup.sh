@@ -13,6 +13,8 @@ chromium_cleanup() {
 	find -iname '*cache*' -not -path "./Default/Extensions/*" -exec rm -rf -v {} \;
 }
 
+cd -- "$MIYKA_REPO_HOME"
+
 cd -- ".config/chromium" && chromium_cleanup
 
 if test -d ".mozilla"
