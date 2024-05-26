@@ -16,7 +16,10 @@
 
 (define-packages cli-tools
   findutils ;; literally the "find" command
+  procps ;; commands like "ps", "top", "pkill", etc
   less ;; literally the "less" command
+  ncurses ;; provides "clear" and "reset"
+  dash ;; a POSIX-compliant shell
   time ;; measure time taken by programs
   pv ;; measures progress of the unix pipe
   man-db ;; default manual
@@ -48,7 +51,7 @@
   )
 
 (define-packages cli-programs
-  vim ;; text editor
+  nvi ;; text editor "vi"
   git ;; version control system
   fish ;; shell
   htop ;; process monitor
@@ -212,8 +215,7 @@
 (define-packages guix-packages
   gnupg ;; gpg for pgs
   pinentry ;; needed for GPG for some reason
-  ncurses ;; provides "clear" and "reset"
-  dash ;; bash replacement
+  nss-certs ;; HTTPS certificates
   glibc-locales ;; provides locales
   glibc-utf8-locales-2.29 ;; provides utf8 locales
   ;; localed ;; provides systemd's localectl command
