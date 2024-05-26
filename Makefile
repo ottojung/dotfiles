@@ -1,7 +1,5 @@
 
 
-SFLAGS =
-
 TARGET = $(HOME)
 
 ROOT =
