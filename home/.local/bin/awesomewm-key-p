@@ -1,0 +1,2 @@
+#! /bin/sh
+notify-send --urgency=low -- "Hello you pressed me" "And this is the body $(cat /dev/urandom | base32 | head -c 5)"

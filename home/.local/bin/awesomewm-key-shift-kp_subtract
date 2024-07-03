@@ -1,0 +1,11 @@
+#! /bin/sh
+
+if pgrep --full cmus 1>/dev/null
+then
+	cmus-remote --vol "-10%"
+	vol=$(cmus-remote -Q | grep '^set vol_.*')
+	notify-send --urgency=low -- "cmus volume down" "$vol"
+else
+	mpc volume -10
+	notify-send --urgency=low -- "mpd volume down" "$(mpc volume | awk -F ':' '{print $2}')"
+fi

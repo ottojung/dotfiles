@@ -1,0 +1,5 @@
+#!/bin/sh
+if which fish >/dev/null
+then export SHELL=$(which fish)
+fi
+EMACS_SERVER_NAME=fast emacs --daemon $@

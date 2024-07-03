@@ -1,0 +1,55 @@
+#!/bin/sh
+
+if which dash 1>/dev/null 2>/dev/null
+then export SHELL=$(which dash)
+else export SHELL=/bin/sh
+fi
+
+env 2>&1 > /tmp/executing-env.txt
+
+NAME="$1"
+
+if tmux ls | grep -q -e "$NAME"
+then
+	echo "Initialize session detected, not running again"
+	exit 0
+fi
+
+# if screen -ls | grep -q -e "$NAME"
+# then
+# 	echo "Initialize session detected, not running again"
+# 	exit 0
+# fi
+
+echo "NAME: $NAME"
+shift
+
+i=0
+for arg in "$@"
+do
+	WIN=$(echo "$arg" | sed -e 's/\s*$// ; s/my-// ; s/daemon/d/g' | head -c 15)
+
+	# # screen version
+	# # Spawn window
+	# if test $i -eq 0
+	# then screen -S "$NAME" -s "$SH" -t "$WIN" -A -d -m
+	# else screen -S "$NAME" -s "$SH" -X screen -t "$WIN"
+	# fi
+
+	# # Stuff command into session window
+	# screen -S "$NAME" -p $i -X stuff "$arg^M"
+
+	# tmux version
+	if test $i -eq 0
+	then
+		tmux start-server
+		tmux new-session -d -s "$NAME" -n "$WIN"
+	else
+		tmux new-window -t "$NAME:$i" -n "$WIN"
+	fi
+
+	tmux send-keys -t "$NAME:$i" "$arg" ENTER
+
+	i=$((i + 1))
+done
+

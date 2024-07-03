@@ -1,0 +1,72 @@
+#! /bin/sh
+
+# Usage:
+#   eval $(my-require program1.exe program1.nix program1.guix program2.nix library1.nix library2.guix library3.guix)
+#
+# This will make sure all programs and libraries are present
+
+ENVER="my-env --export"
+CACHE=1
+
+case "$1" in
+	--envonly)
+		ENVER="env"
+		shift
+		;;
+	--standard)
+		ENVER="my-env --export"
+		shift
+		;;
+	--cache)
+		CACHE=1
+		shift
+		;;
+	--no-cache)
+		CACHE=0
+		shift
+		;;
+esac
+
+CACHEPREFIX="$MY_ROOT/tmp/my-require:"
+
+WHICHES=$(echo "$@" | tr ' ' '\n' | grep -E '\.exe$' | xargs -I% sh -c 'echo "%" | my-split-extension | head -n 1' | tr '\n' ' ')
+
+if test -n "$WHICHES" && my-require-check --verbose=bad $WHICHES
+then
+	echo 'Found all packages, not installing anything...' 1>&2
+	exit 0
+fi
+
+if test -n "$NIX_PATH"
+then
+	PACKAGES="$(echo "$@" | tr ' ' '\n' | grep -E '\.nix$' | xargs -I% sh -c 'echo "%" | my-split-extension | head -n 1' | tr '\n' ' ' | sed 's/^[ ].*//g ; s/[ ].*\$//g')"
+	if test -z "$PACKAGES"
+	then
+		echo 'The system is nix, but no .nix package candidates provided. No way to isntall. Error' 1>&2
+		exit 1
+	fi
+
+	PROGRAM="$ENVER | tee '$CACHEPREFIX$PACKAGES' ; my-require-check --verbose=bad $WHICHES"
+
+	if test "$CACHE" -eq 1 && test -f "$CACHEPREFIX$PACKAGES"
+	then cat "$CACHEPREFIX$PACKAGES" ; echo "[Cached]" 1>&2
+	else exec nix-shell --packages $PACKAGES --run "$PROGRAM"
+	fi
+fi
+
+if test -d /gnu/store
+then
+	PACKAGES="$(echo "$@" | tr ' ' '\n' | grep -E '\.guix$' | xargs -I% sh -c 'echo "%" | my-split-extension | head -n 1' | tr '\n' ' ' | sed 's/^[ ].*//g ; s/[ ].*\$//g')"
+	if test -z "$PACKAGES"
+	then
+		echo 'The system is guix, but no .guix package candidates provided. No way to isntall. Error' 1>&2
+		exit 1
+	fi
+
+	PROGRAM="$ENVER | tee '$CACHEPREFIX$PACKAGES' ; my-require-check --verbose=bad $WHICHES"
+
+	if test "$CACHE" -eq 1 && test -f "$CACHEPREFIX$PACKAGES"
+	then cat "$CACHEPREFIX$PACKAGES" ; echo "[Cached]" 1>&2
+	else exec guix environment --ad-hoc $PACKAGES -- sh -c "$PROGRAM"
+	fi
+fi

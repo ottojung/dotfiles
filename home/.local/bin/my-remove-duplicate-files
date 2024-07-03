@@ -1,0 +1,77 @@
+#! /usr/bin/env guile
+!#
+
+(use-modules (euphrates common))
+
+(when (parse-cli-get-flag "h" "help")
+  (let ((path (get-current-program-path)))
+    (dprintln "examples:")
+    (dprintln "")
+    (dprintln " find | ~a" path)
+    (dprintln " ~a . -r" path)
+    (dprintln "")
+    (dprintln " ls | ~a" path)
+    (dprintln " ~a ." path))
+  (exit 1))
+
+(define shell-log? (parse-cli-get-flag "v" "verbose"))
+(define dry-run? (parse-cli-get-flag "n" "dry-run"))
+(define recursive? (parse-cli-get-flag "r" "recursive"))
+(define async? (parse-cli-get-flag "a" "async"))
+
+(define (start)
+  (let* ((h (make-hash-table))
+         (files
+          (let ((positional-args (parse-cli-get-list #f)))
+            (if (null? positional-args)
+                (let* ((input (read-all-port (current-input-port)))
+                       (lns (lines input))
+                       (filtered
+                        (filter (compose not string-null?)
+                                lns)))
+                  filtered)
+                (let* ((directory (car positional-args))
+                       (func (if recursive?
+                                 directory-files-rec
+                                 directory-files)))
+                  (map car (func directory))))))
+
+         (get-hash
+          (lambda (file)
+            (catch-any
+             (lambda ()
+               (let ((ret (sh-re
+                           (stringf
+                            "md5sum --binary '~a'" file))))
+                 (car (words ret))))
+             (lambda errs (make-unique))))) ;; NOTE: ignoring errors
+
+         (check-sync
+          (lambda (file)
+            (let* ((hsum (get-hash file))
+                   (existing (hash-ref h hsum #f)))
+              (if existing
+                  (begin
+                    (dprintln "'~a' duplicates '~a'" file existing)
+                    (unless dry-run?
+                      (hash-set! h hsum #f)
+                      (delete-file existing)))
+                  (hash-set! h hsum file)))))
+
+         (check
+          (lambda (file)
+            (if async?
+                (dynamic-thread-spawn
+                 (lambda () (check-sync file)))
+                (check-sync file)))))
+
+    (for-each check files)))
+
+(define (beg)
+  (with-np-thread-env#non-interruptible
+   (start)))
+
+(if shell-log?
+    (beg)
+    (with-no-shell-log (beg)))
+

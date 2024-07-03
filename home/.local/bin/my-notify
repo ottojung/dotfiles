@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if test -n "$*"
+then notify-send --urgency critical -- "$*"
+else notify-send --urgency critical "BEEEP"
+fi
+
+exec my-beep

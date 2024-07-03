@@ -1,0 +1,20 @@
+#! /usr/bin/env guile
+!#
+
+(define in (current-input-port))
+(define out (current-output-port))
+
+(define hh (make-hash-table))
+
+(let lp ((buf (list)))
+  (let ((c (read-char in)))
+    (cond
+      ((eof-object? c) 0)
+      ((eq? c #\newline)
+       (let ((line (list->string (reverse (cons #\newline buf)))))
+         (unless (hash-ref hh line)
+           (hash-set! hh line #t)
+           (display line out))
+         (lp (list))))
+      (else
+       (lp (cons c buf))))))

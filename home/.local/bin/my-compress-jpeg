@@ -1,0 +1,90 @@
+#! /bin/sh
+
+eval $(my-require jpegoptim.exe convert.exe jpegoptim.nix imagemagick.nix jpegoptim.guix imagemagick.guix)
+
+INPUT=
+NEWNAME=
+QUALITY=70
+PIXELS=786432 # 1024x768
+
+while test -n "$*"
+do
+	case "$1" in
+		--input=*)
+			INPUT=$(echo "$1" | sed 's/.*=//')
+			;;
+		--in=*)
+			INPUT=$(echo "$1" | sed 's/.*=//')
+			;;
+		-i)
+			shift
+			INPUT="$1"
+			;;
+
+		--output=*)
+			NEWNAME=$(echo "$1" | sed 's/.*=//')
+			;;
+		--out=*)
+			NEWNAME=$(echo "$1" | sed 's/.*=//')
+			;;
+		-o)
+			shift
+			NEWNAME="$1"
+			;;
+
+		--quality=*)
+			QUALITY=$(echo "$1" | sed 's/.*=//')
+			;;
+		--pixels=*)
+			PIXELS=$(echo "$1" | sed 's/.*=//')
+			;;
+
+		*)
+			echo 1>&2 "Unrecognized argument '$1'"
+			exit 1
+			;;
+	esac
+	shift
+done
+
+if test -z "$INPUT"
+then
+	echo "No input specified. Use --input=path/to/file to specify the file" 1>&2
+	exit 1
+fi
+
+if test -z "$NEWNAME"
+then
+	OUT=$(echo "$INPUT" | my-split-extension)
+	NAME=$(echo "$OUT" | head -n 1)
+	EXT=$(echo "$OUT" | tail -n 1)
+	NEWNAME="$NAME.Z$EXT"
+fi
+
+INPUT0="$INPUT"
+TEMPNAME="/tmp/$(cat /dev/urandom | base32 | head -c 20).jpeg"
+
+if test -n "$PIXELS"
+then
+	if convert -verbose -resize "$PIXELS@" "$INPUT" "$TEMPNAME"
+	then INPUT="$TEMPNAME"
+	else echo 1>&2 "Could not resize '$INPUT'. Continuing with original size compression"
+	fi
+fi
+
+if jpegoptim --verbose --stdout --force --max "$QUALITY" "$INPUT" > "$NEWNAME"
+then
+	echo 1>&2 "Compression of '$INPUT0' succeeded"
+	CODE=0
+else
+	echo 1>&2 "Compression of '$INPUT0' failed"
+	CODE=1
+fi
+
+if test $(du "$INPUT0" | awk '{print $1}') -le $(du "$NEWNAME" | awk '{print $1}')
+then cp "$INPUT0" "$NEWNAME"
+fi
+
+rm -f "$TEMPNAME"
+
+exit $CODE

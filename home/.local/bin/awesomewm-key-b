@@ -1,0 +1,5 @@
+#! /bin/sh
+# exec my-browser-open-link
+# exec my-browser-open-link $(xclip -selection c -o)
+# exec chromium --incognito
+exec icecat

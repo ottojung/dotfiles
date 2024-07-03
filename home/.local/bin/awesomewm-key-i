@@ -1,0 +1,2 @@
+#!/bin/sh
+exec ecc --eval '(notmuch-search "tag:unread")'

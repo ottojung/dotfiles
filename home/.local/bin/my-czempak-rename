@@ -1,0 +1,21 @@
+#! /bin/sh
+
+FROM="$1"
+TO="$2"
+TMPNAME=$(cat /dev/urandom | base32 | head -c 10)
+TMP="/tmp/my-czempak-rename-$TMPNAME"
+
+find . -type f -not -path '*/.*' | while IFS= read -r FILE
+do
+	NEWNAME="$(printf '%s' "$FILE" | sed -e "s#$FROM#$TO#g")"
+	if ! test "$FILE" = "$NEWNAME"
+	then mv -v "$FILE" "$NEWNAME"
+	fi
+
+	sed -e "s#$FROM#$TO#g" "$NEWNAME" > "$TMP"
+	if ! diff -q "$NEWNAME" "$TMP"
+	then cp "$TMP" "$NEWNAME"
+	fi
+done
+
+rm -f "$TMP"

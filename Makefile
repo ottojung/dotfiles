@@ -3,7 +3,7 @@
 TARGET = $(HOME)
 
 ROOT =
-DIRECTORIES = $(TARGET)/my $(TARGET)/.config $(TARGET)/.local/share $(TARGET)/.config/fish
+DIRECTORIES = $(TARGET)/my $(TARGET)/.config $(TARGET)/.local/bin $(TARGET)/.local/share $(TARGET)/.config/fish
 
 all:
 	@ echo "run '$(MAKE) root' as root followed by '$(MAKE) home' as a regular user"

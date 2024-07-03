@@ -1,0 +1,40 @@
+#! /bin/sh
+
+LOGFILE="/tmp/my-email-daemon-log"
+FAILCOUNT=0
+
+while true
+do
+	if nice -n 19 my-email-sync
+	then FAILCOUNT=0
+	else FAILCOUNT=$((FAILCOUNT + 1))
+	fi
+
+	if test "$FAILCOUNT" -gt 10
+	then
+		my-notify "Email sync failed!"
+		FAILCOUNT=0
+	fi
+
+	notmuch show --body=false --format=json -- tag:unread \
+		| jq '.[][][] | select(type == "object") | select(.headers | has("From")) | select(has("filename"))' \
+		| sed "s/\t/   /g" \
+		| jq -r '[.headers.From, .headers.Subject, .filename[0]] | @tsv' \
+		| sed 's/</[/g ; s/>/]/g' \
+		> "$LOGFILE"
+
+	FORMATTED=""
+	while IFS=$'\t' read -r from subject filename
+	do
+		if grep -q 'X-Original-To: list\.' "$filename" || grep -q 'Delivered-To: list\.' "$filename"
+		then continue
+		fi
+
+		FORMATTED="$FORMATTED\nFrom: $from\nSubject: $subject\n"
+	done < "$LOGFILE"
+
+	test -z "$FORMATTED" || notify-send -- "New emails" "$FORMATTED"
+
+	printf "Timestamp: " ; date
+	sleep 300
+done

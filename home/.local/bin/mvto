@@ -1,0 +1,9 @@
+#! /bin/sh
+
+DEST="$1"
+if ! test -d "$DEST"
+then mkdir -p "$DEST"
+fi
+
+shift
+exec mv -v "$@" "$DEST"

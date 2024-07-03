@@ -1,0 +1,11 @@
+#! /bin/sh
+
+if pgrep --full cmus 1>/dev/null
+then
+	cmus-remote --next
+	song=$(basename "$(cmus-remote -Q | grep '^file .*' | sed 's/file // ; s/\.mp3//')")
+	notify-send --urgency=low -- "cmus next" "$song"
+else
+	mpc next
+	notify-send --urgency=low -- "mpd next" "$(mpc current)"
+fi

@@ -1,0 +1,11 @@
+#! /bin/sh
+
+mpd
+mpc pause
+
+sleep 5
+mpc pause
+sleep 1
+mpc repeat on
+sleep 1
+mpc random on

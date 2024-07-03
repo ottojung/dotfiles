@@ -1,0 +1,16 @@
+#! /bin/sh
+
+if command -v slock 1>/dev/null 2>/dev/null
+then slock
+else
+    if command -v xscreensaver-command 1>/dev/null 2>/dev/null
+    then xscreensaver-command -lock
+    else
+        if command -v slimlock 1>/dev/null 2>/dev/null
+        then slimlock
+        else
+            echo "Neither slimlock, slock nor xscreensaver-command present! Cannot lock the screen." 1>&2
+            notify-send --urgency=critical "Neither slimlock, slock nor xscreensaver-command present! Cannot lock the screen."
+        fi
+    fi
+fi

@@ -1,0 +1,9 @@
+#! /bin/sh
+
+if which pamixer 1>/dev/null 2>/dev/null
+then pamixer --allow-boost --get-volume
+else
+    NAME="$(pactl --format=json info | jq --raw-output '.default_sink_name')"
+    SINK=$(pactl --format=json list sinks | jq --raw-output ".[] | select(.name == \"$NAME\") | .index")
+    pactl --format=json list sinks | jq --raw-output ".[] | select(.index == $SINK) | .volume | .[] | .value_percent" | head -n 1 | grep -o '[0-9]*'
+fi

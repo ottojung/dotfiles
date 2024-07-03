@@ -1,0 +1,29 @@
+#! /bin/sh
+
+# If x-terminal-emulator is invoked from emacs, then some shells adopt
+# to emacs and incidentally produce wierd behaviour for non-emacs terminals.
+# Unsetting INSIDE_EMACS tells that emacs is not involed here.
+unset INSIDE_EMACS
+
+# case "$*" in
+# 	"") exec emacsclient --create-frame --socket-name fast --eval "(my-term)" ;;
+# 	*) exec mlterm --sbmod none "$@" ;;
+# esac
+
+# backup terminals, unused for now
+if command -v alacritty 1>/dev/null 2>/dev/null
+then exec alacritty "$@"
+fi
+
+# backup terminals, unused for now
+if command -v lilyterm 1>/dev/null 2>/dev/null
+then exec lilyterm "$@"
+fi
+
+if command -v kitty 1>/dev/null 2>/dev/null
+then exec kitty "$@"
+fi
+
+if command -v xterm 1>/dev/null 2>/dev/null
+then exec xterm "$@"
+fi

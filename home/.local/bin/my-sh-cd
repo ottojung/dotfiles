@@ -1,0 +1,5 @@
+#! /bin/sh
+FILENAME="$1"
+shift
+cd "$(dirname "$FILENAME")"
+exec /bin/sh "$(basename "$FILENAME")" "$@"

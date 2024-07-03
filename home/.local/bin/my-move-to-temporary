@@ -1,0 +1,17 @@
+#! /bin/sh
+
+MY_TRASH="/tmp/my-trash"
+
+if test -z "$MY_TRASH"
+then echo "MY_TRASH" variable is not set, exiting ; exit 1
+fi
+
+RAND=$(cat /dev/urandom | base32 | head -c 30)
+mkdir -p "$MY_TRASH/$RAND/"
+
+if test -n "$*"
+then
+	mv "$@" "$MY_TRASH/$RAND/" && echo "$MY_TRASH/$RAND"
+else
+	echo "$MY_TRASH/$RAND"
+fi

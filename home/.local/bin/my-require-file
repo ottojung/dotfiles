@@ -1,0 +1,15 @@
+#! /bin/sh
+
+# Usage:
+#   eval $(my-require-file default.nix)
+#
+# This will make sure all programs and libraries are present
+
+case "$1" in
+	*.nix)
+		nix-shell "$1" --run "my-env | grep -v '^SHELL='"
+		;;
+	*)
+		echo 1>&2 "Not supported file format of '$1'"
+		;;
+esac

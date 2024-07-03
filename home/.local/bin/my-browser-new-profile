@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if test -d "$1"
+then echo Directory "$1" exists, not copying
+else cp -r "$MY_MEDIA/text/other/browser-dirs/chromium-base-dir" "$1"
+fi
+
+cd "$1"
+chromium "--user-data-dir=$PWD" &
+PID=$!
+echo "$PID" > "$PWD/my-browser-pid"
+wait $PID

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# guix pull
+
+$EDITOR "$HOME/.config/guix/config.scm"
+
+guix package -m "$HOME/.config/guix/config.scm"

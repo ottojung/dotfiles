@@ -1,0 +1,11 @@
+#! /bin/sh
+
+if which pamixer 1>/dev/null 2>/dev/null
+then pamixer --allow-boost --decrease 10
+else
+    NAME="$(pactl --format=json info | jq --raw-output '.default_sink_name')"
+    SINK=$(pactl --format=json list sinks | jq --raw-output ".[] | select(.name == \"$NAME\") | .index")
+    pactl set-sink-volume "$SINK" -10%
+fi
+
+notify-send --urgency=low $(my-volume-status)%

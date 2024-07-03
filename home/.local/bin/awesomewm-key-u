@@ -1,0 +1,8 @@
+#! /bin/sh
+
+notify-send -- "\
+$(acpi | grep -v -e ' 0%')
+Free memory: $(my-get-memory-status)
+Temperatures: $(my-get-temperature)"
+
+notify-send -- "CPU usage: $(my-get-cpu-usage)"

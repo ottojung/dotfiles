@@ -1,0 +1,14 @@
+#!/bin/sh
+
+#(nix-channel --add https://nixos.org/channels/nixpkgs-unstable && nix-channel --update) &
+nix-channel --update &
+PID=$!
+
+$EDITOR $HOME/.config/nixpkgs/config.nix
+
+wait $PID
+
+nix-env -iA nixpkgs.myPackages
+
+
+

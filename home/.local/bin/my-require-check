@@ -1,0 +1,65 @@
+#! /bin/sh
+
+REPORT_GOOD=1
+REPORT_BAD=1
+
+while test -n "$*"
+do
+	case "$1" in
+		-q)
+			REPORT_BAD=0
+			REPORT_GOOD=0
+			;;
+		--quiet)
+			REPORT_BAD=0
+			REPORT_GOOD=0
+			;;
+		--verbose)
+			REPORT_BAD=1
+			REPORT_GOOD=1
+			;;
+		-v)
+			REPORT_BAD=1
+			REPORT_GOOD=1
+			;;
+		--verbose=good)
+			REPORT_GOOD=1
+			REPORT_BAD=0
+			;;
+		--verbose=bad)
+			REPORT_GOOD=0
+			REPORT_BAD=1
+			;;
+		*)
+			break
+			;;
+	esac
+	shift
+done
+
+WHICHES="$*"
+MISSING=""
+
+if test -n "$WHICHES"
+then
+	FOUND_ALL=true
+	for w in $WHICHES
+	do
+		if ! command -v "$w" 1>/dev/null 2>/dev/null
+		then MISSING="$MISSING
+$w"
+		fi
+	done
+fi
+
+if test $REPORT_BAD = 1 && test -n "$MISSING"
+then echo "Missing programs: $MISSING" 1>&2
+fi
+
+if test $REPORT_GOOD = 1 && test -z "$MISSING"
+then echo "All programs are present" 1>&2
+fi
+
+if test -n "$MISSING"
+then exit 1
+fi

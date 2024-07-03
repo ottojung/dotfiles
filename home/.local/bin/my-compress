@@ -1,0 +1,87 @@
+#! /bin/sh
+
+INPUT=
+COPY_ON_FAIL=0
+
+while true
+do
+	case "$1" in
+		--input=*)
+			INPUT=$(echo "$1" | sed 's/.*=//')
+			;;
+		--in=*)
+			INPUT=$(echo "$1" | sed 's/.*=//')
+			;;
+		-i)
+			shift
+			INPUT="$1"
+			;;
+
+		--output=*)
+			NEWNAME=$(echo "$1" | sed 's/.*=//')
+			;;
+		--out=*)
+			NEWNAME=$(echo "$1" | sed 's/.*=//')
+			;;
+		-o)
+			shift
+			NEWNAME="$1"
+			;;
+
+		--copy-on-fail)
+			COPY_ON_FAIL=1
+			;;
+		--no-copy-on-fail)
+			COPY_ON_FAIL=0
+			;;
+
+		*)
+			break
+			;;
+	esac
+	shift
+done
+
+if test -z "$INPUT"
+then
+	echo "No input specified. Use --input=path/to/file to specify the file" 1>&2
+	exit 1
+fi
+
+LOWER=$(printf "%s" "$INPUT" | tr '[:upper:]' '[:lower:]')
+case "$LOWER" in
+	*.png) CMD=my-compress-png ;;
+
+	*.jpeg) CMD=my-compress-jpeg ;;
+	*.jpg) CMD=my-compress-jpeg ;;
+
+	*.mkv) CMD=my-compress-video ;;
+	*.mp4) CMD=my-compress-video ;;
+	*.mpeg) CMD=my-compress-video ;;
+	*.webm) CMD=my-compress-video ;;
+	*.mov) CMD=my-compress-video ;;
+	*.wmv) CMD=my-compress-video ;;
+	*.flv) CMD=my-compress-video ;;
+
+	*)
+		echo 1>&2 "Compression for format of '$INPUT' is not supported"
+		CMD=false
+		;;
+esac
+
+if ! $CMD "--input=$INPUT" "--output=$NEWNAME" "$@"
+then
+	if test "$COPY_ON_FAIL" = 1
+	then
+		if test -z "$NEWNAME"
+		then
+			OUT=$(echo "$INPUT" | my-split-extension)
+			NAME=$(echo "$OUT" | head -n 1)
+			EXT=$(echo "$OUT" | tail -n 1)
+			NEWNAME="$NAME.Z$EXT"
+		fi
+
+		cp -v "$INPUT" "$NEWNAME"
+	fi
+	exit 1
+fi

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [ -z "$@" ] ; then
+	x-terminal-emulator &> /dev/null &
+	return $?
+fi
+
+if [ -d "$@" ] ; then
+	x-terminal-emulator --working-directory="$@" &> /dev/null
+	return $?
+else
+	>&2 echo "Directory \"$@\" does not exist!"
+	return 1
+fi

@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if test -d "$1"
+then echo Directory "$1" exists, not copying
+else cp -r "$MY_MEDIA/text/other/browser-dirs/qutebrowser-base-dir" "$1"
+fi
+
+RR=$(cat /dev/urandom | base32 | head -c 20)
+DIR="/tmp/$RR"
+ln -s "$(readlink -f "$1")" "$DIR"
+
+cd /tmp
+qutebrowser --basedir "$RR" &
+PID=$!
+echo "$PID" > "$RR/my-browser-pid"
+wait "$PID"

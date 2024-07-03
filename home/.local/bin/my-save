@@ -1,0 +1,28 @@
+#! /bin/sh
+
+TEMPFILE=$(mktemp)
+
+set -xe
+
+case "$*" in
+	"")
+		tegfs --texteditor .local/bin/ec add --share --interactive --remote "tegfs@$MY_SERVER_NAME" | tee "$TEMPFILE"
+		;;
+	*)
+		tegfs --texteditor .local/bin/ec add --share --interactive --remote "tegfs@$MY_SERVER_NAME" --content "$*" | tee "$TEMPFILE"
+		;;
+esac
+
+URL=$(cat "$TEMPFILE" | tail -n 1)
+
+case "$URL" in
+	http://*|https://*)
+		printf "%s" "$URL" | my-clipboard-copy
+		notify-send -- "Saved"
+		;;
+	*)
+		echo "Could not save - something went wrong on the server side" 1>&2
+		echo "Press enter to continue" 1>&2
+		read ENTER
+		;;
+esac

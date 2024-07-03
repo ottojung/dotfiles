@@ -1,0 +1,29 @@
+#! /bin/sh
+
+FROM="$1"
+TO="$2"
+TMPNAME=$(cat /dev/urandom | base32 | head -c 10)
+TMP="/tmp/my-r7rs-rename-$TMPNAME"
+
+find . -type f -name '*.scm' -not -path '*/.*' | while IFS= read -r FILE
+do
+	sed -e "s#$FROM#$TO#g" "$FILE" > "$TMP"
+	if ! diff -q "$FILE" "$TMP"
+	then
+		cp "$TMP" "$FILE"
+		my-fix-imports "$FILE"
+	fi
+done
+
+FROM_SANI="$(echo "$FROM" | sed 's#->#-to-#g ; s#[?]#-huh-#g ; s#[!]#-bang-#g ; s#[~]#-tilda-#g ; s#[=]#-equal-#g ; s#/#-#g ; s#:#-#g ; s#[*]#-star-#g ; s#--#-#g ; s#--#-#g ; s#--#-#g ; s#--#-#g ; s#--#-#g ; s#--#-#g ;' )"
+TO_SANI="$(echo "$TO" | sed 's#->#-to-#g ; s#[?]#-huh-#g ; s#[!]#-bang-#g ; s#[~]#-tilda-#g ; s#[=]#-equal-#g ; s#/#-#g ; s#:#-#g ; s#[*]#-star-#g ; s#--#-#g ; s#--#-#g ; s#--#-#g ; s#--#-#g ; s#--#-#g ; s#--#-#g ;' )"
+
+find . -type f -not -path '*/.*' | while IFS= read -r FILE
+do
+	NEWNAME="$(printf '%s' "$FILE" | sed -e "s#$FROM_SANI\([.].*\)#$TO_SANI\1#g")"
+	if ! test "$FILE" = "$NEWNAME"
+	then mv -v "$FILE" "$NEWNAME"
+	fi
+done
+
+rm -f "$TMP"

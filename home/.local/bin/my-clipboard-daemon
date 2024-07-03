@@ -1,0 +1,19 @@
+#! /bin/sh
+
+LAST=0
+
+FILE="/tmp/my-clipboard-dir/text1"
+touch "$FILE"
+
+while true
+do
+	CURRENT=$(stat "$FILE" | grep -e 'Modify:')
+	if test "$CURRENT" = "$LAST"
+	then true
+	else
+		LAST="$CURRENT"
+		cat "$FILE" | xclip -loops 0 -select clipboard
+		notify-send -- "Copied!"
+	fi
+	sleep 1
+done

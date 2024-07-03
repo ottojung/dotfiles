@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if pkill -0 awesome
+then
+	echo 'Awesome detected, not running 3rd-party trayer'
+	exit 0
+fi
+
+# exec trayer --edge top --width 5 --align right --margin 200 --transparent true --alpha 0 --tint 0x000000
+
+SCREEN_WIDTH=$(xrandr | grep -E -o 'current \w+ x \w+' | awk '{ print $2 }')
+exec stalonetray --background black --geometry 6x1+$((SCREEN_WIDTH - 330))+4 --icon-size 22 --icon-gravity NE --kludges=force_icons_size

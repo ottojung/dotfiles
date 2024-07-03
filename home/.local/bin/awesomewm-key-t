@@ -1,0 +1,3 @@
+#! /bin/sh
+export TASKS_PRINT_AT_START=1
+exec x-terminal-emulator

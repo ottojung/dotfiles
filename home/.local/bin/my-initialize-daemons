@@ -1,0 +1,34 @@
+#! /bin/sh
+
+TITLE="my-desktop-initialize"
+
+nice -n 19 my-execute-in-screens \
+	"$TITLE" \
+	"my-notify-daemon" \
+	"my-launch-music-daemon" \
+	"my-cpu-daemon" \
+	"my-wallpaper-daemon" \
+	"my-launch-tray" \
+	"my-break-daemon" \
+	"my-agenda-daemon" \
+	"my-email-daemon" \
+	"my-battery-daemon" \
+	"my-memory-daemon" \
+	"my-clipboard-daemon" \
+	"my-reverse-ssh" \
+	"my-data-sync-daemon" \
+
+
+my-emacs-start-server &
+
+#############
+## USELESS ##
+#############
+
+# if which compton
+# then
+# 	compton &
+# else
+# 	echo 'No compton installed'
+# 	echo '	run "sudo apt install compton"'
+# fi

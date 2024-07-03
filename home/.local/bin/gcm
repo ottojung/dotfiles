@@ -1,0 +1,5 @@
+#! /bin/sh
+
+git status --short
+message="$*"
+git commit --message "$message"

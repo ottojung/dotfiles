@@ -1,0 +1,9 @@
+#! /bin/sh
+
+while true
+do
+	echo 'wallpaper change'
+	# nitrogen --set-tiled --random "$HOME/Pictures/wallps/"
+	nitrogen --set-zoom-fill --random "$HOME/Pictures/wallps/"
+	sleep $((60 * 10))
+done

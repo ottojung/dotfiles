@@ -1,0 +1,10 @@
+#! /bin/sh
+
+gitlog '--max-count=5'
+
+STATUS=$(git -c color.ui=always status --short "$@" 2>/dev/null)
+test "$?" = 0 || exit 1
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+
+printf '%b' "   [\033[32m$BRANCH\033[0m]\n$STATUS\n" | tr -s '\n'

@@ -1,0 +1,8 @@
+#! /bin/sh
+
+echo Syncing mail...
+
+mbsync -a
+notmuch new
+notmuch tag +deleted -- "tag:unread and (from:promotions@inbox.lv or from:offers@inbox.lv)"
+notmuch tag -unread -- "to:guile-devel@gnu.org or to:guix-devel@gnu.org"

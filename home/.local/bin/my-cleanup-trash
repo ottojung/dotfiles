@@ -1,0 +1,13 @@
+#! /bin/sh
+
+MY_TRASH="/tmp/my-trash"
+
+if test -z "$MY_TRASH"
+then "Trash location not set" ; exit 1
+fi
+
+cd "$MY_TRASH" || exit 1
+
+find -type f -exec shred --force --remove=wipe --size=1000 {} \;
+
+rm -rf "$MY_TRASH"

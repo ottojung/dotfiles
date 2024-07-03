@@ -1,0 +1,29 @@
+#! /usr/bin/env guile
+-s
+!#
+
+(define args
+  (cdr (command-line)))
+
+(unless (= 2 (length args))
+  (parameterize ((current-output-port (current-error-port)))
+    (display "Expected two arguments: ") (newline)
+    (display "  code_root main_relative_path") (newline)
+    (exit 1)))
+
+(define code_root (car args))
+(define main (cadr args))
+
+(display "#! ")
+(flush-all-ports)
+(system* "sh" "-c" "command -v sh")
+(flush-all-ports)
+
+(display "exec guile --r7rs -L ")
+(write code_root)
+(display " -s ")
+(write (string-append code_root "/" main))
+(display " \"$@\"")
+(newline)
+
+(flush-all-ports)

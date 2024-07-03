@@ -1,0 +1,19 @@
+#! /bin/sh
+
+if pgrep --full cmus 1>/dev/null
+then
+	cmus-remote --pause
+	song=$(basename "$(cmus-remote -Q | grep '^file .*' | sed 's/file // ; s/\.mp3//')")
+	status=$(cmus-remote -Q | grep '^status .*' | sed 's/status // ; s/\.mp3//')
+	notify-send --urgency=low -- "cmus $status" "$song"
+else
+	mpc toggle
+
+	STATUS=$(mpc status | head -n 2 | tail -n 1)
+	if echo "$STATUS" | grep -q "playing"
+	then ISPLAYING=playing
+	else ISPLAYING=paused
+	fi
+
+	notify-send --urgency=low -- "mpd $ISPLAYING" "$(mpc current)"
+fi

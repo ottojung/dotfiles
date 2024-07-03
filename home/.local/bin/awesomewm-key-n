@@ -1,0 +1,3 @@
+#!/bin/sh
+exec ecc "$MY_MEDIA/text/notes/org/todo/main.org"
+# exec ecc "$MY_MEDIA/text/browser-notes.md"

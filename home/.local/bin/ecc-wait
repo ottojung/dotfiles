@@ -1,0 +1,8 @@
+#! /bin/sh
+
+if test -z "$EMACS_SERVER_NAME"
+then NAME=fast
+else NAME="$EMACS_SERVER_NAME"
+fi
+
+exec emacsclient --create-frame --socket-name "$NAME" "$@"

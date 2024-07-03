@@ -1,0 +1,32 @@
+#! /bin/sh
+
+# # Qutebrowser
+# CONFIGPATH="$HOME/.config/qutebrowser-profiles/prog/config/"
+# TMPDIR=$(mktemp -d)
+# ln -s "$CONFIGPATH" "$TMPDIR/" || (echo "Could not copy configs from '$CONFIGPATH' to '$TMPDIR'" ; exit 1)
+# url="$@"
+# qutebrowser --basedir "$TMPDIR" "$url"
+# rm -rf "$TMPDIR"
+
+
+# if test -z "$*"
+# then TARGET=$(xsel)
+# else TARGET="$*"
+# fi
+TARGET="$*"
+
+# Chromium
+
+# if pgrep --list-full '^chromium$' || test -z "$TARGET"
+# then exec chromium --incognito "$TARGET"
+# else
+# 	chromium --incognito & disown
+# 	notify-send --urgency=low -- "Starting browser..."
+# 	sleep 5
+# 	exec chromium --incognito "$TARGET"
+# fi
+
+# exec chromium --incognito "$TARGET"
+
+printf '%s\n' "$TARGET" | my-clipboard-copy
+# x-terminal-emulator-exe "printf '%s\n' '$TARGET' ; sleep 5"

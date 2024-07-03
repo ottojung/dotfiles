@@ -1,0 +1,3 @@
+#! /bin/sh
+
+cat "/tmp/my-clipboard-dir/text1" | xclip -select clipboard && notify-send Copied!
