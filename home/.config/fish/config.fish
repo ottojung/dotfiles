@@ -14,13 +14,15 @@ if [ -z "$MY_HOSTNAME" ]
 	set MY_HOSTNAME (cat /etc/hostname | string collect -N)
 end
 
+set SIMPLE_HOME (realpath -- "$HOME")
+
 function get_prompt_header
 	set_color purple
 
 	if [ -n "$MY_SESSION_DIRECTORY" ]
-		printf "\n%s" "$PWD" | sed "s#^$MY_SESSION_DIRECTORY#\$SESSION#" | sed "s#^$HOME#~#"
+		printf "\n%s" "$PWD" | sed "s#^$MY_SESSION_DIRECTORY#\$SESSION#" | sed "s#^$SIMPLE_HOME#~#"
 	else
-		printf "\n%s" "$PWD" | sed "s#^$HOME#~#"
+		printf "\n%s" "$PWD" | sed "s#^$SIMPLE_HOME#~#"
 	end
 
 	if [ -n "$SSH_CONNECTION" ]
