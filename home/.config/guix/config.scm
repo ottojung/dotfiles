@@ -152,12 +152,12 @@
   ;; telegram-desktop ;; Telegram desktop client (nix: tdesktop)
   ;; virtualbox ;; virtual machine (some parts are propriatary)
   virt-manager ;; virtual machine helper
-  ungoogled-chromium ;; chromium without google services
+  ;; ungoogled-chromium ;; chromium without google services
   ;; firefox ;; fuck mozilla
-  icecat ;; better firefox
+  ;; icecat ;; better firefox
   ;; torbrowser ;; breaks ;; TODO: track incoming: https://issues.guix.gnu.org/42380
-  nyxt ;; lisp-based web browser
-  qutebrowser ;; python-based web browser
+  ;; nyxt ;; lisp-based web browser
+  ;; qutebrowser ;; python-based web browser
   ;; teams ;; unfree :(
   obs ;; (nix: obs-studio)
   flatpak
