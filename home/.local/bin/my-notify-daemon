@@ -10,4 +10,5 @@
 
 # ln -v -sf $(readlink -f $(which dunstctl)) ~/.local/bin/my-dunstctl &
 
-exec dunst -config ~/.config/dunst/dunstrc
+dunst -config ~/.config/dunst/dunstrc &
+dbus-monitor "interface='org.freedesktop.Notifications'"
