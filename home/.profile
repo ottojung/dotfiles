@@ -19,17 +19,20 @@ esac
 
 if command -v guix 1>/dev/null 2>/dev/null
 then
-	if test -z "$GUIX_PROFILE" || ! test -d "$GUIX_PROFILE"
+	if test -z "$GUIX_ENVIRONMENT"
 	then
-		if test -d "$HOME/.config/guix/current"
-		then export GUIX_PROFILE="$HOME/.config/guix/current"
-		else
-			if test -d "$HOME/.guix-profile"
-			then export GUIX_PROFILE="$HOME/.guix-profile"
+		if test -z "$GUIX_PROFILE" || ! test -d "$GUIX_PROFILE"
+		then
+			if test -d "$HOME/.config/guix/current"
+			then export GUIX_PROFILE="$HOME/.config/guix/current"
+			else
+				if test -d "$HOME/.guix-profile"
+				then export GUIX_PROFILE="$HOME/.guix-profile"
+				fi
 			fi
+			. "$GUIX_PROFILE/etc/profile"
+			export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
 		fi
-		. "$GUIX_PROFILE/etc/profile"
-		export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
 	fi
 fi
 
@@ -37,7 +40,6 @@ fi
 ## PATHS ##
 ###########
 
-test -d "$HOME/.guix-profile/bin" && PATH="${HOME}/.guix-profile/bin:${PATH}"
 test -d "$HOME/.cabal/bin" && PATH="${HOME}/.cabal/bin:${PATH}"
 test -d "$HOME/.cargo/bin" && PATH="${HOME}/.cargo/bin:${PATH}"
 test -d "$HOME/.local/nodejs/bin" && PATH="${HOME}/.local/nodejs/bin:${PATH}"
