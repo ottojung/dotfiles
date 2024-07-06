@@ -15,27 +15,28 @@ shift
 
 TMUX_SESSION_NAME="miyka"
 
-EXISTING=$(tmux list-windows -F '#{window_name}' -t "$TMUX_SESSION_NAME" | grep -e "^$NAME"'$' || true)
-if test -n "$EXISTING"
-then
-	echo "Workspace $NAME already opened." 1>&2
-	printf "Press enter to continue..." 1>&2
-	read
-	exit 1
-fi
-
 tmux start-server
 
-if tmux has-session -t "$TMUX_SESSION_NAME"
+if tmux has-session -t "$TMUX_SESSION_NAME" 1>/dev/null 2>/dev/null
 then
-	tmux new-window -t "$TMUX_SESSION_NAME" -n "$NAME"
+	EXISTING=$(tmux list-windows -F '#{window_name}' -t "$TMUX_SESSION_NAME" | grep -e "^$NAME"'$' || true)
+	if test -z "$EXISTING"
+	then
+		tmux new-window -t "$TMUX_SESSION_NAME" -n "$NAME"
+	else
+		echo "Workspace $NAME already opened." 1>&2
+	fi
 else
 	tmux new-session -d -s "$TMUX_SESSION_NAME" -n "$NAME"
 fi
 
 INDEX=$(tmux list-windows -F '#{window_index} #{window_name}' -t "$TMUX_SESSION_NAME" | grep -e "^[0-9]* $NAME"'$' | tail -n 1 | awk '{ print $1 }')
 
-tmux send-keys -t "$TMUX_SESSION_NAME:$INDEX" "miyka run '$NAME' ; exit" ENTER \; \
-     pipe-pane -t "$TMUX_SESSION_NAME:$INDEX" "cat > $TMP"
+tmux \
+	send-keys -t "$TMUX_SESSION_NAME:$INDEX" C-c
+
+tmux \
+	send-keys -t "$TMUX_SESSION_NAME:$INDEX" "date ; miyka run '$NAME' ; date" ENTER \; \
+	pipe-pane -t "$TMUX_SESSION_NAME:$INDEX" "cat > $TMP"
 
 tail -f "$TMP"
