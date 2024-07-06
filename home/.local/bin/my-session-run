@@ -1,6 +1,7 @@
 #! /bin/sh
 
 set -e
+set -x
 
 TMP="$(mktemp)"
 
@@ -15,6 +16,12 @@ shift
 
 TMUX_SESSION_NAME="miyka"
 
+INDEX=$(tmux list-windows -F '#{window_index} #{window_name}' -t "$TMUX_SESSION_NAME" | grep -e "^[0-9]* $NAME"'$' | tail -n 1 | awk '{ print $1 }')
+if test -z "$INDEX"
+then
+	INDEX=$(tmux list-windows -F '#{window_index} #{window_name}' -t "$TMUX_SESSION_NAME" | wc -l)
+fi
+
 tmux start-server
 
 if tmux has-session -t "$TMUX_SESSION_NAME" 1>/dev/null 2>/dev/null
@@ -22,15 +29,13 @@ then
 	EXISTING=$(tmux list-windows -F '#{window_name}' -t "$TMUX_SESSION_NAME" | grep -e "^$NAME"'$' || true)
 	if test -z "$EXISTING"
 	then
-		tmux new-window -t "$TMUX_SESSION_NAME" -n "$NAME"
+		tmux new-window -t "$TMUX_SESSION_NAME:$INDEX" -n "$NAME"
 	else
 		echo "Workspace $NAME already opened." 1>&2
 	fi
 else
-	tmux new-session -d -s "$TMUX_SESSION_NAME" -n "$NAME"
+	tmux new-session -d -s "$TMUX_SESSION_NAME:$INDEX" -n "$NAME"
 fi
-
-INDEX=$(tmux list-windows -F '#{window_index} #{window_name}' -t "$TMUX_SESSION_NAME" | grep -e "^[0-9]* $NAME"'$' | tail -n 1 | awk '{ print $1 }')
 
 tmux \
 	send-keys -t "$TMUX_SESSION_NAME:$INDEX" C-c
