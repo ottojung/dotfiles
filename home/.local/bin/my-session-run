@@ -13,6 +13,16 @@ trap cleanup exit int term hup
 NAME="$1"
 shift
 
+while test $# -gt 0
+do
+	case "$1" in
+		--detach)
+			DETACH=1
+			;;
+	esac
+	shift
+done
+
 TMUX_SESSION_NAME="miyka"
 
 INDEX=$(tmux list-windows -F '#{window_index} #{window_name}' -t "$TMUX_SESSION_NAME" | grep -e "^[0-9]* $NAME"'$' | tail -n 1 | awk '{ print $1 }')
@@ -43,4 +53,7 @@ tmux \
 	send-keys -t "$TMUX_SESSION_NAME:$INDEX" "date ; miyka run '$NAME' ; date" ENTER \; \
 	pipe-pane -t "$TMUX_SESSION_NAME:$INDEX" "cat > $TMP"
 
-# tail -f "$TMP"
+if ! test "$DETACH" = 1
+then
+	tail -f "$TMP"
+fi

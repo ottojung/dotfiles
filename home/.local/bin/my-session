@@ -16,12 +16,12 @@ fi
 
 case "$NAME" in
 	"*new*")
-		exec my-session-create --new
+		exec my-session-create --new "$@"
 		;;
 	"*copy*")
-		exec my-session-create --copy
+		exec my-session-create --copy "$@"
 		;;
 	*)
-		exec my-session-run "$NAME"
+		exec my-session-run "$NAME" "$@"
 		;;
 esac

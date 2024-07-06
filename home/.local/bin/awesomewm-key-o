@@ -1,2 +1,2 @@
 #! /bin/sh
-x-terminal-emulator-exe 'exec my-session'
+x-terminal-emulator-exe 'exec my-session --detach'
