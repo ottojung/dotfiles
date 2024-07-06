@@ -13,6 +13,6 @@ case "$1" in
         printf "Session name: "
         read NAME
         FROM=$(miyka list | fzf)
-        miyka copy "$FROM" "$NAME"
+        miyka copy "$FROM" as "$NAME"
         ;;
 esac
