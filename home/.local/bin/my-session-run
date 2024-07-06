@@ -43,4 +43,4 @@ tmux \
 	send-keys -t "$TMUX_SESSION_NAME:$INDEX" "date ; miyka run '$NAME' ; date" ENTER \; \
 	pipe-pane -t "$TMUX_SESSION_NAME:$INDEX" "cat > $TMP"
 
-tail -f "$TMP"
+# tail -f "$TMP"
