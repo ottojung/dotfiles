@@ -22,6 +22,6 @@ case "$NAME" in
 		exec my-session-create --copy
 		;;
 	*)
-		exec miyka run "$NAME"
+		exec my-session-run "$NAME"
 		;;
 esac
