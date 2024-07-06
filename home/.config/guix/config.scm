@@ -16,6 +16,7 @@
 
 (define-packages cli-tools
   findutils ;; literally the "find" command
+  diffutils ;; literally the "diff" command
   procps ;; commands like "ps", "top", "pkill", etc
   less ;; literally the "less" command
   ncurses ;; provides "clear" and "reset"
