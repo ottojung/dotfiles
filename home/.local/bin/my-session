@@ -3,7 +3,7 @@
 LIST=$(miyka list)
 
 if test -n "$LIST"
-then NAMES=$(printf "%s\n%s\n%s" "$LIST" "*new*" "*copy*")
+then NAMES=$(printf "%s\n%s\n%s" "$LIST" "*new*" "*edit*" "*copy*")
 else NAMES="*new*
 *pwd*"
 fi
