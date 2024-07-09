@@ -8,7 +8,7 @@ else NAMES="*new*
 *pwd*"
 fi
 
-NAME=$(printf "%s" "$NAMES" | fzf)
+NAME=$(printf "%s" "$NAMES" | fzf --prompt "run> ")
 
 if test -z "$NAME"
 then echo Cancelled ; exit 1
@@ -17,6 +17,10 @@ fi
 case "$NAME" in
 	"*new*")
 		exec my-session-create --new "$@"
+		;;
+	"*edit*")
+		NAME=$(printf "%s" "$NAMES" | fzf --prompt "edit> ")
+		miyka edit "$NAME"
 		;;
 	"*copy*")
 		exec my-session-create --copy "$@"
