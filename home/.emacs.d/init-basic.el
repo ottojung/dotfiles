@@ -508,10 +508,11 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 (defconst my-use-package-required nil)
 
 (defun my-require-use-package ()
-  (package-initialize)
-  (add-to-list 'load-path (emacs-root-join "custom" "use-package"))
-  (require 'use-package)
-  (setq my-use-package-required t))
+  (unless my-use-package-required
+    (package-initialize)
+    (add-to-list 'load-path (emacs-root-join "custom" "use-package"))
+    (require 'use-package)
+    (setq my-use-package-required t)))
 
 (defconst my-buffer-flip-loaded-p nil)
 
