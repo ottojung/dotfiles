@@ -500,6 +500,68 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
     (message "%s" out)
     (find-file filename)))
 
+
+;;;;;;;;;;;;;;
+;; PACKAGES ;;
+;;;;;;;;;;;;;;
+
+(defconst my-use-package-required nil)
+
+(defun my-require-use-package ()
+  (package-initialize)
+  (add-to-list 'load-path (emacs-root-join "custom" "use-package"))
+  (require 'use-package)
+  (setq my-use-package-required t))
+
+(defconst my-buffer-flip-loaded-p nil)
+
+(defun my-buffer-flip ()
+  (interactive)
+  (my-load-buffer-flip)
+  (buffer-flip))
+
+(defun my-buffer-flip-back ()
+  (interactive)
+  (my-load-buffer-flip)
+  (buffer-flip)
+  (buffer-flip-forward)
+  (buffer-flip-forward)
+  (buffer-flip-forward))
+
+(defun my-load-buffer-flip ()
+  (unless my-buffer-flip-loaded-p
+    (setq my-buffer-flip-loaded-p t)
+    (my-require-use-package)
+
+    (use-package
+      buffer-flip
+      :ensure nil
+      :config
+
+      (defvar buffer-flip-map)
+      ;; transient keymap used once cycling starts
+      (setq buffer-flip-map
+            (let ((map (make-sparse-keymap)))
+              (define-key map (kbd "M-p") 'buffer-flip-forward)
+              (define-key map (kbd "M-n") 'buffer-flip-backward)
+              (define-key map (kbd "M-g") 'buffer-flip-abort)
+              map))
+
+      )
+
+    ;; don't skip same buffer
+    (defun my-buffer-flip-skip-buffer-advice
+        (orig-fun buf)
+      (or (= ? (elt (buffer-name buf) 0)) ; internal?
+          (eq (get-buffer-window buf)
+              (get-buffer-window (current-buffer)))))
+
+    (advice-add 'buffer-flip-skip-buffer
+                :around #'my-buffer-flip-skip-buffer-advice)
+
+    ))
+
+
 ;;;;;;;;;;
 ;; KEYS ;;
 ;;;;;;;;;;
@@ -556,6 +618,8 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 
      ("e"     buffer-menu)
      ("M-e"   switch-to-buffer)
+     ("M-p"   my-buffer-flip)
+     ("M-n"   my-buffer-flip-back)
      ("M-i"   (find-file "."))
      ("M-x"   (save-buffers-kill-terminal t))
 

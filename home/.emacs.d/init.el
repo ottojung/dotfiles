@@ -226,30 +226,6 @@
   (setq org-ai-openai-api-token my-openai-api-key)
   )
 
-(use-package
- buffer-flip
- :ensure nil
- :config
-
- (define-key my-window-map (kbd "M-p") 'buffer-flip)
- (define-key my-window-map (kbd "M-n")
-   #'(lambda ()
-       (buffer-flip)
-       (buffer-flip-forward)
-       (buffer-flip-forward)
-       (buffer-flip-forward)))
-
- (defvar buffer-flip-map)
- ;; transient keymap used once cycling starts
- (setq buffer-flip-map
-       (let ((map (make-sparse-keymap)))
-         (define-key map (kbd "M-p") 'buffer-flip-forward)
-         (define-key map (kbd "M-n") 'buffer-flip-backward)
-         (define-key map (kbd "M-g") 'buffer-flip-abort)
-         map))
-
- )
-
 (defun my-elfeed-update ()
   (interactive)
   (elfeed-update)
@@ -274,15 +250,6 @@
 (if (file-exists-p (concat my-ciaoroot "/ciao-site-file.el"))
   (load-file (concat my-ciaoroot "/ciao-site-file.el")))
 ; @end(56867949)@ - End of automatically added lines.
-
-;; don't skip same buffer
-(defun my-buffer-flip-skip-buffer-advice
-    (orig-fun buf)
-  (or (= ? (elt (buffer-name buf) 0)) ; internal?
-      (eq (get-buffer-window buf)
-          (get-buffer-window (current-buffer)))))
-(advice-add 'buffer-flip-skip-buffer
-            :around #'my-buffer-flip-skip-buffer-advice)
 
 (defun agda-mode-exists? ()
   (program-resolve-path "agda-mode"))
