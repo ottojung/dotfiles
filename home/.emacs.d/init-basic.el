@@ -153,6 +153,23 @@ Bcc:
   "always grab lock"
   t)
 
+(defun my-generate-random-string ()
+  "Generate a random string of length 20, where the first character is always a letter."
+  (let ((letters "abcdefghijklmnopqrstuvwxyz")
+        (chars "abcdefghijklmnopqrstuvwxyz0123456789")
+        (result ""))
+    ;; Ensure the first character is a letter
+    (setq result (string (aref letters (random (length letters)))))
+    ;; Generate the remaining 19 characters
+    (dotimes (_ 19)
+      (setq result (concat result (string (aref chars (random (length chars)))))))
+    result))
+
+(defun my-type-random-string ()
+  "Insert a random string at point."
+  (interactive)
+  (insert (my-generate-random-string)))
+
 ;;;;;;;;;;;;;
 ;; HELPERS ;;
 ;;;;;;;;;;;;;
@@ -563,6 +580,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
      ("f c"   my-create-scheme-file)
      ("a n"   my-chatfile-new)
      ("a f"   my-chatfile-fork)
+     ("m"     my-type-random-string)
      )
 
     ;; terminal for each number
