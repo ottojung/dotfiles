@@ -16,14 +16,17 @@ fi
 
 case "$NAME" in
 	"*new*")
-		exec my-session-create --new "$@"
+		my-session-create --new "$@"
+		"$0"
 		;;
 	"*edit*")
 		NAME=$(printf "%s" "$NAMES" | fzf --prompt "edit> ")
 		miyka edit "$NAME"
+		"$0"
 		;;
 	"*copy*")
-		exec my-session-create --copy "$@"
+		my-session-create --copy "$@"
+		"$0"
 		;;
 	*)
 		exec my-session-run "$NAME" "$@"
