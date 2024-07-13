@@ -556,7 +556,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
             (let ((map (make-sparse-keymap)))
               (define-key map (kbd "M-p") 'buffer-flip-forward)
               (define-key map (kbd "M-n") 'buffer-flip-backward)
-              (define-key map (kbd "M-g") 'buffer-flip-abort)
+              ;; (define-key map (kbd "M-g") 'buffer-flip-abort)
               map))
 
       )
