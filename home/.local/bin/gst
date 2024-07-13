@@ -6,5 +6,6 @@ STATUS=$(git -c color.ui=always status --short "$@" 2>/dev/null)
 test "$?" = 0 || exit 1
 
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+COMMIT=$(git rev-parse --short HEAD 2>/dev/null)
 
-printf '%b' "   [\033[32m$BRANCH\033[0m]\n$STATUS\n" | tr -s '\n'
+printf '%b' " \033[32m$COMMIT\033[0m ($BRANCH)\n$STATUS\n" | tr -s '\n'
