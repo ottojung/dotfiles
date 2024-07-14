@@ -11,6 +11,14 @@
 # 	export MY_SHELL_INITIALIZED=true
 # fi
 
+if test -z "$MIYKA_REPO_HOPE"
+then
+	(find -- "$MIYKA_REPO_HOME/.config/miyka/autorun" -type f 2>/dev/null | sort) | while IFS= read SCRIPT
+	do
+		. "$SCRIPT"
+	done
+fi
+
 case $IN_NIX_SHELL in
 	pure)
 		# export PATH=$(cat "$HOME/.my-initial-env")
