@@ -3,6 +3,7 @@
 (load "~/.emacs.d/init-basic")
 (defvar my-window-map)
 
+(customize-set-variable 'tool-bar-mode nil)
 (customize-set-variable 'grep-command "grep --color -HRIn")
 (customize-set-variable 'grep-use-null-device nil)
 (customize-set-variable 'markdown-fontify-code-blocks-natively t)

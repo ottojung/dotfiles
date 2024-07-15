@@ -56,8 +56,6 @@ Bcc:
  ;; If there is more than one, they won't work right.
  )
 
-(customize-set-variable 'tool-bar-mode nil)
-
 ;;;;;;;;;;;
 ;; BASIC ;;
 ;;;;;;;;;;;
