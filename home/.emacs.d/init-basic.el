@@ -44,7 +44,6 @@ Bcc:
  '(message-sendmail-f-is-evil 't)
  '(message-sendmail-extra-arguments '("--read-envelope-from"))
  '(tab-width 4)
- '(tool-bar-mode nil)
  '(truncate-lines t)
  '(vc-follow-symlinks t)
  '(warning-suppress-types '((comp)))
@@ -56,6 +55,8 @@ Bcc:
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(customize-set-variable 'tool-bar-mode nil)
 
 ;;;;;;;;;;;
 ;; BASIC ;;
