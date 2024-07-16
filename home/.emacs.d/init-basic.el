@@ -539,6 +539,8 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
   (buffer-flip-forward)
   (buffer-flip-forward))
 
+(defvar buffer-flip)
+
 (defun my-load-buffer-flip ()
   (unless my-buffer-flip-loaded-p
     (setq my-buffer-flip-loaded-p t)
@@ -577,6 +579,8 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 
 
 (defconst my-org-ai-loaded-p nil)
+
+(defvar org-ai)
 
 (defun my-load-org-ai ()
   (unless my-org-ai-loaded-p
