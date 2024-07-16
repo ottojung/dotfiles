@@ -22,8 +22,8 @@ uninitialize_home: directories
 	STOWY_LINK_CMD="scripts/unlink.sh" ./stowy $(STOWYFLAGS) --quiet --overwrite --keep-going run home $(TARGET)
 
 compile_emacs:
-	git -C home/.emacs.d clean -x -f -- '**/*.elc'
-	emacs --batch --eval '(byte-recompile-directory "home/.emacs.d/" 0 t)' || true
+	find ~/.emacs.d -name '*.elc' -delete
+	emacs --batch --eval '(byte-recompile-directory "~/.emacs.d/" 0 t)' || true
 
 miyka-initialize:
 	$(MAKE) TARGET=$(MIYKA_REPO_HOME) directories
