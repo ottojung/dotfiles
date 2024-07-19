@@ -3,13 +3,18 @@
 if test "$#" = 0
 then
     echo "Expected some CLI arguments." 1>&2
-    false
+    exit 1
 fi
 
-if test -z "$MY_ROOT"
+if test -z "$MY_LOGS_ROOT"
 then
-    echo "Must set \$MY_ROOT environment variable." 1>&2
-    false
+    if test -z "$MY_ROOT"
+    then
+        echo "Must set either \$MY_ROOT or \$MY_LOGS_ROOT environment variable." 1>&2
+        exit 1
+    fi
+
+    MY_LOGS_ROOT="$MY_ROOT/logs"
 fi
 
 ##########
@@ -20,9 +25,9 @@ escape_string() {
     printf "%s" "$*" | sed -e "s/'/'\\\\''/g; 1s/^/'/; \$s/\$/'/"
 }
 
-LOCALDIR="$MY_ROOT/logs"
+MY_LOGS_ROOT="$MY_ROOT/logs"
 NAME=$(date '+%Y-%m-%dT%H-%M-%S-%N-%Z')
-DIR="$LOCALDIR/$NAME"
+DIR="$MY_LOGS_ROOT/$NAME"
 mkdir -p -- "$DIR"
 
 COMMAND_PATH="$DIR/command.sh"
