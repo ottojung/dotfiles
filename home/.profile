@@ -1,23 +1,9 @@
-# ~/.profile: executed by the command interpreter for login shells.
-# This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
-# exists.
-# see /usr/share/doc/bash/examples/startup-files for examples.
-# the files are located in the bash-doc package
 
-# # Save initial state
-# if ! test -n "$MY_SHELL_INITIALIZED"
-# then
-# 	echo "$PATH" > "$HOME/.my-initial-env"
-# 	export MY_SHELL_INITIALIZED=true
-# fi
-
-if test -z "$MIYKA_REPO_HOPE"
-then
-	(find -- "$MIYKA_REPO_HOME/.config/miyka/autorun" -type f 2>/dev/null | sort) | while IFS= read SCRIPT
-	do
-		. "$SCRIPT"
-	done
-fi
+find -- "$MIYKA_REPO_HOME/.config/miyka/autorun" -type f 2>/dev/null | sort | while IFS= read SCRIPT
+do
+	. "$SCRIPT"
+	return
+done
 
 case $IN_NIX_SHELL in
 	pure)
