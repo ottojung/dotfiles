@@ -1,0 +1,48 @@
+#! /bin/sh
+
+set -e
+
+if test "$#" = 0
+then
+    echo "Expected some CLI arguments." 1>&2
+    false
+fi
+
+if test -z "$MY_ROOT"
+then
+    echo "Must set \$MY_ROOT environment variable." 1>&2
+    false
+fi
+
+##########
+## Body ##
+##########
+
+escape_string() {
+    printf "%s" "$*" | sed 's/["\]/\\&/g; s/.*/"&"/'
+}
+
+LOCALDIR="$MY_ROOT/logs"
+NAME=$(date '+%Y-%m-%dT%H-%M-%S-%N-%Z')
+DIR="$LOCALDIR/$NAME"
+mkdir -p -- "$DIR"
+
+COMMAND_PATH="$DIR/command.sh"
+ESCAPED_COMMAND_PATH="$(escape_string "$COMMAND_PATH")"
+
+echo "#! /bin/sh" > "$COMMAND_PATH"
+
+while test "$#" -gt 0
+do
+    ARG="$1"
+    printf '%s' "$(escape_string "$ARG")" >> "$COMMAND_PATH"
+    printf ' ' >> "$COMMAND_PATH"
+    shift
+done
+
+export > "$DIR/environment.sh"
+hostname > "$DIR/hostname.txt"
+date '+%Y-%m-%dT%H-%M-%S-%N-%Z' > "$DIR/start-date.txt"
+script -c "sh -- $ESCAPED_COMMAND_PATH" --logging-format advanced --log-timing "$DIR/timing.tsv" -- "$DIR/typescript"
+date '+%Y-%m-%dT%H-%M-%S-%N-%Z' > "$DIR/end-date.txt"
+chmod -R a-w -- "$DIR"
