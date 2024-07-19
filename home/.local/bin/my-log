@@ -12,9 +12,9 @@ then
     then
         echo "Must set either \$MY_ROOT or \$MY_LOGS_ROOT environment variable." 1>&2
         exit 1
+    else
+        MY_LOGS_ROOT="$MY_ROOT/logs"
     fi
-
-    MY_LOGS_ROOT="$MY_ROOT/logs"
 fi
 
 ##########
@@ -25,7 +25,6 @@ escape_string() {
     printf "%s" "$*" | sed -e "s/'/'\\\\''/g; 1s/^/'/; \$s/\$/'/"
 }
 
-MY_LOGS_ROOT="$MY_ROOT/logs"
 NAME=$(date '+%Y-%m-%dT%H-%M-%S-%N-%Z')
 DIR="$MY_LOGS_ROOT/$NAME"
 mkdir -p -- "$DIR"
