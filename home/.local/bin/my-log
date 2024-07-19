@@ -46,6 +46,16 @@ teardown() {
 trap 'teardown' exit hup int quit abrt kill alrm term
 
 export > "$DIR/environment.sh"
-hostname > "$DIR/hostname.txt"
+
+if command -v hostname 1>/dev/null 2>/dev/null
+then
+    hostname > "$DIR/hostname.txt"
+else
+    if test -f "/etc/hostname"
+    then
+        cat "/etc/hostname" > "$DIR/hostname.txt"
+    fi
+fi
+
 date '+%Y-%m-%dT%H-%M-%S-%N-%Z' > "$DIR/start-date.txt"
 script --return --quiet  --command "sh -- $ESCAPED_COMMAND_PATH" --logging-format advanced --log-timing "$DIR/timing.tsv" -- "$DIR/typescript"
