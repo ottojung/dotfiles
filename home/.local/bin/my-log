@@ -58,4 +58,4 @@ else
 fi
 
 date '+%Y-%m-%dT%H-%M-%S-%N-%Z' > "$DIR/start-date.txt"
-script --return --quiet  --command "sh -- $ESCAPED_COMMAND_PATH" --logging-format advanced --log-timing "$DIR/timing.tsv" -- "$DIR/typescript"
+script --return --quiet --command "sh -- $ESCAPED_COMMAND_PATH" --logging-format advanced --log-timing "$DIR/timing.tsv" -- "$DIR/typescript"
