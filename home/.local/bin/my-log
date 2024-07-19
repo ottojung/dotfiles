@@ -33,9 +33,14 @@ echo "#! /bin/sh" > "$COMMAND_PATH"
 while test "$#" -gt 0
 do
     ARG="$1"
-    printf '%s' "$(escape_string "$ARG")" >> "$COMMAND_PATH"
-    printf ' ' >> "$COMMAND_PATH"
     shift
+
+    printf '%s' "$(escape_string "$ARG")" >> "$COMMAND_PATH"
+
+    if test "$#" -gt 0
+    then
+        printf ' ' >> "$COMMAND_PATH"
+    fi
 done
 
 teardown() {
