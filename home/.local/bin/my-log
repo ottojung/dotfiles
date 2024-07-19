@@ -34,7 +34,7 @@ ESCAPED_COMMAND_PATH="$(escape_string "$COMMAND_PATH")"
 
 echo "#! /bin/sh" > "$COMMAND_PATH"
 
-while test "$#" -gt 0
+while true
 do
     ARG="$1"
     shift
@@ -44,6 +44,9 @@ do
     if test "$#" -gt 0
     then
         printf ' ' >> "$COMMAND_PATH"
+    else
+        echo >> "$COMMAND_PATH"
+        break
     fi
 done
 
