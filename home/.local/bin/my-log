@@ -1,7 +1,5 @@
 #! /bin/sh
 
-set -e
-
 if test "$#" = 0
 then
     echo "Expected some CLI arguments." 1>&2
@@ -19,7 +17,7 @@ fi
 ##########
 
 escape_string() {
-    printf "%s" "$*" | sed 's/["\]/\\&/g; s/.*/"&"/'
+    printf "%s" "$*" | sed -e "s/'/'\\\\''/g; 1s/^/'/; \$s/\$/'/"
 }
 
 LOCALDIR="$MY_ROOT/logs"
@@ -40,9 +38,14 @@ do
     shift
 done
 
+teardown() {
+    date '+%Y-%m-%dT%H-%M-%S-%N-%Z' > "$DIR/end-date.txt"
+    chmod -R a-w -- "$DIR"/*
+}
+
+trap 'teardown' exit hup int quit abrt kill alrm term
+
 export > "$DIR/environment.sh"
 hostname > "$DIR/hostname.txt"
 date '+%Y-%m-%dT%H-%M-%S-%N-%Z' > "$DIR/start-date.txt"
-script -c "sh -- $ESCAPED_COMMAND_PATH" --logging-format advanced --log-timing "$DIR/timing.tsv" -- "$DIR/typescript"
-date '+%Y-%m-%dT%H-%M-%S-%N-%Z' > "$DIR/end-date.txt"
-chmod -R a-w -- "$DIR"
+script --return --quiet  --command "sh -- $ESCAPED_COMMAND_PATH" --logging-format advanced --log-timing "$DIR/timing.tsv" -- "$DIR/typescript"
