@@ -1,10 +1,4 @@
 
-find -- "$MIYKA_REPO_HOME/.config/miyka/autorun" -type f 2>/dev/null | sort | while IFS= read SCRIPT
-do
-	. "$SCRIPT"
-	return
-done
-
 case $IN_NIX_SHELL in
 	pure)
 		# export PATH=$(cat "$HOME/.my-initial-env")
