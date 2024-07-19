@@ -19,8 +19,8 @@ set SIMPLE_HOME (realpath -- "$HOME")
 function get_prompt_header
 	set_color purple
 
-	if [ -n "$MY_SESSION_DIRECTORY" ]
-		printf "\n%s" "$PWD" | sed "s#^$MY_SESSION_DIRECTORY#\$SESSION#" | sed "s#^$SIMPLE_HOME#~#"
+	if [ -n "$MIYKA_REPO_HOME" ]
+		printf "\n%s" "$PWD" | sed "s#^$MIYKA_REPO_HOME#\$SESSION#" | sed "s#^$SIMPLE_HOME#~#"
 	else
 		printf "\n%s" "$PWD" | sed "s#^$SIMPLE_HOME#~#"
 	end
@@ -33,9 +33,14 @@ function get_prompt_header
 	set_color blue
 	printf "%s" " \$$USER"
 
-	if [ -n "$GUIX_ENVIRONMENT" ]
+	if [ -n "$MIYKA_REPO_NAME" ]
 		set_color yellow
-		printf "%s" " [env]"
+		printf "%s" " [$MIYKA_REPO_NAME]"
+	else
+		if [ -n "$GUIX_ENVIRONMENT" ]
+			set_color yellow
+			printf "%s" " [*]"
+		end
 	end
 
 	set -l display_status $status
