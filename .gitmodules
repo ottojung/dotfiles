@@ -1,3 +1,6 @@
 [submodule "home/.emacs.d/custom/translate.el"]
 	path = home/.emacs.d/custom/translate.el
 	url = https://git.sr.ht/~konkrotte/translate.el
+[submodule "dependencies/md1"]
+	path = dependencies/md1
+	url = git://vau.place/md1.git
