@@ -84,6 +84,7 @@ fi
 export MY_ROOT="$HOME/my"
 export MY_MEDIA="$MY_ROOT/media"
 export MY_SESSIONS_ROOT="$MY_MEDIA/text/other/sessions"
+export MIYKA_FETCHER="miyka-md1"
 
 if test -f "$MY_ROOT/var/private-profile.sh"
 then . "$MY_ROOT/var/private-profile.sh"
