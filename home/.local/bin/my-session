@@ -1,6 +1,6 @@
 #! /bin/sh
 
-LIST=$(miyka list)
+LIST=$(miyka list | grep -v -e '^[.]')
 
 if test -n "$LIST"
 then NAMES=$(printf "%s\n%s\n%s\n%s" "$LIST" "*create*" "*edit*" "*copy*")
