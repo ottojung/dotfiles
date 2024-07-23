@@ -5,7 +5,7 @@ LIST=$(miyka list)
 if test -n "$LIST"
 then NAMES=$(printf "%s\n%s\n%s\n%s" "$LIST" "*create*" "*edit*" "*copy*")
 else NAMES="*create*
-*pwd*"
+"
 fi
 
 NAME=$(printf "%s" "$NAMES" | fzf --prompt "run> ")
