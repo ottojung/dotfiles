@@ -20,7 +20,7 @@ case "$NAME" in
 		"$0" "$@"
 		;;
 	"*edit*")
-		NAME=$(printf "%s" "$NAMES" | fzf --prompt "edit> ")
+		NAME=$(echo "$LIST" | fzf --prompt "edit> ")
 		miyka edit "$NAME"
 		"$0" "$@"
 		;;
