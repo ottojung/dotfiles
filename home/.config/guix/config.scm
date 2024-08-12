@@ -78,7 +78,7 @@
   rsync ;; copies files between remote computers
   unison ;; like rsync, but for syncing
   youtube-dl ;; need newest version
-  texlive ;; distribution of TeX programs (nix: texlive.combined.scheme-full)
+  ;; texlive ;; distribution of TeX programs (nix: texlive.combined.scheme-full)
   imagemagick ;; CLI tool to edit images
   lynx ;; CLI browser
   weechat ;; CLI IRC client
