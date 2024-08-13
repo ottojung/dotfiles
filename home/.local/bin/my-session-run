@@ -4,6 +4,10 @@ set -e
 
 TMP="$(mktemp)"
 
+escape_string() {
+	printf "%s" "$*" | sed -e "s/'/'\\\\''/g; 1s/^/'/; \$s/\$/'/"
+}
+
 cleanup() {
 	rm -f "$TMP"
 }
@@ -22,6 +26,8 @@ do
 	esac
 	shift
 done
+
+ESCAPED_NAME="$(escape_string "$NAME")"
 
 TMUX_SESSION_NAME="miyka"
 
@@ -50,7 +56,7 @@ tmux \
 	send-keys -t "$TMUX_SESSION_NAME:$INDEX" C-c
 
 tmux \
-	send-keys -t "$TMUX_SESSION_NAME:$INDEX" "date ; export MIYKA_REPO_NAME='$NAME' ; echo | miyka run '$NAME' ; date" ENTER \; \
+	send-keys -t "$TMUX_SESSION_NAME:$INDEX" "my-session-start $ESCAPED_NAME " ENTER \; \
 	pipe-pane -t "$TMUX_SESSION_NAME:$INDEX" "cat > $TMP"
 
 if ! test "$DETACH" = 1

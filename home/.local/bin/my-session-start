@@ -1,0 +1,11 @@
+#! /bin/sh
+
+NAME="$1"
+shift
+
+set -x
+
+date
+export MIYKA_REPO_NAME="$NAME"
+echo | miyka run "$NAME"
+date
