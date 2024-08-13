@@ -111,7 +111,7 @@ myKeys =
 	, ("M-h",             moveTo Prev groupedWSP)                                      -- go to next workspace
 	, ("M-j",             windows SS.focusDown)                                         -- %! Move focus to the next window
 	, ("M-k",             windows SS.focusUp)                                           -- %! Move focus to the previous window
-	, ("M-<Tab>",         nextMatch History (return True))                             -- previus window
+	, ("M-<Tab>",         focusLastWindow)                                              -- previous window
 	, ("M-S-<Tab>",       toggleWS)                                                    -- previus workspace
 	, ("M-S-j",           windows SS.swapDown)                                          -- %! Swap the focused window with the next window
 	, ("M-S-k",           windows SS.swapUp)                                            -- %! Swap the focused window with the previous window
@@ -462,6 +462,40 @@ groupedWSP = WSIs groupedWS
 -------------
 -- Helpers --
 -------------
+
+-- Helper function to get the current monitor index
+getCurrentMonitor :: X Int
+getCurrentMonitor = do
+	ws <- gets windowset
+	return $ fromEnum (SS.screen $ SS.current ws)
+
+-- Helper function to get the current workspace on a given screen
+getWorkspaceOnScreen :: Int -> X (Maybe WorkspaceId)
+getWorkspaceOnScreen n = do
+	ws <- gets windowset
+	return $ SS.lookupWorkspace (toEnum n) ws
+
+-- Helper function to swap workspaces between monitors
+swapWorkspacesBetweenMonitors :: Int -> Int -> X ()
+swapWorkspacesBetweenMonitors screen1 screen2 = do
+	mWorkspace1 <- getWorkspaceOnScreen screen1
+	mWorkspace2 <- getWorkspaceOnScreen screen2
+	case (mWorkspace1, mWorkspace2) of
+		(Just ws1, Just ws2) -> do
+			windows $ SS.greedyView ws2
+			windows $ SS.shift ws1
+			windows $ SS.greedyView ws1
+			windows $ SS.shift ws2
+		_ -> return ()
+
+focusLastWindow :: X ()
+focusLastWindow = do
+	startingMonitor <- getCurrentMonitor
+	nextMatch History (return True)
+	targetMonitor <- getCurrentMonitor
+	when (startingMonitor /= targetMonitor) $ do
+		swapWorkspacesBetweenMonitors startingMonitor targetMonitor
+		nextMatch History (return True)
 
 maybeRead :: (Read a) => String -> Maybe a
 maybeRead = fmap fst . listToMaybe . reads
