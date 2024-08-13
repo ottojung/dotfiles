@@ -35,6 +35,8 @@
 
 (defconst MY-EMACS-SERVER-NAME
   (or (getenv "EMACS_SERVER_NAME")
+      (and (getenv "MIYKA_REPO_NAME")
+           (concat "miyka-" (getenv "MIYKA_REPO_NAME")))
       (concat "my-emacs-server-"
               (number-to-string MY-EMACS-START-TIME))))
 
