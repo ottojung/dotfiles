@@ -1,0 +1,18 @@
+#! /bin/sh
+
+set -e
+
+printf "Session name: "
+read NAME
+
+FROM="$(miyka list | fzf --prompt 'from> ')"
+miyka copy "$FROM" as "$NAME"
+
+FROMHOME="$(miyka get home of "$FROM")"
+FROMCONFIG="$FROMHOME/.config/miyka"
+
+NAMEHOME="$(miyka get home of "$NAME")"
+NAMECONFIG="$NAMEHOME/.config/miyka"
+
+rm -rf -- "$NAMECONFIG"
+cp -T -r -- "$FROMCONFIG" "$NAMECONFIG"

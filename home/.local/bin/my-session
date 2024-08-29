@@ -16,7 +16,7 @@ fi
 
 case "$NAME" in
 	"*create*")
-		my-session-create --new "$@"
+		my-session-create "$@"
 		"$0" "$@"
 		;;
 	"*edit*")
@@ -25,7 +25,7 @@ case "$NAME" in
 		"$0" "$@"
 		;;
 	"*copy*")
-		my-session-create --copy "$@"
+		my-session-copy "$@"
 		"$0" "$@"
 		;;
 	*)

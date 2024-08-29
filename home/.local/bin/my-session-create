@@ -2,17 +2,6 @@
 
 set -e
 
-case "$1" in
-    --new)
-        printf "Session name: "
-        read NAME
-        miyka create "$NAME"
-        ;;
-
-    --copy)
-        printf "Session name: "
-        read NAME
-        FROM=$(miyka list | fzf)
-        miyka copy "$FROM" as "$NAME"
-        ;;
-esac
+printf "Session name: "
+read NAME
+miyka create "$NAME"
