@@ -15,6 +15,7 @@ NAMEHOME="$(miyka get home of "$NAME")"
 NAMECONFIG="$NAMEHOME/.config/miyka"
 
 rm -rf -- "$NAMECONFIG"
+mkdir -p -- "$NAMECONFIG"
 cp -T -r -- "$FROMCONFIG" "$NAMECONFIG"
 
 # Clean locks.
