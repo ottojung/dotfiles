@@ -16,3 +16,6 @@ NAMECONFIG="$NAMEHOME/.config/miyka"
 
 rm -rf -- "$NAMECONFIG"
 cp -T -r -- "$FROMCONFIG" "$NAMECONFIG"
+
+# Clean locks.
+rm -rf -- "$NAMECONFIG/git-repositories/lock"
