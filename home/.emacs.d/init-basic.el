@@ -1435,7 +1435,9 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
   (local-set-key (kbd "C-c C-c") 'kill-compilation))
 
 (add-hook 'compilation-mode-hook 'my-compilation-hook)
-(add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
+
+(when (boundp 'ansi-color-compilation-filter)
+  (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter))
 
 ;;;;;;;;;;
 ;; TERM ;;
