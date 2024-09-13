@@ -67,8 +67,8 @@
   zip ;; .zip archive creator
   ;; unrar ;; .rar archive manager, unfree :(
   ;; megacmd ;; mega.nz command line interface, unfree :(
-  ffmpeg ;; video covertery
-  pandoc ;; conversion between formats, like markdown to HTML
+  ;; ffmpeg ;; video covertery
+  ;; pandoc ;; conversion between formats, like markdown to HTML
   ;; scc ;; cloc alternative
   cloc ;; scc alternative
   nitrogen ;; changes wallpapers
