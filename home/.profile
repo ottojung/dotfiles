@@ -60,6 +60,11 @@ test -s "$NVM_DIR/nvm.sh" && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 # prepend ~.local/bin to PATH
 PATH="${HOME}/.local/bin:${PATH}"
 
+if test -n "$MIYKA_PROJ_PATH"
+then
+	PATH="$MIYKA_PROJ_PATH/bin:$PATH"
+fi
+
 export PATH
 
 # Chibi scheme load path
