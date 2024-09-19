@@ -219,7 +219,7 @@
   pinentry ;; needed for GPG for some reason
   nss-certs ;; HTTPS certificates
   glibc-locales ;; provides locales
-  glibc-utf8-locales-2.29 ;; provides utf8 locales
+  ;; glibc-utf8-locales-2.29 ;; provides utf8 locales
   ;; localed ;; provides systemd's localectl command
   )
 
