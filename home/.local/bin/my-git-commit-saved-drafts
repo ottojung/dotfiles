@@ -1,0 +1,63 @@
+#! /bin/sh
+
+# 0. Prompt for new commit message.
+# 1. Examine git logs.
+# 2. In case the last commit message is not "$MSG", then exit with error.
+# 3. Otherwise, find the beginning of a chain of "$MSG", i.e. the oldest commit with message "$MSG" in the current chain of such commits.
+# 4. When found, extract its commit hash (such that it can be referenced).
+# 5. Reset to the found commit.
+# 6. Stash all files.
+# 7. Commit the stashed files.
+
+printf '%s' "Commit message: " >&2
+if ! read NEW_MSG
+then
+    echo "Cancelled." >&2
+    exit 1
+fi
+
+# The target commit message.
+MSG="save"
+
+# Get the last commit message
+LAST_MSG=$(git log -1 --pretty=%s)
+
+# Check if the last commit message matches MSG
+if [ "$LAST_MSG" != "$MSG" ]; then
+    echo "Error: Last commit message is not '$MSG'" >&2
+    exit 1
+fi
+
+# Initialize the oldest commit variable
+oldest_commit=""
+first=true
+
+# Iterate over the commits starting from HEAD
+for commit in $(git rev-list HEAD); do
+    if $first
+    then
+        echo "Starting at ${commit}." >&2
+        first=false
+    fi
+
+    # Get the commit message for the current commit
+    commit_msg=$(git log -1 --pretty=%s "$commit")
+
+    # Check if the commit message matches MSG
+    if [ "$commit_msg" = "$MSG" ]; then
+        oldest_commit="$commit"
+    else
+        break
+    fi
+done
+
+# Check if an oldest commit was found
+if [ -z "$oldest_commit" ]; then
+    echo "Error: No commits found with message '$MSG'" >&2
+    exit 1
+fi
+
+set -e
+
+git reset "$oldest_commit"~1
+my-git-commit-all "$NEW_MSG"

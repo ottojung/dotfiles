@@ -1,4 +1,2 @@
 #! /bin/sh
-
-message="$*"
-git add --all && git status --short && git commit --message "$message"
+exec my-git-commit-all "$@"
