@@ -9,12 +9,7 @@
 # 6. Stash all files.
 # 7. Commit the stashed files.
 
-printf '%s' "Commit message: " >&2
-if ! read NEW_MSG
-then
-    echo "Cancelled." >&2
-    exit 1
-fi
+NEW_MSG="$*"
 
 # The target commit message.
 MSG="save"
