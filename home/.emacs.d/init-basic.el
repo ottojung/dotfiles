@@ -437,6 +437,21 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
                      (let ((output (string-trim (buffer-string))))
                        (message "%s" output))))))))
 
+(defun my-git-commit-saved-drafts (commit-msg)
+  "Collates all draft commits."
+  (interactive "sCommit message: ")
+  (let ((output-buffer "*my-git-save-output*"))
+    (when (get-buffer output-buffer)
+      (kill-buffer output-buffer))
+    (make-process
+     :name "my-git-save"
+     :buffer output-buffer
+     :command (list "/bin/sh" "-c" (format "my-git-commit-saved-drafts %s" commit-msg))
+     :sentinel (lambda (proc _event)
+                 (when (eq (process-status proc) 'exit)
+                   (with-current-buffer (process-buffer proc)
+                     (message "%s" (buffer-string))))))))
+
 (defconst my-git-status:output-buffer
   "*my-git-status-output*")
 
@@ -1052,6 +1067,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
      ("M--"   my-default-font-size-dec!)
      ("M-="   my-default-font-size-inc!)
      ("M-j"   my-git-save)
+     ("M j"   my-git-commit-saved-drafts)
      ("M-h"   my-git-status)
 
      ("M-c"   shell-command)
