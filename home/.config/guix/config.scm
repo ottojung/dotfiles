@@ -205,7 +205,8 @@
   notmuch ;; mail indexer
   isync ;; also known as `mbsync' and uses `~/.mbsyncrc'
   msmtp ;; for sending mails, uses `~/.msmtprc'
-  icedove ;; like "Thunderbird" email client
+  ;; icedove ;; like "Thunderbird" email client
+  icedove-minimal ;; smaller version of icedov
   )
 
 (define-packages drivers
