@@ -1067,7 +1067,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
      ("M--"   my-default-font-size-dec!)
      ("M-="   my-default-font-size-inc!)
      ("M-j"   my-git-save)
-     ("M j"   my-git-commit-saved-drafts)
+     ("j"     my-git-commit-saved-drafts)
      ("M-h"   my-git-status)
 
      ("M-c"   shell-command)
