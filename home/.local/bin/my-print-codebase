@@ -1,0 +1,15 @@
+#! /bin/sh
+
+while IFS= read -r FILE
+do
+    SIZE="$(cat -- "$FILE" | wc -c)"
+    if test "$SIZE" -gt 102400
+    then continue
+    fi
+
+    echo
+    echo "File <$FILE>:"
+    echo '```'
+    cat -- "$FILE"
+    echo '```'
+done
