@@ -484,8 +484,8 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
   (interactive)
   (message
    (if (revert-buffer t t t)
-       "I reverted buffer :)"
-     "I failed you, sensei")))
+       "I reverted buffer."
+     "I failed you, sensei.")))
 
 (defun my-copy-filename ()
   (interactive)
@@ -493,9 +493,9 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
     (if name
         (progn
           (kill-new name)
-          (message (format "Copied %s" name))
+          (message (format "Copied %s." name))
           name)
-      (message (format "Buffer %s is not associated with any file" (buffer-name))))))
+      (message (format "Buffer %s is not associated with any file." (buffer-name))))))
 
 (defun my-fix-imports ()
   "Tries to fix missing imports in the current file."
@@ -1121,8 +1121,9 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 (advice-add 'switch-to-buffer :around 'my-select-window-advice)
 
 (condition-case nil
-	(add-function :after after-focus-change-function #'my-save-current-buffer)
-  (error (message "Adding 'after-focus-change-function hook failed. Your emacs is too old.")))
+    (add-function :after after-focus-change-function #'my-save-current-buffer)
+  (error
+   (warn "Adding 'after-focus-change-function hook failed. Your emacs is too old.")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; LOOK/TRANSPARENCY ;;
@@ -1187,14 +1188,14 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
   (condition-case nil
       (if (null (x-list-fonts font)) nil t)
     (error
-     (message "Cannot determine if font '%s' exists" font)
+     (warn "Cannot determine if font '%s' exists." font)
      nil)))
 
 (defconst my-prog-font "Fira Code")
 
 (unless my-emacs-in-terminal-mode?
   (unless (my-font-exists-p my-prog-font)
-    (message "No font '%s' found" my-prog-font)))
+    (warn "No font '%s' found." my-prog-font)))
 
 (defun my-set-prog-face ()
   (unless my-emacs-in-terminal-mode?
@@ -1319,7 +1320,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
   (condition-case nil
       (list
        (my-path-join MY-MEDIA-DIR "text" "notes" "org" "todo"))
-    (error (message "Org-agenda directory does not exist"))))
+    (error (warn "Org-agenda directory does not exist."))))
 (customize-set-variable
  'org-agenda-default-appointment-duration 90)
 ;; org agend)
@@ -1464,7 +1465,10 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 (defvar my-term-shell-program
   (or (getenv "SHELL")
       (program-resolve-path "fish")
-      (program-resolve-path "bash")))
+      (program-resolve-path "bash")
+      (progn
+        (warn "Could not infer shell, defaulting to /bin/sh.")
+        "/bin/sh")))
 
 (defconst my-term-loaded-p nil)
 

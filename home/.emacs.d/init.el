@@ -241,7 +241,7 @@
       (load-file
        (let ((coding-system-for-read 'utf-8))
          (shell-command-to-string "agda-mode locate")))
-    (error (message "Could not load agda-mode"))))
+    (error (warn "Could not load agda-mode."))))
 
 (defvar company-active-map)
 (with-eval-after-load 'company
@@ -297,11 +297,11 @@
   (if company-tabnine-restart-enabled
       (progn
         (add-to-list 'company-backends #'company-tabnine)
-        (message "tabnine was turned on"))
+        (message "tabnine was turned on."))
     (progn
       (setq company-backends
             (delete #'company-tabnine company-backends))
-      (message "tabnine was turned off"))))
+      (message "tabnine was turned off."))))
 
 (defun company-tabnine-start-process-wrapper (orig-fun &rest args)
   (if company-tabnine-restart-enabled
