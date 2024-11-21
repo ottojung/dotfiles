@@ -1,0 +1,26 @@
+#! /bin/sh
+
+set -x
+
+cd -- "$MY_MEDIA/text/notes"
+
+if ! git pull origin master --no-rebase
+then
+    my-notify "Cannot sync notes! Run $0 to see the logs."
+    exit 1
+fi
+
+emacs \
+    --quick \
+    --no-init-file \
+    --no-site-file \
+    --no-site-lisp \
+    --no-splash \
+    --no-loadup \
+    --no-bitmap-icon \
+    --load "~/.emacs.d/init-basic" \
+    -- "org/todo/main.org"
+
+git add --all
+git commit --message 'update'
+git push origin master
