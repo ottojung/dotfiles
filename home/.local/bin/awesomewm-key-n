@@ -3,9 +3,14 @@
 set -x
 
 cd -- "$MY_MEDIA/text/notes"
-git pull origin master --no-rebase
 
-ecc -- "org/todo/main.org"
+if ! git pull origin master --no-rebase
+then
+    my-notify "Cannot sync notes! Run $0 to see the logs."
+    exit 1
+fi
+
+ec -- "org/todo/main.org"
 
 git add --all
 git commit --message 'update'
