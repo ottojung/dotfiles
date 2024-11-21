@@ -10,16 +10,7 @@ then
     exit 1
 fi
 
-emacs \
-    --quick \
-    --no-init-file \
-    --no-site-file \
-    --no-site-lisp \
-    --no-splash \
-    --no-loadup \
-    --no-bitmap-icon \
-    --load "~/.emacs.d/init-basic" \
-    -- "org/todo/main.org"
+ec -- "org/todo/main.org"
 
 git add --all
 git commit --message 'update'

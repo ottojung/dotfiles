@@ -1,3 +1,2 @@
 #! /bin/sh
-
-x-terminal-emulator-exe my-edit-notes
+x-terminal-emulator-exe 'my-edit-notes'
