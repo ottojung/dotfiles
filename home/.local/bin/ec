@@ -1,6 +1,6 @@
 #! /bin/sh
 
 if test -z "$EMACS_SERVER_NAME"
-then exec emacs -nw -Q --load "~/.emacs.d/init-basic" "$@"
+then exec emacs  --no-init-file --no-site-file --no-window-system --no-site-lisp --no-splash --no-desktop --no-loadup --no-bitmap-icon --quick --load "~/.emacs.d/init-basic" "$@"
 else exec emacsclient --socket-name "$EMACS_SERVER_NAME" "$@"
 fi
