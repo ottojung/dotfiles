@@ -206,7 +206,7 @@
   isync ;; also known as `mbsync' and uses `~/.mbsyncrc'
   msmtp ;; for sending mails, uses `~/.msmtprc'
   ;; icedove ;; like "Thunderbird" email client
-  icedove-minimal ;; smaller version of icedov
+  icedove-minimal ;; smaller version of icedove
   )
 
 (define-packages drivers
