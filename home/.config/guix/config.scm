@@ -171,7 +171,7 @@
   gimp ;; image editor
   mypaint ;; simple paint program
   ;; element-desktop ;; default matrix client
-  openttd ;; game called Open Transport Tycoon Delux, economic simulator
+  ;; openttd ;; game called Open Transport Tycoon Delux, economic simulator
   cataclysm-dda ;; game called Cataclysm: Dark Days Ahead, zombie survival
   remmina ;; Remmina is a client to use other desktops remotely.  RDP, VNC, SPICE, NX, XDMCP, SSH and EXEC network protocols are supported.
   )
