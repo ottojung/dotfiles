@@ -27,8 +27,8 @@
    ;; (locale "en_US.UTF-8")
    (timezone "US/Pacific")
    (keyboard-layout my-console-keyboard)
+
    (host-name this-hostname)
-   (hosts-file this-hosts-file)
 
    ;; The list of user accounts ('root' is implicit).
    (users (cons* (user-account
@@ -843,28 +843,19 @@
    ))
 
 
-(define this-hosts-file
-  (plain-file
-   "hosts"
+(define this-hosts-service
+  (simple-service
+   'add-extra-hosts
+   hosts-service-type
 
-   (call-with-output-string
-    (lambda (port)
+   (map
+    (lambda (website)
+      (host "0.0.0.0" website))
+    blocked-websites)))
 
-      (define (display-line . words)
-        (for-each
-         (lambda (word i)
-           (unless (= i 0) (display "	"))
-           (display word port))
-         words (iota (length words)))
-        (newline port))
 
-      (display-line "127.0.0.1" "localhost" this-hostname)
-      (display-line "::1"       "localhost" this-hostname)
-
-      (for-each
-       (lambda (website)
-         (display-line "0.0.0.0" website))
-       blocked-websites)))))
+(define (add-hosts-service services)
+  (cons this-hosts-service services))
 
 
 (define (set-in-alist alist . key-values)
@@ -921,14 +912,19 @@
   (cons (service gnome-desktop-service-type) packages))
 
 (define add-my-desktop-services
-  (compose add-gnome-service add-libvirt-services set-display-manager modify-special-files))
+  (compose
+   ;; add-gnome-service
+   add-libvirt-services
+   set-display-manager
+   modify-special-files
+   add-hosts-service
+   ))
 
 (define my-system-package-names
   '("dash"
-    "glibc-locales"
-    "glibc-utf8-locales-2.29"
+    ;; "glibc-locales"
+    ;; "glibc-utf8-locales-2.29"
     "localed"
-    "nss-certs"
     "fontconfig"
     "font-google-noto"
     "font-google-noto-serif-cjk"
