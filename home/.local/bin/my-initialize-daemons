@@ -15,7 +15,6 @@ nice -n 19 my-execute-in-screens \
 	"my-battery-daemon" \
 	"my-memory-daemon" \
 	"my-clipboard-daemon" \
-	"my-reverse-ssh" \
 	"my-data-sync-daemon" \
 
 
