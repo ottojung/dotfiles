@@ -48,7 +48,7 @@ do
 		tmux new-window -t "$NAME:$i" -n "$WIN"
 	fi
 
-	tmux send-keys -t "$NAME:$i" "$arg" ENTER
+	tmux send-keys -t "$NAME:$i" "dash -l -c $arg" ENTER
 
 	i=$((i + 1))
 done
