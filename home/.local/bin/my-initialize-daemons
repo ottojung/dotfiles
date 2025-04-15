@@ -15,6 +15,7 @@ nice -n 19 my-execute-in-screens \
 	"my-battery-daemon" \
 	"my-memory-daemon" \
 	"my-clipboard-daemon" \
+	"my-screensaver-daemon" \
 	"my-data-sync-daemon" \
 
 
