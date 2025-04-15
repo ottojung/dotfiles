@@ -1,10 +1,31 @@
 #! /bin/sh
 
-if command -v slock 1>/dev/null 2>/dev/null
-then slock
+set -x
+
+if command -v xscreensaver-command 1>/dev/null 2>/dev/null
+then
+    if ! xscreensaver-command -lock
+    then
+        xscreensaver &
+        sleep 10
+        xscreensaver-command -lock
+    fi
+
+    MYPID="$$"
+
+    xscreensaver-command -watch | while IFS= read LINE
+    do
+        SHOULD_EXIT=0
+        case "$LINE" in
+            UNBLANK*)
+                my-kill-my-screensaver
+                kill "$MYPID"
+            ;;
+        esac
+    done
 else
-    if command -v xscreensaver-command 1>/dev/null 2>/dev/null
-    then xscreensaver-command -lock
+    if command -v slock 1>/dev/null 2>/dev/null
+    then slock || slimlock
     else
         if command -v slimlock 1>/dev/null 2>/dev/null
         then slimlock
@@ -14,3 +35,8 @@ else
         fi
     fi
 fi
+
+# slock || slimlock
+
+# gnome-screensaver &
+# gnome-screensaver-command --lock
