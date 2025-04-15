@@ -18,7 +18,9 @@ then
 				then export GUIX_PROFILE="$HOME/.guix-profile"
 				fi
 			fi
-			. "$GUIX_PROFILE/etc/profile"
+			if test -f "$GUIX_PROFILE/etc/profile"
+			then . "$GUIX_PROFILE/etc/profile"
+			fi
 			export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
 		fi
 	fi
