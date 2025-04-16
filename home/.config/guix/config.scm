@@ -252,12 +252,8 @@
    - texlive
    - x-server
    + arandr
-   + gui-small
-   - gui-big
    + ungoogled-chromium
    + firefox-esr
-   - fonts
-   - e-mail
    - drivers
    - guix-packages
    + glibc-locales
