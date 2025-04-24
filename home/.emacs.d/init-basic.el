@@ -9,7 +9,7 @@
  '(ansi-color-names-vector
    ["#454545" "#cd5542" "#6aaf50" "#baba36" "#5180b3" "#ab75c3" "#68a5e9" "#bdbdb3"])
  '(backward-delete-char-untabify-method 'hungry)
- '(org-ai-default-chat-model "o3-mini")
+ '(org-ai-default-chat-model "o4-mini")
  '(blink-cursor-mode nil)
  '(compilation-disable-input t)
  '(compilation-scroll-output 'first-error)
