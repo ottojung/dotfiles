@@ -1320,7 +1320,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
   (condition-case nil
       (list
        (my-path-join MY-MEDIA-DIR "text" "notes" "org" "todo"))
-    (error (warn "Org-agenda directory does not exist."))))
+    (error (message "Org-agenda directory does not exist."))))
 (customize-set-variable
  'org-agenda-default-appointment-duration 90)
 ;; org agend)
@@ -1453,7 +1453,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 
 (add-hook 'compilation-mode-hook 'my-compilation-hook)
 
-(when (boundp 'ansi-color-compilation-filter)
+(when (fboundp 'ansi-color-compilation-filter)
   (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter))
 
 ;;;;;;;;;;
