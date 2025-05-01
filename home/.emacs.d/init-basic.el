@@ -1452,7 +1452,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 
 (defun my-rerun-compile/this ()
   "Save the current buffer and run the file it visits in its own compilation buffer.
-The buffer is named “*mycmp-<filename>*”, so you never clobber your other *compilation* buffers."
+The buffer is named “*mycomp-<filename>*”, so you never clobber your other *compilation* buffers."
 
   (interactive)
 
