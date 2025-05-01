@@ -82,7 +82,7 @@
   imagemagick ;; CLI tool to edit images
   lynx ;; CLI browser
   weechat ;; CLI IRC client
-  docker docker-cli docker-compose ;; Docker stuff
+  ;; docker docker-cli docker-compose ;; Docker stuff
   ;; podman ;; podman stuff. NOTE: does not work on Guix at the moment.
   restic ;; backup program with deduplication and incrementality.
   )
@@ -161,7 +161,7 @@
   ;; qutebrowser ;; python-based web browser
   ;; teams ;; unfree :(
   obs ;; (nix: obs-studio)
-  flatpak
+  ;; flatpak
   okular ;; pdf-reader
   zathura ;; pdf-reader
   zathura-pdf-poppler ;; plugin for zathura that makes it actually work for pdfs
@@ -218,7 +218,7 @@
 (define-packages guix-packages
   gnupg ;; gpg for pgs
   pinentry ;; needed for GPG for some reason
-  nss-certs ;; HTTPS certificates
+  ;; nss-certs ;; HTTPS certificates
   glibc-locales ;; provides locales
   ;; glibc-utf8-locales-2.29 ;; provides utf8 locales
   ;; localed ;; provides systemd's localectl command
