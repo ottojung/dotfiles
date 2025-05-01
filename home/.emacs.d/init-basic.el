@@ -1469,7 +1469,7 @@ The buffer is named “*mycmp-<filename>*”, so you never clobber your other *c
          ;; run via "./foo", quoting the name in case it has spaces
          (cmd      (concat "./" (shell-quote-argument fname)))
          ;; this is the one‐off name we want for this run
-         (cmp-buf  (format "*mycmp-%s*" fname)))
+         (cmp-buf  (format "*mycomp-%s*" fname)))
 
     ;; 2) ensure +x bit
     (unless (file-executable-p file)
