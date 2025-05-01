@@ -1076,6 +1076,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
      ("M-l"   my-translate)
      ("M-y"   my-term-taged)
      ("M-u"   my-rerun-compile)
+     ("u"     my-rerun-compile/this)
      ("t u"   my-run-last-term-command)
      ("f i"   my-fix-imports)
      ("f c"   my-create-scheme-file)
@@ -1447,6 +1448,34 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
       (call-interactively 'compile))
 
     (select-window current-w)))
+
+
+(defun my-rerun-compile/this ()
+  "Save the current buffer and run the file it visits in its own compilation buffer.
+The buffer is named “*mycmp-<filename>*”, so you never clobber your other *compilation* buffers."
+
+  (interactive)
+  (unless buffer-file-name
+    (user-error "Buffer is not visiting a file"))
+  ;; 1) save file
+  (save-buffer)
+  ;; 2) build the command and buffer‐name
+  (let* ((file      (buffer-file-name))
+         (dir       (file-name-directory file))
+         (fname     (file-name-nondirectory file))
+         ;; we assume `file' is made executable already
+         ;; use the full path so there is no ambiguity:
+         (cmd       (concat "./" (shell-quote-argument fname)))
+         (buf-name  (format "*mycmp-%s*" fname)))
+    ;; 3) cd into its directory (so "./foo" works) and start compilation
+    (let ((default-directory dir))
+      (compilation-start
+       cmd
+       'compilation-mode
+       ;; NAME‐FUNCTION: ignore the argument (the command) and always
+       ;; return our custom buffer name
+       (lambda (_command) buf-name)))))
+
 
 (defun my-compilation-hook ()
   (local-set-key (kbd "C-c C-c") 'kill-compilation))
