@@ -1460,23 +1460,29 @@ The buffer is named “*mycmp-<filename>*”, so you never clobber your other *c
   (unless buffer-file-name
     (user-error "This buffer is not visiting a file"))
 
-  ;; 1) save file
+  ;; 1) save so disk has the latest
   (save-buffer)
-  ;; 2) figure out the directory, basename and command
-  (let* ((file     buffer-file-name)
+
+  (let* ((file     (buffer-file-name))
          (dir      (file-name-directory file))
          (fname    (file-name-nondirectory file))
-         ;; assume +x bit is already set on `file`
-         ;; we run it via "./foo"
+         ;; run via "./foo", quoting the name in case it has spaces
          (cmd      (concat "./" (shell-quote-argument fname)))
          ;; this is the one‐off name we want for this run
          (cmp-buf  (format "*mycmp-%s*" fname)))
+
+    ;; 2) ensure +x bit
+    (unless (file-executable-p file)
+      (let ((modes (file-modes file)))
+        ;; OR in the user/group/other executable bits (octal 0111)
+        (set-file-modes file (logior modes #o111))))
 
     ;; 3) bind default-directory so "./foo" resolves, then start
     ;;    compilation.  We hand it `cmp-buf` as a string name‐function.
     (let ((default-directory dir))
       (compilation-start cmd
                          'compilation-mode
+                         ;; name-fn: return our precomputed buffer name
                          (lambda (&args) cmp-buf)))))
 
 
