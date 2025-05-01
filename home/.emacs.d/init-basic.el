@@ -1455,26 +1455,29 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
 The buffer is named “*mycmp-<filename>*”, so you never clobber your other *compilation* buffers."
 
   (interactive)
+
+  ;; must be visiting a real file
   (unless buffer-file-name
-    (user-error "Buffer is not visiting a file"))
+    (user-error "This buffer is not visiting a file"))
+
   ;; 1) save file
   (save-buffer)
-  ;; 2) build the command and buffer‐name
-  (let* ((file      (buffer-file-name))
-         (dir       (file-name-directory file))
-         (fname     (file-name-nondirectory file))
-         ;; we assume `file' is made executable already
-         ;; use the full path so there is no ambiguity:
-         (cmd       (concat "./" (shell-quote-argument fname)))
-         (buf-name  (format "*mycmp-%s*" fname)))
-    ;; 3) cd into its directory (so "./foo" works) and start compilation
+  ;; 2) figure out the directory, basename and command
+  (let* ((file     buffer-file-name)
+         (dir      (file-name-directory file))
+         (fname    (file-name-nondirectory file))
+         ;; assume +x bit is already set on `file`
+         ;; we run it via "./foo"
+         (cmd      (concat "./" (shell-quote-argument fname)))
+         ;; this is the one‐off name we want for this run
+         (cmp-buf  (format "*mycmp-%s*" fname)))
+
+    ;; 3) bind default-directory so "./foo" resolves, then start
+    ;;    compilation.  We hand it `cmp-buf` as a string name‐function.
     (let ((default-directory dir))
-      (compilation-start
-       cmd
-       'compilation-mode
-       ;; NAME‐FUNCTION: ignore the argument (the command) and always
-       ;; return our custom buffer name
-       (lambda (_command) buf-name)))))
+      (compilation-start cmd
+                         'compilation-mode
+                         (lambda (&args) cmp-buf)))))
 
 
 (defun my-compilation-hook ()
