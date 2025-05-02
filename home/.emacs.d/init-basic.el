@@ -1477,13 +1477,14 @@ The buffer is named “*mycomp-<filename>*”, so you never clobber your other *
         ;; OR in the user/group/other executable bits (octal 0111)
         (set-file-modes file (logior modes #o111))))
 
-    ;; 3) bind default-directory so "./foo" resolves, then start
-    ;;    compilation.  We hand it `cmp-buf` as a string name‐function.
+    ;; 3) cd into the file’s dir, start the compile, grab & rename the buffer
     (let ((default-directory dir))
-      (compilation-start cmd
-                         'compilation-mode
-                         ;; name-fn: return our precomputed buffer name
-                         (lambda (&args) cmp-buf)))))
+      (let ((buf (compilation-start cmd 'compilation-mode)))
+        (with-current-buffer buf
+          ;; the `t` here means “if target exists, make it unique”.
+          (rename-buffer cmp-buf t))
+        ;; return the buffer if anyone cares
+        buf))))
 
 
 (defun my-compilation-hook ()
