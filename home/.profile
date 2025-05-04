@@ -95,7 +95,7 @@ export MIYKA_FETCHER="miyka-md1"
 
 for SCRIPT in "$MY_ROOT"/var/private-env-init/*
 do . "$SCRIPT"
-fi
+done
 
 # Export locale so terminals and tmux are fancy
 # export LC_ALL='en_US.UTF-8'
