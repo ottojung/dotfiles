@@ -93,8 +93,8 @@ export MY_MEDIA="$MY_ROOT/media"
 export MY_SESSIONS_ROOT="$MY_MEDIA/text/other/sessions"
 export MIYKA_FETCHER="miyka-md1"
 
-if test -f "$MY_ROOT/var/private-profile.sh"
-then . "$MY_ROOT/var/private-profile.sh"
+for SCRIPT in "$MY_ROOT"/var/private-env-init/*
+then . "$SCRIPT"
 fi
 
 # Export locale so terminals and tmux are fancy
