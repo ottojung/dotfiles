@@ -94,7 +94,7 @@ export MY_SESSIONS_ROOT="$MY_MEDIA/text/other/sessions"
 export MIYKA_FETCHER="miyka-md1"
 
 for SCRIPT in "$MY_ROOT"/var/private-env-init/*
-then . "$SCRIPT"
+do . "$SCRIPT"
 fi
 
 # Export locale so terminals and tmux are fancy
