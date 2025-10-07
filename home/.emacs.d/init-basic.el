@@ -480,6 +480,21 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
                                             (message "%s" output))))))
                        (message "%s" output))))))))
 
+(defun my-evaluate ()
+  "Evaluate the sexp before point and copy its printed value to the clipboard.
+Unlike `C-x C-e`, this does not print the value in the echo area."
+  (interactive)
+  (let* ((print-length eval-expression-print-length)
+         (print-level  eval-expression-print-level))
+    (condition-case err
+        (let* ((form  (elisp--preceding-sexp))
+               (value (eval form lexical-binding))
+               (text  (prin1-to-string value)))
+          (kill-new (string-trim-right text))
+          (message "%s" value))
+      (error (message "Eval error: %s" (error-message-string err))))))
+
+
 (defun my-revert-buffer ()
   (interactive)
   (message
@@ -1073,7 +1088,7 @@ SEQ, this is like `mapcar'.  With several, it is like the Common Lisp
      ("M-c"   shell-command)
      ("c"     my-term-new)
      ("M-t"   my-term-open-last)
-     ("M-l"   my-translate)
+     ("M-l"   my-evaluate)
      ("M-y"   my-term-taged)
      ("M-u"   my-rerun-compile)
      ("u"     my-rerun-compile/this)
