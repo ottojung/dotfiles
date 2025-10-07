@@ -26,7 +26,7 @@ TARGET="$*"
 # 	exec chromium --incognito "$TARGET"
 # fi
 
-# exec chromium --incognito "$TARGET"
+exec chromium --incognito "$TARGET"
 
-printf '%s\n' "$TARGET" | my-clipboard-copy
+# printf '%s\n' "$TARGET" | my-clipboard-copy
 # x-terminal-emulator-exe "printf '%s\n' '$TARGET' ; sleep 5"

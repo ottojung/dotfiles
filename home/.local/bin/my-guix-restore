@@ -2,6 +2,7 @@
 
 # guix pull
 
-$EDITOR "$HOME/.config/guix/config.scm"
+#$EDITOR "$HOME/.config/guix/config.scm"
 
 guix package -m "$HOME/.config/guix/config.scm"
+
