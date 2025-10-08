@@ -1503,6 +1503,7 @@ The buffer is named “*mycomp-<filename>*”, so you never clobber your other *
 
 
 (defun my-compilation-hook ()
+  (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
   (local-set-key (kbd "C-c C-c") 'kill-compilation))
 
 (add-hook 'compilation-mode-hook 'my-compilation-hook)
