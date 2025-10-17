@@ -1,58 +1,24 @@
 {
-    "[javascript]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features"
-    },
+    "editor.minimap.enabled": false,
+    "window.menuBarVisibility": "toggle",
+    "workbench.colorTheme": "Visual Studio 2019 Dark",
+    "editor.cursorStyle": "block",
     "git.enableSmartCommit": true,
     "git.confirmSync": false,
-    "editor.minimap.enabled": false,
-    "javascript.updateImportsOnFileMove.enabled": "always",
-    "explorer.confirmDragAndDrop": false,
-    "github.copilot.chat.codesearch.enabled": true,
-    "github.copilot.chat.agent.thinkingTool": true,
-    "chat.agent.maxRequests": 500,
-    "javascript.suggest.classMemberSnippets.enabled": false,
-    "typescript.suggest.classMemberSnippets.enabled": false,
-    "typescript.suggest.objectLiteralMethodSnippets.enabled": false,
-    "editor.suggest.showSnippets": false,
+    "chat.tools.terminal.autoApprove": {
+        "/.*/": true,
+        "iex": false,
+        "curl": true
+    },
+    "files.autoSave": "onFocusChange",
     "github.copilot.enable": {
         "*": true,
         "plaintext": false,
         "markdown": true,
-        "scminput": false,
-        "javascript": true
+        "scminput": false
     },
+    "chat.agent.maxRequests": 900,
     "github.copilot.nextEditSuggestions.enabled": true,
-    "[jsonc]": {
-        "editor.defaultFormatter": "vscode.json-language-features"
-    },
-    "files.autoSave": "onFocusChange",
-    "editor.cursorStyle": "block",
-    "diffEditor.ignoreTrimWhitespace": false,
-    "workbench.colorTheme": "GitHub Dark Colorblind (Beta)",
-    "remote.autoForwardPortsSource": "hybrid",
-    "git.openRepositoryInParentFolders": "never",
     "window.zoomLevel": -1,
-    "github.copilot.advanced": {},
-    "[html]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "chat.tools.autoApprove": true,
-    "[markdown]": {
-        "editor.defaultFormatter": "yzhang.markdown-all-in-one"
-    },
-    "[javascriptreact]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "explorer.confirmDelete": false,
-    "chat.editing.confirmEditRequestRemoval": false,
-    "chat.editing.confirmEditRequestRetry": false,
-    "chat.notifyWindowOnConfirmation": false,
-    "githubPullRequests.codingAgent.promptForConfirmation": false,
-    "makefile.configureOnOpen": false,
-    "githubPullRequests.createOnPublishBranch": "never",
-    "chat.tools.terminal.autoApprove": {
-        "/.*/": true,
-        "rm": true,
-        "cd": true
-    }
+    "remote.autoForwardPortsSource": "hybrid"
 }
