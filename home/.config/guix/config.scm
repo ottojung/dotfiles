@@ -35,8 +35,8 @@
   rlwrap ;; provides `readline` functionality for CLI programs
   tree ;; like `ls` but recursive
   entr ;; runs command when file is updated
-  wget ;; downloads stuff from the internet, like curl
-  curl ;; downloads stuff from the internet, like wget
+  ;; wget ;; downloads stuff from the internet, like curl
+  ;; curl ;; downloads stuff from the internet, like wget
   libnotify ;; provides `notify-send'
   sox ;; provides `play' command
   figlet ;; transforms text into nice drawings
@@ -62,7 +62,7 @@
   mpd mpd-mpc ncmpcpp ;; terminal music player suite
   ;; cordless ;; discord CLI client
   ;; neofetch ;; to look cool on the internet
-  p7zip ;; .7z archive manager
+  7zip ;; .7z archive manager
   unzip ;; .zip archive extractor
   zip ;; .zip archive creator
   ;; unrar ;; .rar archive manager, unfree :(
@@ -71,13 +71,13 @@
   ;; pandoc ;; conversion between formats, like markdown to HTML
   ;; scc ;; cloc alternative
   cloc ;; scc alternative
-  nitrogen ;; changes wallpapers
+  ;; nitrogen ;; changes wallpapers
   cpupower ;; `cpupower' utility (nix: linuxPackages.cpupower)
   lm-sensors ;; CPU diagnostics tool, provides `sensors' program and others (nix: lm_sensors)
   acpi ;; battery diagnostics tool
   rsync ;; copies files between remote computers
   unison ;; like rsync, but for syncing
-  youtube-dl ;; need newest version
+  ;; youtube-dl ;; need newest version
   ;; texlive ;; distribution of TeX programs (nix: texlive.combined.scheme-full)
   imagemagick ;; CLI tool to edit images
   lynx ;; CLI browser
@@ -104,6 +104,7 @@
   ;; coq ;; Coq language compiler
   ;; maxima ;; mathematica-like computer algebra system
   swi-prolog ;; free prolog implementation
+  go ;; the golang compiler
   )
 
 (define-packages x-server
@@ -169,7 +170,7 @@
   libreoffice
   ;; krita ;; paint program
   gimp ;; image editor
-  mypaint ;; simple paint program
+  ;; mypaint ;; simple paint program
   ;; element-desktop ;; default matrix client
   ;; openttd ;; game called Open Transport Tycoon Delux, economic simulator
   ;; cataclysm-dda ;; game called Cataclysm: Dark Days Ahead, zombie survival
@@ -253,10 +254,15 @@
    - x-server
    + arandr
    + ungoogled-chromium
-   + firefox-esr
+   + go
+   - firefox-esr
+   - fonts
+   - e-mail
    - drivers
+   + alacritty
    - guix-packages
    + glibc-locales
+   + nss-certs ;; HTTPS certificates
    - xmonad-packages))
 
 
