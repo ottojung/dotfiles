@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Terminal=false
+Type=Application
+Name=Volodyslav
+Exec=/gnu/store/8c1nw2h98rhx71600ghaklsra2x6l5sj-ungoogled-chromium-112.0.5615.165-1/lib/chromium --user-data-dir=/media/mybtrfs/home-submodule/my-link-files/root/home/puser/my/media/miyka/repositories/n0vi5pbhx1x5k5r1/wd/home/.config/chromium --profile-directory=Default --app-id=ocgcjdgheaooopdfndihmfppjckehjei
+Icon=chrome-ocgcjdgheaooopdfndihmfppjckehjei-Default
+StartupWMClass=crx_ocgcjdgheaooopdfndihmfppjckehjei

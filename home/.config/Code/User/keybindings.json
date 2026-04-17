@@ -1694,11 +1694,6 @@
         "when": "editorTextFocus && !editorReadonly"
     },
     {
-        "key": "ctrl+k",
-        "command": "deleteAllRight",
-        "when": "textInputFocus"
-    },
-    {
         "key": "ctrl+shift+-",
         "command": "emacs.C-/",
         "when": "textInputFocus && !editorReadonly"
@@ -2019,5 +2014,47 @@
         "key": "ctrl+w",
         "command": "-workbench.action.closeGroup",
         "when": "activeEditorGroupEmpty && multipleEditorGroups"
+    },
+    {
+        "key": "ctrl+k v",
+        "command": "-markdown.showPreviewToSide",
+        "when": "!notebookEditorFocused && editorLangId =~ /^(markdown|prompt|instructions|chatmode)$/"
+    },
+    {
+        "key": "ctrl+k ctrl+i",
+        "command": "-workbench.action.showHover"
+    },
+    {
+        "key": "ctrl+k",
+        "command": "deleteAllRight"
+    },
+    {
+        "key": "ctrl+k ctrl+o",
+        "command": "-workbench.action.files.openFolder",
+        "when": "openFolderWorkspaceSupport && !isSessionsWindow"
+    },
+    {
+        "key": "ctrl+k v",
+        "command": "-markdown.showPreviewToSide",
+        "when": "!notebookEditorFocused && editorLangId =~ /^(markdown|prompt|instructions|chatagent|skill)$/"
+    },
+    {
+        "key": "ctrl+x k",
+        "command": "-workbench.action.closeActiveEditor"
+    },
+    {
+        "key": "ctrl+k z",
+        "command": "-workbench.action.toggleZenMode",
+        "when": "!isAuxiliaryWindowFocusedContext && !isSessionsWindow"
+    },
+    {
+        "key": "ctrl+k f",
+        "command": "-workbench.action.closeFolder",
+        "when": "emptyWorkspaceSupport && !isSessionsWindow && workbenchState != 'empty'"
+    },
+    {
+        "key": "ctrl+k f2",
+        "command": "-toggleQuickDiffWidgetFocus",
+        "when": "dirtyDiffVisible"
     }
 ]

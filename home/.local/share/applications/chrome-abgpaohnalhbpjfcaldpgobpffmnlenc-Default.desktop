@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Terminal=false
+Type=Application
+Name=Codespaces
+Exec=/gnu/store/4dx2znm32qkdwwnq8xnywraw1rh8ldp6-ungoogled-chromium-141.0.7390.65-1/lib/chromium --user-data-dir=/media/mybtrfs/home-submodule/my-link-files/root/home/puser/my/media/miyka/repositories/n0vi5pbhx1x5k5r1/wd/home/.config/chromium --profile-directory=Default --app-id=abgpaohnalhbpjfcaldpgobpffmnlenc
+Icon=chrome-abgpaohnalhbpjfcaldpgobpffmnlenc-Default
+StartupWMClass=crx_abgpaohnalhbpjfcaldpgobpffmnlenc
