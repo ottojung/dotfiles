@@ -257,7 +257,7 @@
    + go
    - firefox-esr
    - fonts
-   - e-mail
+   + e-mail
    - drivers
    + alacritty
    - guix-packages
