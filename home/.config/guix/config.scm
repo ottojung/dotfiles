@@ -226,7 +226,7 @@
   )
 
 (define-packages xmonad-packages
-  ghc-xmonad-contrib xmonad xmobar)
+  ghc-xmonad-contrib xmonad xmobar qtile)
 
 
 (define base
