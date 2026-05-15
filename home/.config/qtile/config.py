@@ -26,6 +26,11 @@ DEFAULT_SECONDARY = "t"
 # persisted across restarts.
 _last_secondary_by_main = {main: DEFAULT_SECONDARY for main in MAIN_GROUPS}
 
+# Global focus history for Mod-Tab. Qtile has its own internal focus handling,
+# but this gives us something close to the XMonad GroupNavigation behavior.
+_focus_history = []
+_MAX_FOCUS_HISTORY = 64
+
 
 def group_name(main: int, secondary: str) -> str:
     # Match the XMonad naming: "a".."z" for main 1, "2/a".."9/z" otherwise.
@@ -64,11 +69,114 @@ def move_window_to_group(qtile_obj, name: str, switch: bool = True) -> None:
         switch_to_group(qtile_obj, name)
 
 
-@hook.subscribe.setgroup
 def remember_current_subworkspace() -> None:
     main, secondary = current_parts(qtile)
     if main in _last_secondary_by_main:
         _last_secondary_by_main[main] = secondary
+
+
+# Register imperatively rather than with @hook.subscribe.setgroup.
+# This avoids a qtile-check/mypy stubgen issue where decorated hook functions
+# can be emitted as `FunctionType` without importing it in config.pyi.
+hook.subscribe.setgroup(remember_current_subworkspace)
+
+
+def remember_focused_window(window) -> None:
+    global _focus_history
+
+    if window is None:
+        return
+
+    # Keep most-recent-first and remove stale/dead windows opportunistically.
+    alive = []
+    for old_window in _focus_history:
+        if old_window is window:
+            continue
+        if getattr(old_window, "group", None) is not None:
+            alive.append(old_window)
+
+    _focus_history = [window] + alive[: _MAX_FOCUS_HISTORY - 1]
+
+
+# Register imperatively for the same reason as setgroup above.
+hook.subscribe.client_focus(remember_focused_window)
+
+
+def screen_status_text() -> str:
+    """Xmobar-ish active-screen summary.
+
+    Format:
+      [0:t]     = focused screen 0, group t
+      (1:2/a)   = another active screen, group 2/a
+    """
+    try:
+        focused_screen = qtile.current_screen
+        parts = []
+        for index, screen in enumerate(qtile.screens):
+            group = getattr(screen, "group", None)
+            if group is None:
+                continue
+
+            item = f"{index}:{group.name}"
+            if screen is focused_screen:
+                parts.append(f"[{item}]")
+            else:
+                parts.append(f"({item})")
+
+        return " ".join(parts)
+    except Exception:
+        return ""
+
+
+@lazy.function
+def focus_previous_window(qtile_obj) -> None:
+    """Focus the previously focused live window, possibly on another screen.
+
+    This is a practical Qtile approximation of the old XMonad `focusLastWindow`.
+    It intentionally switches focus to the screen that already owns the target
+    window, rather than trying to swap physical monitor contents.
+    """
+    current = qtile_obj.current_window
+    target = None
+    cleaned = []
+
+    for window in _focus_history:
+        group = getattr(window, "group", None)
+        if group is None:
+            continue
+        cleaned.append(window)
+        if window is not current and target is None:
+            target = window
+
+    _focus_history[:] = cleaned[:_MAX_FOCUS_HISTORY]
+
+    if target is None:
+        return
+
+    target_group = getattr(target, "group", None)
+    if target_group is None:
+        return
+
+    target_screen = getattr(target_group, "screen", None)
+    if target_screen is not None:
+        try:
+            qtile_obj.focus_screen(qtile_obj.screens.index(target_screen))
+        except ValueError:
+            pass
+    else:
+        qtile_obj.current_screen.set_group(target_group)
+
+    try:
+        target_group.focus(target, warp=False)
+    except TypeError:
+        target_group.focus(target)
+
+    try:
+        target.focus(warp=False)
+    except TypeError:
+        target.focus(False)
+    except Exception:
+        pass
 
 
 @lazy.function
@@ -119,6 +227,7 @@ keys = [
     # Window focus and swapping.
     Key([mod], "j", lazy.layout.down(), desc="Focus next window"),
     Key([mod], "k", lazy.layout.up(), desc="Focus previous window"),
+    Key([mod], "Tab", focus_previous_window, desc="Focus previously focused window/screen"),
     Key([mod, "shift"], "j", lazy.layout.shuffle_down(), desc="Swap down"),
     Key([mod, "shift"], "k", lazy.layout.shuffle_up(), desc="Swap up"),
 
@@ -178,6 +287,7 @@ for secondary in SECONDARIES:
 # explicitly used above are skipped so Qtile does not bind the same chord twice.
 ENABLE_AWESOMEWM_KEY_SCRIPTS = True
 QTILE_USED_LETTER_KEYS = {"a", "f", "h", "j", "k", "l", "m", "n", "w", "x"}
+QTILE_USED_SPECIAL_KEYS = {"Tab"}
 if ENABLE_AWESOMEWM_KEY_SCRIPTS:
     for letter in SECONDARIES:
         if letter not in QTILE_USED_LETTER_KEYS:
@@ -202,8 +312,9 @@ if ENABLE_AWESOMEWM_KEY_SCRIPTS:
         ("Insert", "insert"),
         ("space", "space"),
     ]:
-        keys.append(Key([mod], key_name, lazy.spawn(f"awesomewm-key-{script_name}")))
-        keys.append(Key([mod, "shift"], key_name, lazy.spawn(f"awesomewm-key-shift-{script_name}")))
+        if key_name not in QTILE_USED_SPECIAL_KEYS:
+            keys.append(Key([mod], key_name, lazy.spawn(f"awesomewm-key-{script_name}")))
+            keys.append(Key([mod, "shift"], key_name, lazy.spawn(f"awesomewm-key-shift-{script_name}")))
 
 
 layouts = [
@@ -230,6 +341,8 @@ screens = [
     Screen(
         top=bar.Bar(
             [
+                widget.GenPollText(func=screen_status_text, update_interval=0.25),
+                widget.TextBox(" "),
                 widget.CurrentLayout(),
                 widget.TextBox(" "),
                 widget.WindowName(),
