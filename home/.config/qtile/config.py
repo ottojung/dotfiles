@@ -6,6 +6,7 @@
 # The important bit for your Chrome/F11 behavior is:
 #     auto_fullscreen = False
 
+from html import escape
 from string import ascii_lowercase
 from typing import Any, cast
 
@@ -117,52 +118,94 @@ def remember_focused_window(window: Any) -> None:
 hook.subscribe.client_focus(remember_focused_window)
 
 
-def screen_status_text() -> str:
-    """Xmobar-ish active-workspace summary.
+def pango_span(text: str, fg: str, bg: str | None = None, weight: str | None = None) -> str:
+    attrs = [f'foreground="{fg}"']
+    if bg is not None:
+        attrs.append(f'background="{bg}"')
+    if weight is not None:
+        attrs.append(f'weight="{weight}"')
+    return f"<span {' '.join(attrs)}> {escape(text)} </span>"
 
-    Shows every visible workspace and every hidden workspace that contains
-    windows. Formatting:
-      [t]     = focused screen's workspace
-      (2/a)   = workspace visible on another monitor
-      3/b     = hidden workspace with at least one window
+
+class ScreenStatus(widget.GenPollText):
+    """Compact, coloured screen/workspace status.
+
+    State colours:
+      [0:t]    focused monitor/workspace
+      (1:2/a)  visible workspace on another monitor, with windows
+       1:2/a   visible workspace on another monitor, currently empty/muted
+       3/b     hidden workspace that contains windows
     """
-    try:
-        qtile_any = cast(Any, qtile)
-        current_group = getattr(qtile_any, "current_group", None)
-        visible_group_names = set()
 
-        for screen in getattr(qtile_any, "screens", []):
-            group = getattr(screen, "group", None)
-            if group is not None:
-                visible_group_names.add(group.name)
+    def __init__(self, **config: Any) -> None:
+        super().__init__(func=self.poll_status, update_interval=0.25, markup=True, **config)
 
-        parts = []
-        for group in getattr(qtile_any, "groups", []):
-            windows = getattr(group, "windows", []) or []
-            is_visible = group.name in visible_group_names
-            has_windows = bool(windows)
+    def poll_status(self) -> str:
+        try:
+            qtile_any = getattr(self, "qtile", None) or cast(Any, qtile)
+            current_group = getattr(qtile_any, "current_group", None)
 
-            if not is_visible and not has_windows:
-                continue
+            visible_group_to_screen = {}
+            for index, screen in enumerate(getattr(qtile_any, "screens", [])):
+                group = getattr(screen, "group", None)
+                if group is not None:
+                    visible_group_to_screen[group.name] = index
 
-            if current_group is not None and group.name == current_group.name:
-                parts.append(f"[{group.name}]")
-            elif is_visible:
-                parts.append(f"({group.name})")
-            else:
-                parts.append(group.name)
+            parts = []
+            for group in getattr(qtile_any, "groups", []):
+                windows = getattr(group, "windows", []) or []
+                screen_index = visible_group_to_screen.get(group.name)
+                is_visible = screen_index is not None
+                has_windows = bool(windows)
 
-        return " ".join(parts)
-    except Exception:
-        return ""
+                # Always show monitor workspaces, even if empty, so that the
+                # bar tells you which physical display is focused. Also show
+                # hidden workspaces if they contain windows.
+                if not is_visible and not has_windows:
+                    continue
+
+                if current_group is not None and group.name == current_group.name:
+                    parts.append(
+                        pango_span(
+                            f"[{screen_index}:{group.name}]",
+                            COLORS["bg"],
+                            COLORS["accent"],
+                            "bold",
+                        )
+                    )
+                elif is_visible and has_windows:
+                    parts.append(
+                        pango_span(
+                            f"({screen_index}:{group.name})",
+                            COLORS["bg"],
+                            COLORS["accent_2"],
+                            "bold",
+                        )
+                    )
+                elif is_visible:
+                    parts.append(
+                        pango_span(
+                            f" {screen_index}:{group.name} ",
+                            COLORS["muted"],
+                            COLORS["bg"],
+                        )
+                    )
+                else:
+                    parts.append(pango_span(group.name, COLORS["muted"], COLORS["bg_alt"]))
+
+            return "  ".join(parts)
+        except Exception:
+            return ""
 
 
-def focus_previous_window(qtile_obj) -> None:
-    """Focus the previously focused live window, possibly on another screen.
+def focus_previous_window(qtile_obj: Any) -> None:
+    """Focus the previously focused live window.
 
-    This is a practical Qtile approximation of the old XMonad `focusLastWindow`.
-    It intentionally switches focus to the screen that already owns the target
-    window, rather than trying to swap physical monitor contents.
+    If the target window is visible on another monitor, swap that monitor's
+    workspace with the currently focused monitor's workspace first. This keeps
+    the useful XMonad behavior: Mod-Tab brings the target window to the display
+    you are already looking at, rather than moving your keyboard focus away to a
+    different physical display.
     """
     current = qtile_obj.current_window
     target = None
@@ -185,14 +228,25 @@ def focus_previous_window(qtile_obj) -> None:
     if target_group is None:
         return
 
+    current_screen = qtile_obj.current_screen
+    current_group = getattr(current_screen, "group", None)
     target_screen = getattr(target_group, "screen", None)
-    if target_screen is not None:
-        try:
-            qtile_obj.focus_screen(qtile_obj.screens.index(target_screen))
-        except ValueError:
-            pass
-    else:
-        qtile_obj.current_screen.set_group(target_group)
+
+    if target_screen is not None and target_screen is not current_screen:
+        # Swap the two visible workspaces. Do the other screen first so the
+        # target group is free to land on the current screen.
+        if current_group is not None:
+            target_screen.set_group(current_group)
+        current_screen.set_group(target_group)
+    elif target_screen is None:
+        # Hidden target workspace: pull it onto the current monitor.
+        current_screen.set_group(target_group)
+
+    # Keep keyboard focus on the physical monitor that initiated Mod-Tab.
+    try:
+        qtile_obj.focus_screen(qtile_obj.screens.index(current_screen))
+    except Exception:
+        pass
 
     try:
         target_group.focus(target, warp=False)
@@ -389,12 +443,10 @@ screens = [
                     background=COLORS["accent"],
                     padding=10,
                 ),
-                widget.GenPollText(
-                    func=screen_status_text,
-                    update_interval=0.25,
+                ScreenStatus(
                     foreground=COLORS["fg"],
-                    background=COLORS["bg_alt"],
-                    padding=10,
+                    background=COLORS["bg"],
+                    padding=6,
                 ),
                 widget.Sep(linewidth=0, padding=6, background=COLORS["bg"]),
                 widget.WindowName(
