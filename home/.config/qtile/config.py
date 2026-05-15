@@ -246,7 +246,7 @@ keys = [
     Key([mod], "bracketleft", lazy.layout.shrink(), desc="Shrink focused pane / vertical size"),
     Key([mod], "bracketright", lazy.layout.grow(), desc="Grow focused pane / vertical size"),
     Key([mod, "shift"], "asciicircum", lazy.layout.grow(), desc="Grow focused pane / vertical size"),
-    Key([mod, "shift"], "6", lazy.layout.grow(), desc="Grow focused pane / vertical size fallback"),
+    Key([mod, "control", "shift"], "6", lazy.layout.grow(), desc="Grow focused pane / vertical size fallback"),
 
     # Horizontal/master ratio. The brace variants cover keyboards where
     # Shift+[ / Shift+] produce braceleft/braceright keysyms.
