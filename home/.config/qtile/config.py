@@ -397,12 +397,6 @@ screens = [
                     padding=10,
                 ),
                 widget.Sep(linewidth=0, padding=6, background=COLORS["bg"]),
-                widget.CurrentLayout(
-                    foreground=COLORS["bg"],
-                    background=COLORS["accent_2"],
-                    padding=10,
-                ),
-                widget.Sep(linewidth=0, padding=6, background=COLORS["bg"]),
                 widget.WindowName(
                     foreground=COLORS["fg"],
                     background=COLORS["bg"],
