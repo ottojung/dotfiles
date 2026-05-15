@@ -7,6 +7,7 @@
 #     auto_fullscreen = False
 
 from string import ascii_lowercase
+from typing import Any, cast
 
 from libqtile import bar, hook, layout, qtile, widget
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
@@ -28,7 +29,7 @@ _last_secondary_by_main = {main: DEFAULT_SECONDARY for main in MAIN_GROUPS}
 
 # Global focus history for Mod-Tab. Qtile has its own internal focus handling,
 # but this gives us something close to the XMonad GroupNavigation behavior.
-_focus_history = []
+_focus_history: list[Any] = []
 _MAX_FOCUS_HISTORY = 64
 
 
@@ -81,7 +82,7 @@ def remember_current_subworkspace() -> None:
 hook.subscribe.setgroup(remember_current_subworkspace)
 
 
-def remember_focused_window(window) -> None:
+def remember_focused_window(window: Any) -> None:
     global _focus_history
 
     if window is None:
@@ -103,32 +104,45 @@ hook.subscribe.client_focus(remember_focused_window)
 
 
 def screen_status_text() -> str:
-    """Xmobar-ish active-screen summary.
+    """Xmobar-ish active-workspace summary.
 
-    Format:
-      [0:t]     = focused screen 0, group t
-      (1:2/a)   = another active screen, group 2/a
+    Shows every visible workspace and every hidden workspace that contains
+    windows. Formatting:
+      [t]     = focused screen's workspace
+      (2/a)   = workspace visible on another monitor
+      3/b     = hidden workspace with at least one window
     """
     try:
-        focused_screen = qtile.current_screen
-        parts = []
-        for index, screen in enumerate(qtile.screens):
+        qtile_any = cast(Any, qtile)
+        current_group = getattr(qtile_any, "current_group", None)
+        visible_group_names = set()
+
+        for screen in getattr(qtile_any, "screens", []):
             group = getattr(screen, "group", None)
-            if group is None:
+            if group is not None:
+                visible_group_names.add(group.name)
+
+        parts = []
+        for group in getattr(qtile_any, "groups", []):
+            windows = getattr(group, "windows", []) or []
+            is_visible = group.name in visible_group_names
+            has_windows = bool(windows)
+
+            if not is_visible and not has_windows:
                 continue
 
-            item = f"{index}:{group.name}"
-            if screen is focused_screen:
-                parts.append(f"[{item}]")
+            if current_group is not None and group.name == current_group.name:
+                parts.append(f"[{group.name}]")
+            elif is_visible:
+                parts.append(f"({group.name})")
             else:
-                parts.append(f"({item})")
+                parts.append(group.name)
 
         return " ".join(parts)
     except Exception:
         return ""
 
 
-@lazy.function
 def focus_previous_window(qtile_obj) -> None:
     """Focus the previously focused live window, possibly on another screen.
 
@@ -179,7 +193,6 @@ def focus_previous_window(qtile_obj) -> None:
         pass
 
 
-@lazy.function
 def go_to_main(qtile_obj, main: int, move_window: bool = False) -> None:
     secondary = _last_secondary_by_main.get(main, DEFAULT_SECONDARY)
     target = group_name(main, secondary)
@@ -189,7 +202,6 @@ def go_to_main(qtile_obj, main: int, move_window: bool = False) -> None:
         switch_to_group(qtile_obj, target)
 
 
-@lazy.function
 def go_to_secondary(qtile_obj, secondary: str, move_window: bool = False) -> None:
     main, _ = current_parts(qtile_obj)
     target = group_name(main, secondary)
@@ -199,7 +211,6 @@ def go_to_secondary(qtile_obj, secondary: str, move_window: bool = False) -> Non
         switch_to_group(qtile_obj, target)
 
 
-@lazy.function
 def go_to_secondary_delta(qtile_obj, delta: int, move_window: bool = False) -> None:
     main, secondary = current_parts(qtile_obj)
     index = SECONDARIES.index(secondary) if secondary in SECONDARIES else 0
@@ -227,13 +238,22 @@ keys = [
     # Window focus and swapping.
     Key([mod], "j", lazy.layout.down(), desc="Focus next window"),
     Key([mod], "k", lazy.layout.up(), desc="Focus previous window"),
-    Key([mod], "Tab", focus_previous_window, desc="Focus previously focused window/screen"),
+    Key([mod], "Tab", lazy.function(focus_previous_window), desc="Focus previously focused window/screen"),
     Key([mod, "shift"], "j", lazy.layout.shuffle_down(), desc="Swap down"),
     Key([mod, "shift"], "k", lazy.layout.shuffle_up(), desc="Swap up"),
 
     # Tall-layout resizing. This is close to XMonad Shrink/Expand.
-    Key([mod], "bracketleft", lazy.layout.shrink(), desc="Shrink focused pane"),
-    Key([mod], "bracketright", lazy.layout.grow(), desc="Grow focused pane"),
+    Key([mod], "bracketleft", lazy.layout.shrink(), desc="Shrink focused pane / vertical size"),
+    Key([mod], "bracketright", lazy.layout.grow(), desc="Grow focused pane / vertical size"),
+    Key([mod, "shift"], "asciicircum", lazy.layout.grow(), desc="Grow focused pane / vertical size"),
+    Key([mod, "shift"], "6", lazy.layout.grow(), desc="Grow focused pane / vertical size fallback"),
+
+    # Horizontal/master ratio. The brace variants cover keyboards where
+    # Shift+[ / Shift+] produce braceleft/braceright keysyms.
+    Key([mod, "shift"], "bracketleft", lazy.layout.shrink_main(), desc="Decrease horizontal/master size"),
+    Key([mod, "shift"], "bracketright", lazy.layout.grow_main(), desc="Increase horizontal/master size"),
+    Key([mod, "shift"], "braceleft", lazy.layout.shrink_main(), desc="Decrease horizontal/master size fallback"),
+    Key([mod, "shift"], "braceright", lazy.layout.grow_main(), desc="Increase horizontal/master size fallback"),
     Key([mod], "n", lazy.layout.normalize(), desc="Normalize layout"),
 
     # Layout / window state.
@@ -247,22 +267,22 @@ keys = [
     Key([mod], "F11", lazy.window.toggle_fullscreen(), desc="Explicitly fullscreen focused window"),
 
     # XMonad's grouped workspace movement.
-    Key([mod], "h", go_to_secondary_delta(-1), desc="Previous letter workspace in current main group"),
-    Key([mod], "l", go_to_secondary_delta(1), desc="Next letter workspace in current main group"),
-    Key([mod, "shift"], "h", go_to_secondary_delta(-1, True), desc="Move window to previous letter workspace"),
-    Key([mod, "shift"], "l", go_to_secondary_delta(1, True), desc="Move window to next letter workspace"),
+    Key([mod], "h", lazy.function(go_to_secondary_delta, -1), desc="Previous letter workspace in current main group"),
+    Key([mod], "l", lazy.function(go_to_secondary_delta, 1), desc="Next letter workspace in current main group"),
+    Key([mod, "shift"], "h", lazy.function(go_to_secondary_delta, -1, True), desc="Move window to previous letter workspace"),
+    Key([mod, "shift"], "l", lazy.function(go_to_secondary_delta, 1, True), desc="Move window to next letter workspace"),
 
     # Temporary/default desktop: the XMonad config's default secondary is 't'.
-    Key([mod], "a", go_to_secondary(DEFAULT_SECONDARY), desc="Go to temporary/default letter workspace"),
-    Key([mod, "shift"], "a", go_to_secondary(DEFAULT_SECONDARY, True), desc="Move window to temporary/default workspace"),
+    Key([mod], "a", lazy.function(go_to_secondary, DEFAULT_SECONDARY), desc="Go to temporary/default letter workspace"),
+    Key([mod, "shift"], "a", lazy.function(go_to_secondary, DEFAULT_SECONDARY, True), desc="Move window to temporary/default workspace"),
 ]
 
 # Numeric main workspaces: Mod-1..9. Preserve last visited letter per number.
 for main in MAIN_GROUPS:
     keys.extend(
         [
-            Key([mod], str(main), go_to_main(main), desc=f"Go to main workspace {main}"),
-            Key([mod, "shift"], str(main), go_to_main(main, True), desc=f"Move window to main workspace {main}"),
+            Key([mod], str(main), lazy.function(go_to_main, main), desc=f"Go to main workspace {main}"),
+            Key([mod, "shift"], str(main), lazy.function(go_to_main, main, True), desc=f"Move window to main workspace {main}"),
         ]
     )
 
@@ -270,11 +290,11 @@ for main in MAIN_GROUPS:
 for secondary in SECONDARIES:
     keys.extend(
         [
-            Key([mod, "control"], secondary, go_to_secondary(secondary), desc=f"Go to {secondary} in current main workspace"),
+            Key([mod, "control"], secondary, lazy.function(go_to_secondary, secondary), desc=f"Go to {secondary} in current main workspace"),
             Key(
                 [mod, "control", "shift"],
                 secondary,
-                go_to_secondary(secondary, True),
+                lazy.function(go_to_secondary, secondary, True),
                 desc=f"Move window to {secondary} in current main workspace",
             ),
         ]
