@@ -132,6 +132,7 @@
   xmessage ;; for displaying user messages
   awesome ;; the awesome window manager
   xdg-user-dirs ;; for xdg-user-dir command that is used by various programs
+  qtile ;; the qtile window manager
   )
 
 (define-packages gui-small
@@ -226,7 +227,7 @@
   )
 
 (define-packages xmonad-packages
-  ghc-xmonad-contrib xmonad xmobar qtile)
+  ghc-xmonad-contrib xmonad xmobar)
 
 
 (define base
@@ -251,7 +252,7 @@
    - man-db ;; missing lost of manual entries
    + ruby
    - texlive
-   - x-server
+   + x-server
    + arandr
    + ungoogled-chromium
    + go
