@@ -64,16 +64,11 @@ def move_window_to_group(qtile_obj, name: str, switch: bool = True) -> None:
         switch_to_group(qtile_obj, name)
 
 
+@hook.subscribe.setgroup
 def remember_current_subworkspace() -> None:
     main, secondary = current_parts(qtile)
     if main in _last_secondary_by_main:
         _last_secondary_by_main[main] = secondary
-
-
-# Register imperatively rather than with @hook.subscribe.setgroup.
-# This avoids a qtile-check/mypy stubgen issue where decorated hook functions
-# can be emitted as `FunctionType` without importing it in config.pyi.
-hook.subscribe.setgroup(remember_current_subworkspace)
 
 
 @lazy.function
