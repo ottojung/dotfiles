@@ -17,6 +17,20 @@ from libqtile.lazy import lazy
 mod = "mod4"
 terminal = "xterm"
 
+# Small, readable palette. Adjust these freely if you want a different vibe.
+COLORS = {
+    "bg": "#1e1e2e",
+    "bg_alt": "#313244",
+    "fg": "#cdd6f4",
+    "muted": "#a6adc8",
+    "accent": "#89b4fa",
+    "accent_2": "#a6e3a1",
+    "warning": "#f38ba8",
+    "border_focus": "#f38ba8",
+    "border_normal": "#585b70",
+    "gap": "#11111b",
+}
+
 MAIN_GROUPS = range(1, 10)
 SECONDARIES = tuple(ascii_lowercase)
 DEFAULT_MAIN = 1
@@ -246,7 +260,7 @@ keys = [
     Key([mod], "bracketleft", lazy.layout.shrink(), desc="Shrink focused pane / vertical size"),
     Key([mod], "bracketright", lazy.layout.grow(), desc="Grow focused pane / vertical size"),
     Key([mod, "shift"], "asciicircum", lazy.layout.grow(), desc="Grow focused pane / vertical size"),
-    Key([mod, "control", "shift"], "6", lazy.layout.grow(), desc="Grow focused pane / vertical size fallback"),
+    Key([mod, "shift"], "6", lazy.layout.grow(), desc="Grow focused pane / vertical size fallback"),
 
     # Horizontal/master ratio. The brace variants cover keyboards where
     # Shift+[ / Shift+] produce braceleft/braceright keysyms.
@@ -340,20 +354,27 @@ if ENABLE_AWESOMEWM_KEY_SCRIPTS:
 layouts = [
     # Full ||| Tall equivalent. Max is not automatic fullscreen; it is just
     # "one tiled window fills the available Qtile screen rectangle".
-    layout.Max(border_width=0),
+    layout.Max(
+        border_width=0,
+        margin=8,
+    ),
     layout.MonadTall(
         ratio=0.5,
         change_ratio=0.03,
         border_width=3,
-        margin=0,
+        margin=8,
+        border_focus=COLORS["border_focus"],
+        border_normal=COLORS["border_normal"],
     ),
 ]
 
 
 widget_defaults = dict(
-    font="sans",
-    fontsize=12,
-    padding=3,
+    font="DejaVu Sans",
+    fontsize=14,
+    padding=8,
+    foreground=COLORS["fg"],
+    background=COLORS["bg"],
 )
 extension_defaults = widget_defaults.copy()
 
@@ -361,22 +382,53 @@ screens = [
     Screen(
         top=bar.Bar(
             [
-                widget.GenPollText(func=screen_status_text, update_interval=0.25),
-                widget.TextBox(" "),
-                widget.CurrentLayout(),
-                widget.TextBox(" "),
-                widget.WindowName(),
-                widget.Systray(),
-                widget.Clock(format="%Y-%m-%d %a %H:%M"),
+                widget.TextBox(
+                    " 󰍹 ",
+                    fontsize=18,
+                    foreground=COLORS["bg"],
+                    background=COLORS["accent"],
+                    padding=10,
+                ),
+                widget.GenPollText(
+                    func=screen_status_text,
+                    update_interval=0.25,
+                    foreground=COLORS["fg"],
+                    background=COLORS["bg_alt"],
+                    padding=10,
+                ),
+                widget.Sep(linewidth=0, padding=6, background=COLORS["bg"]),
+                widget.CurrentLayout(
+                    foreground=COLORS["bg"],
+                    background=COLORS["accent_2"],
+                    padding=10,
+                ),
+                widget.Sep(linewidth=0, padding=6, background=COLORS["bg"]),
+                widget.WindowName(
+                    foreground=COLORS["fg"],
+                    background=COLORS["bg"],
+                    empty_group_string="",
+                    padding=10,
+                ),
+                widget.Systray(background=COLORS["bg"], padding=8),
+                widget.Clock(
+                    format="%Y-%m-%d  %a  %H:%M",
+                    foreground=COLORS["bg"],
+                    background=COLORS["accent"],
+                    padding=10,
+                ),
             ],
-            24,
+            32,
+            background=COLORS["bg"],
+            margin=[6, 8, 0, 8],
         )
     ),
 ]
 
 
 floating_layout = layout.Floating(
-    border_width=0,
+    border_width=3,
+    border_focus=COLORS["border_focus"],
+    border_normal=COLORS["border_normal"],
     float_rules=[
         *layout.Floating.default_float_rules,
         Match(wm_class="file-roller"),
