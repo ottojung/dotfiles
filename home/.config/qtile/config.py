@@ -234,14 +234,26 @@ def pango_span(text: str, foreground: str, background: str | None = None, weight
     return f'<span {" ".join(attrs)}>{escape(text)}</span>'
 
 
+def status_group_name(name: str) -> str:
+    """Display-only group name.
+
+    Actual Qtile groups stay named 1/a, 2/a, etc. In the bar, 1/a is shown as
+    just a, while 2/a and above keep their numeric prefix.
+    """
+    main, secondary = parse_group_name(name)
+    if main == DEFAULT_MAIN:
+        return secondary
+    return group_name(main, secondary)
+
+
 def screen_status_text() -> str:
     """Coloured screen/workspace status.
 
     Examples:
-      [0/1/a]    focused screen 0 showing workspace 1/a
-      (1/1/b)    another visible screen 1 showing workspace 1/b with windows
-       1/1/c     another visible screen 1 showing empty workspace 1/c
-      2/t        hidden workspace with windows
+      [a]      focused workspace 1/a
+      (b)      another visible workspace 1/b with windows
+       c       another visible but empty workspace 1/c
+      2/t      hidden workspace 2/t with windows
     """
     try:
         qtile_any = cast(Any, qtile)
@@ -268,7 +280,7 @@ def screen_status_text() -> str:
             if is_current:
                 parts.append(
                     pango_span(
-                        f"[{screen_index}/{group.name}]",
+                        f"[{status_group_name(group.name)}]"
                         COLORS["bg"],
                         COLORS["accent"],
                         "bold",
@@ -277,7 +289,7 @@ def screen_status_text() -> str:
             elif is_visible and has_windows:
                 parts.append(
                     pango_span(
-                        f"({screen_index}/{group.name})",
+                        f"({status_group_name(group.name)})"
                         COLORS["bg"],
                         COLORS["accent_2"],
                         "bold",
@@ -286,13 +298,13 @@ def screen_status_text() -> str:
             elif is_visible:
                 parts.append(
                     pango_span(
-                        f" {screen_index}/{group.name} ",
+                        f" {status_group_name(group.name)} "
                         COLORS["muted"],
                         COLORS["bg"],
                     )
                 )
             else:
-                parts.append(pango_span(group.name, COLORS["muted"], COLORS["bg_alt"]))
+                parts.append(pango_span(status_group_name(group.name), COLORS["muted"], COLORS["bg_alt"]))
 
         return " ".join(parts)
     except Exception:
