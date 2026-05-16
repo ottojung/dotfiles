@@ -281,8 +281,8 @@ def screen_status_text() -> str:
                 parts.append(
                     pango_span(
                         f"[{status_group_name(group.name)}]",
-                        COLORS["bg"],
                         COLORS["accent"],
+                        COLORS["bg"],
                         "bold",
                     )
                 )
@@ -290,8 +290,8 @@ def screen_status_text() -> str:
                 parts.append(
                     pango_span(
                         f"({status_group_name(group.name)})",
+                        COLORS["muted"],
                         COLORS["bg"],
-                        COLORS["accent_2"],
                         "bold",
                     )
                 )
