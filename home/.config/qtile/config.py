@@ -298,7 +298,7 @@ def screen_status_text() -> str:
             elif is_visible:
                 parts.append(
                     pango_span(
-                        f" {status_group_name(group.name)} "
+                        f" {status_group_name(group.name)} ",
                         COLORS["muted"],
                         COLORS["bg"],
                     )
@@ -353,8 +353,7 @@ keys = [
     # Size changes.
     Key([mod], "bracketleft", lazy.layout.shrink(), desc="Shrink focused pane / vertical size"),
     Key([mod], "bracketright", lazy.layout.grow(), desc="Grow focused pane / vertical size"),
-    Key([mod, "shift"], "asciicircum", lazy.layout.grow(), desc="Grow focused pane / vertical size"),
-    Key([mod, "shift"], "6", lazy.layout.grow(), desc="Grow focused pane / vertical size fallback"),
+    Key([mod, "control", "shift"], "6", lazy.layout.grow(), desc="Grow focused pane / vertical size"),
 
     Key([mod, "shift"], "bracketleft", lazy.layout.shrink_main(), desc="Decrease horizontal/master size"),
     Key([mod, "shift"], "bracketright", lazy.layout.grow_main(), desc="Increase horizontal/master size"),
