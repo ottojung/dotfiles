@@ -280,7 +280,7 @@ def screen_status_text() -> str:
             if is_current:
                 parts.append(
                     pango_span(
-                        f"[{status_group_name(group.name)}]"
+                        f"[{status_group_name(group.name)}]",
                         COLORS["bg"],
                         COLORS["accent"],
                         "bold",
@@ -289,7 +289,7 @@ def screen_status_text() -> str:
             elif is_visible and has_windows:
                 parts.append(
                     pango_span(
-                        f"({status_group_name(group.name)})"
+                        f"({status_group_name(group.name)})",
                         COLORS["bg"],
                         COLORS["accent_2"],
                         "bold",
