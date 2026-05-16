@@ -282,7 +282,7 @@ def screen_status_text() -> str:
                     pango_span(
                         f"[{status_group_name(group.name)}]",
                         COLORS["accent"],
-                        COLORS["bg"],
+                        None,
                         "bold",
                     )
                 )
@@ -291,7 +291,7 @@ def screen_status_text() -> str:
                     pango_span(
                         f"({status_group_name(group.name)})",
                         COLORS["muted"],
-                        COLORS["bg"],
+                        None,
                         "bold",
                     )
                 )
@@ -300,7 +300,7 @@ def screen_status_text() -> str:
                     pango_span(
                         f" {status_group_name(group.name)} ",
                         COLORS["muted"],
-                        COLORS["bg"],
+                        None,
                     )
                 )
             else:
