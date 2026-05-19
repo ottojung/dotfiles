@@ -62,6 +62,14 @@ _minor_config_by_major: dict[int, dict[int, str]] = {main: {} for main in MAIN_G
 _focus_history: list[Any] = []
 _MAX_FOCUS_HISTORY = 64
 
+# Per-workspace bar visibility. True means: hide the bar whenever this group is
+# visible on a screen. This makes Mod-F2 behave like a per-workspace layout bit.
+_bar_hidden_by_group: dict[str, bool] = {}
+
+# Last-minimized-first history, so Mod-m can only minimize and Mod-Shift-m can
+# restore the most recent minimized window on the current workspace.
+_minimized_history: list[Any] = []
+
 
 def group_name(main: int, secondary: str) -> str:
     # The only separator used in actual Qtile group names.
@@ -272,6 +280,125 @@ def go_to_secondary_delta(qtile_obj: Any, delta: int, move_window: bool = False)
 def remember_current_subworkspace() -> None:
     qtile_any = cast(Any, qtile)
     save_visible_minor_config(qtile_any)
+    apply_bar_visibility(qtile_any)
+
+
+def get_screen_bars(screen: Any) -> list[Any]:
+    bars = []
+    for position in ("top", "bottom", "left", "right"):
+        bar_obj = getattr(screen, position, None)
+        if bar_obj is not None:
+            bars.append(bar_obj)
+    return bars
+
+
+def set_bar_visible(bar_obj: Any, visible: bool) -> None:
+    show = getattr(bar_obj, "show", None)
+    if callable(show):
+        try:
+            show(visible)
+            return
+        except TypeError:
+            pass
+
+    # Fallback for future/older Qtile API drift. If this does not work on a
+    # given version, it should fail harmlessly rather than breaking the config.
+    window = getattr(bar_obj, "window", None)
+    if window is not None:
+        try:
+            if visible:
+                window.unhide()
+            else:
+                window.hide()
+        except Exception:
+            pass
+
+
+def apply_bar_visibility(qtile_obj: Any) -> None:
+    for screen in getattr(qtile_obj, "screens", []):
+        group = getattr(screen, "group", None)
+        group_name_value = getattr(group, "name", "")
+        visible = not _bar_hidden_by_group.get(group_name_value, False)
+        for bar_obj in get_screen_bars(screen):
+            set_bar_visible(bar_obj, visible)
+
+
+def toggle_bar_for_current_group(qtile_obj: Any) -> None:
+    group = getattr(qtile_obj, "current_group", None)
+    group_name_value = getattr(group, "name", None)
+    if group_name_value is None:
+        return
+
+    _bar_hidden_by_group[group_name_value] = not _bar_hidden_by_group.get(group_name_value, False)
+    apply_bar_visibility(qtile_obj)
+
+
+def call_window_toggle_minimize(window: Any) -> None:
+    toggle = getattr(window, "toggle_minimize", None)
+    if callable(toggle):
+        toggle()
+        return
+
+    cmd_toggle = getattr(window, "cmd_toggle_minimize", None)
+    if callable(cmd_toggle):
+        cmd_toggle()
+
+
+def focus_window_object(group: Any, window: Any) -> None:
+    try:
+        group.focus(window, warp=False)
+    except TypeError:
+        group.focus(window)
+
+    try:
+        window.focus(warp=False)
+    except TypeError:
+        window.focus(False)
+    except Exception:
+        pass
+
+
+def minimize_current_window(qtile_obj: Any) -> None:
+    global _minimized_history
+
+    window = getattr(qtile_obj, "current_window", None)
+    if window is None:
+        return
+
+    if getattr(window, "minimized", False):
+        return
+
+    _minimized_history = [window] + [old for old in _minimized_history if old is not window]
+    call_window_toggle_minimize(window)
+
+
+def unminimize_last_window(qtile_obj: Any) -> None:
+    global _minimized_history
+
+    group = getattr(qtile_obj, "current_group", None)
+    if group is None:
+        return
+
+    candidates = []
+    candidates.extend(_minimized_history)
+    candidates.extend(reversed(getattr(group, "windows", []) or []))
+
+    seen = set()
+    for window in candidates:
+        marker = id(window)
+        if marker in seen:
+            continue
+        seen.add(marker)
+
+        if getattr(window, "group", None) is not group:
+            continue
+        if not getattr(window, "minimized", False):
+            continue
+
+        call_window_toggle_minimize(window)
+        focus_window_object(group, window)
+        _minimized_history = [old for old in _minimized_history if old is not window]
+        return
 
 
 def remember_focused_window(window: Any) -> None:
@@ -302,6 +429,7 @@ def assign_starting_workspaces() -> None:
             screen.set_group(target)
 
     save_visible_minor_config(qtile_any)
+    apply_bar_visibility(qtile_any)
 
 
 def focus_previous_window(qtile_obj: Any) -> None:
@@ -432,13 +560,13 @@ def screen_status_text() -> str:
             elif is_visible and has_windows:
                 parts.append(
                     pango_span("(", COLORS["subtle"])
-                    + pango_span(name, COLORS["active_visible"], weight="bold")
+                    + pango_span(name, COLORS["subtle"], weight="bold")
                     + pango_span(")", COLORS["subtle"])
                 )
             elif is_visible:
-                parts.append(pango_span(name, COLORS["inactive"]))
+                parts.append(pango_span(name, COLORS["subtle"]))
             else:
-                parts.append(pango_span(name, COLORS["active_hidden"]))
+                parts.append(pango_span(name, COLORS["subtle"]))
 
         return pango_span("  ", COLORS["subtle"]).join(parts)
     except Exception:
@@ -473,7 +601,7 @@ groups = [
 
 keys = [
     # Panel / qtile control.
-    Key([mod], "F2", lazy.hide_show_bar("top"), desc="Toggle top bar"),
+    Key([mod], "F2", lazy.function(toggle_bar_for_current_group), desc="Toggle top bar for this workspace"),
     Key([mod, "control"], "r", lazy.reload_config(), desc="Reload Qtile"),
     Key([mod, "shift"], "F12", lazy.shutdown(), desc="Quit Qtile"),
 
@@ -497,7 +625,8 @@ keys = [
     # Layout / window state.
     Key([mod], "x", lazy.next_layout(), desc="Next layout"),
     Key([mod, "shift"], "w", lazy.window.kill(), desc="Kill focused window"),
-    Key([mod], "m", lazy.window.toggle_minimize(), desc="Minimize/unminimize window"),
+    Key([mod], "m", lazy.function(minimize_current_window), desc="Minimize focused window"),
+    Key([mod, "shift"], "m", lazy.function(unminimize_last_window), desc="Unminimize last minimized window"),
     Key([mod], "f", lazy.window.toggle_floating(), desc="Toggle floating"),
     Key([mod, "shift"], "f", lazy.window.toggle_floating(), desc="Toggle floating"),
     Key([mod], "F11", lazy.window.toggle_fullscreen(), desc="Explicitly fullscreen focused window"),
@@ -602,7 +731,7 @@ screens = [
             [
                 widget.TextBox(
                     " qtile ",
-                    foreground=COLORS["subtle"],
+                    foreground=COLORS["active_visible"],
                     padding=8,
                 ),
                 ScreenStatus(
