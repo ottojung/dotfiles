@@ -39,7 +39,7 @@ COLORS = {
     "subtle": "#3f4658",         # brackets, separators, label text
     "muted": "#7f849c",
 
-    "clock": "#f9e2af",
+    "clock": "#a9a2af",
     "warning": "#f38ba8",
     "border_focus": "#f38ba8",
     "border_normal": "#585b70",
@@ -580,15 +580,15 @@ def screen_status_text() -> str:
 
             if is_current:
                 parts.append(
-                    pango_span("[", COLORS["subtle"])
+                    pango_span("[", COLORS["clock"])
                     + pango_span(name, COLORS["focused"], weight="bold")
-                    + pango_span("]", COLORS["subtle"])
+                    + pango_span("]", COLORS["clock"])
                 )
-            elif is_visible and has_windows:
+            elif is_visible:
                 parts.append(
-                    pango_span("(", COLORS["subtle"])
+                    pango_span("(", COLORS["clock"])
                     + pango_span(name, COLORS["clock"], weight="bold")
-                    + pango_span(")", COLORS["subtle"])
+                    + pango_span(")", COLORS["clock"])
                 )
             elif is_visible:
                 parts.append(pango_span(name, COLORS["clock"]))
