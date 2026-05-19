@@ -24,12 +24,16 @@ COLORS = {
     "bg": "#10121a",
     "fg": "#d8dee9",
     "title": "#c0caf5",
+
+    # Status-bar hierarchy. Active things are saturated; inactive things are
+    # intentionally grey and low-contrast.
+    "focused": "#ffcc66",       # current workspace
+    "active_visible": "#a6e3a1", # visible on another display and has windows
+    "active_hidden": "#7dcfff",  # hidden but has windows
+    "inactive": "#545c73",       # visible but empty
+    "subtle": "#3f4658",         # brackets, separators, label text
     "muted": "#7f849c",
-    "subtle": "#4c566a",
-    "dim": "#5f667a",
-    "accent": "#8bd5ff",        # focused workspace
-    "visible": "#d8dee9",       # workspace visible on another monitor
-    "active_hidden": "#a6e3a1", # hidden workspace with windows
+
     "clock": "#f9e2af",
     "warning": "#f38ba8",
     "border_focus": "#f38ba8",
@@ -257,10 +261,10 @@ def screen_status_text() -> str:
     Deliberately flat and xmobar-like: brackets/parens carry meaning, colour
     carries state, and no token gets a coloured background box.
 
-      [a]    focused workspace 1/a
-      (b)    visible workspace 1/b on another monitor, with windows
-       c     visible but empty workspace 1/c
-      2/t    hidden workspace 2/t with windows
+      [a]    focused workspace 1/a                  bright yellow
+      (b)    visible workspace 1/b with windows      green
+       c     visible but empty workspace 1/c          dim grey
+      2/t    hidden workspace 2/t with windows        blue
     """
     try:
         qtile_any = cast(Any, qtile)
@@ -287,17 +291,17 @@ def screen_status_text() -> str:
             if is_current:
                 parts.append(
                     pango_span("[", COLORS["subtle"])
-                    + pango_span(name, COLORS["accent"], weight="bold")
+                    + pango_span(name, COLORS["focused"], weight="bold")
                     + pango_span("]", COLORS["subtle"])
                 )
             elif is_visible and has_windows:
                 parts.append(
                     pango_span("(", COLORS["subtle"])
-                    + pango_span(name, COLORS["visible"], weight="bold")
+                    + pango_span(name, COLORS["active_visible"], weight="bold")
                     + pango_span(")", COLORS["subtle"])
                 )
             elif is_visible:
-                parts.append(pango_span(name, COLORS["dim"]))
+                parts.append(pango_span(name, COLORS["inactive"]))
             else:
                 parts.append(pango_span(name, COLORS["active_hidden"]))
 
