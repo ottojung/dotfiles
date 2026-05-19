@@ -756,11 +756,6 @@ screens = [
     Screen(
         top=bar.Bar(
             [
-                widget.TextBox(
-                    " qtile ",
-                    foreground=COLORS["active_visible"],
-                    padding=8,
-                ),
                 ScreenStatus(
                     fontsize=18,
                     foreground=COLORS["fg"],
