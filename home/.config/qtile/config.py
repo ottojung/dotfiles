@@ -358,6 +358,27 @@ def focus_window_object(group: Any, window: Any) -> None:
         pass
 
 
+def find_focus_replacement(group: Any, minimized_window: Any) -> Any | None:
+    windows = list(getattr(group, "windows", []) or [])
+    if not windows:
+        return None
+
+    if minimized_window in windows:
+        index = windows.index(minimized_window)
+        ordered_windows = windows[index + 1 :] + windows[:index]
+    else:
+        ordered_windows = windows
+
+    for window in ordered_windows:
+        if window is minimized_window:
+            continue
+        if getattr(window, "minimized", False):
+            continue
+        return window
+
+    return None
+
+
 def minimize_current_window(qtile_obj: Any) -> None:
     global _minimized_history
 
@@ -368,8 +389,14 @@ def minimize_current_window(qtile_obj: Any) -> None:
     if getattr(window, "minimized", False):
         return
 
+    group = getattr(window, "group", None) or getattr(qtile_obj, "current_group", None)
+    replacement = find_focus_replacement(group, window) if group is not None else None
+
     _minimized_history = [window] + [old for old in _minimized_history if old is not window]
     call_window_toggle_minimize(window)
+
+    if replacement is not None and group is not None:
+        focus_window_object(group, replacement)
 
 
 def unminimize_last_window(qtile_obj: Any) -> None:
@@ -560,13 +587,13 @@ def screen_status_text() -> str:
             elif is_visible and has_windows:
                 parts.append(
                     pango_span("(", COLORS["subtle"])
-                    + pango_span(name, COLORS["subtle"], weight="bold")
+                    + pango_span(name, COLORS["clock"], weight="bold")
                     + pango_span(")", COLORS["subtle"])
                 )
             elif is_visible:
-                parts.append(pango_span(name, COLORS["subtle"]))
+                parts.append(pango_span(name, COLORS["clock"]))
             else:
-                parts.append(pango_span(name, COLORS["subtle"]))
+                parts.append(pango_span(name, COLORS["clock"]))
 
         return pango_span("  ", COLORS["subtle"]).join(parts)
     except Exception:
