@@ -1,11 +1,16 @@
 # ~/.config/qtile/config.py
 #
-# A compact Qtile translation of your XMonad config.
+# A compact Qtile translation of your XMonad config, extended with a global
+# major-workspace invariant:
+#
+#   If any display is on 3/k, all displays must be on 3/<something>.
 #
 # Important behavior:
 #   - application-requested fullscreen is disabled: auto_fullscreen = False
 #   - group names are always main/letter, e.g. 1/a, 2/t
-#   - screen numbers are only display decoration in the bar, never group names
+#   - the bar displays 1/a as just a, but keeps 2/a, 3/a, etc.
+#   - major workspace switches move all displays together
+#   - each major workspace remembers its own per-display minor layout
 
 from html import escape
 from string import ascii_lowercase
@@ -27,7 +32,7 @@ COLORS = {
 
     # Status-bar hierarchy. Active things are saturated; inactive things are
     # intentionally grey and low-contrast.
-    "focused": "#ffcc66",       # current workspace
+    "focused": "#ffcc66",        # current workspace
     "active_visible": "#a6e3a1", # visible on another display and has windows
     "active_hidden": "#7dcfff",  # hidden but has windows
     "inactive": "#545c73",       # visible but empty
@@ -45,10 +50,13 @@ SECONDARIES = tuple(ascii_lowercase)
 DEFAULT_MAIN = 1
 DEFAULT_SECONDARY = "t"
 
-# XMonad remembered the last letter workspace visited within each numeric
-# workspace. This is the small Qtile equivalent. It is intentionally not
-# persisted across restarts.
-_last_secondary_by_main: dict[int, str] = {main: DEFAULT_SECONDARY for main in MAIN_GROUPS}
+# Richer replacement for the old XMonad-style "last secondary per main" idea.
+#
+# For each major workspace, remember which minor/secondary letter each physical
+# display last showed. Example:
+#   1 -> {0: "a", 1: "b", 2: "t"}
+#   2 -> {0: "k", 1: "m", 2: "l"}
+_minor_config_by_major: dict[int, dict[int, str]] = {main: {} for main in MAIN_GROUPS}
 
 # Global focus history for Mod-Tab.
 _focus_history: list[Any] = []
@@ -85,7 +93,103 @@ def current_parts(qtile_obj: Any) -> tuple[int, str]:
     return parse_group_name(group.name)
 
 
+def current_screen_index(qtile_obj: Any) -> int:
+    current_screen = getattr(qtile_obj, "current_screen", None)
+    screens = list(getattr(qtile_obj, "screens", []))
+    if current_screen in screens:
+        return screens.index(current_screen)
+    return 0
+
+
+def fallback_secondary_for_screen(index: int) -> str:
+    if 0 <= index < len(SECONDARIES):
+        return SECONDARIES[index]
+    return DEFAULT_SECONDARY
+
+
+def first_unused_secondary(used: set[str]) -> str:
+    for secondary in SECONDARIES:
+        if secondary not in used:
+            return secondary
+    return DEFAULT_SECONDARY
+
+
+def normalize_minor_config(main: int, screen_count: int, overrides: dict[int, str] | None = None) -> list[str]:
+    """Return a unique secondary letter for each screen for a major group."""
+    saved = dict(_minor_config_by_major.get(main, {}))
+    if overrides:
+        saved.update(overrides)
+
+    letters: list[str] = []
+    used: set[str] = set()
+
+    for index in range(screen_count):
+        secondary = saved.get(index, fallback_secondary_for_screen(index))
+        if secondary not in SECONDARIES or secondary in used:
+            secondary = first_unused_secondary(used)
+        letters.append(secondary)
+        used.add(secondary)
+
+    _minor_config_by_major[main] = {index: secondary for index, secondary in enumerate(letters)}
+    return letters
+
+
+def save_visible_minor_config(qtile_obj: Any) -> None:
+    """Remember the visible screen -> secondary layout for every visible major."""
+    for index, screen in enumerate(getattr(qtile_obj, "screens", [])):
+        group = getattr(screen, "group", None)
+        if group is None:
+            continue
+
+        main, secondary = parse_group_name(group.name)
+        if main not in MAIN_GROUPS or secondary not in SECONDARIES:
+            continue
+
+        _minor_config_by_major.setdefault(main, {})[index] = secondary
+
+
+def visible_major(qtile_obj: Any) -> int:
+    main, _ = current_parts(qtile_obj)
+    if main in MAIN_GROUPS:
+        return main
+    return DEFAULT_MAIN
+
+
+def set_screen_to_group(screen: Any, group: Any) -> None:
+    if group is not None:
+        screen.set_group(group)
+
+
+def switch_major_on_all_screens(
+    qtile_obj: Any,
+    main: int,
+    preferred_screen_index: int | None = None,
+    preferred_secondary: str | None = None,
+) -> None:
+    """Switch every display to the requested major workspace.
+
+    The target major's last per-screen minor layout is restored. If a preferred
+    screen/secondary is supplied, that screen is forced to that secondary; this
+    is used by Mod-Tab so the target window appears on the currently focused
+    physical display.
+    """
+    if main not in MAIN_GROUPS:
+        return
+
+    screens = list(getattr(qtile_obj, "screens", []))
+    overrides: dict[int, str] = {}
+    if preferred_screen_index is not None and preferred_secondary in SECONDARIES:
+        overrides[preferred_screen_index] = cast(str, preferred_secondary)
+
+    letters = normalize_minor_config(main, len(screens), overrides)
+
+    for index, screen in enumerate(screens):
+        target = qtile_obj.groups_map.get(group_name(main, letters[index]))
+        set_screen_to_group(screen, target)
+
+
 def switch_to_group(qtile_obj: Any, name: str) -> None:
+    """Compatibility helper: switch current screen to a group if it exists."""
     group = qtile_obj.groups_map.get(name)
     if group is not None:
         qtile_obj.current_screen.set_group(group)
@@ -98,44 +202,76 @@ def move_window_to_group(qtile_obj: Any, name: str, switch: bool = True) -> None
         switch_to_group(qtile_obj, name)
 
 
+def swap_screen_groups(screen_a: Any, screen_b: Any) -> None:
+    group_a = getattr(screen_a, "group", None)
+    group_b = getattr(screen_b, "group", None)
+
+    if group_a is None or group_b is None or group_a is group_b:
+        return
+
+    screen_a.set_group(group_b)
+    screen_b.set_group(group_a)
+
+
 def go_to_main(qtile_obj: Any, main: int, move_window: bool = False) -> None:
-    secondary = _last_secondary_by_main.get(main, DEFAULT_SECONDARY)
-    target = group_name(main, secondary)
-    if move_window:
-        move_window_to_group(qtile_obj, target, switch=True)
-    else:
-        switch_to_group(qtile_obj, target)
+    """Switch all displays to a major group, restoring its minor layout."""
+    if main not in MAIN_GROUPS:
+        return
+
+    save_visible_minor_config(qtile_obj)
+
+    screen_index = current_screen_index(qtile_obj)
+    screens = list(getattr(qtile_obj, "screens", []))
+    target_letters = normalize_minor_config(main, len(screens))
+    target_secondary = target_letters[screen_index] if screen_index < len(target_letters) else DEFAULT_SECONDARY
+    target_name = group_name(main, target_secondary)
+
+    if move_window and qtile_obj.current_window is not None:
+        qtile_obj.current_window.togroup(target_name)
+
+    switch_major_on_all_screens(qtile_obj, main)
 
 
 def go_to_secondary(qtile_obj: Any, secondary: str, move_window: bool = False) -> None:
-    main, _ = current_parts(qtile_obj)
-    if main not in MAIN_GROUPS:
-        main = DEFAULT_MAIN
-    target = group_name(main, secondary)
-    if move_window:
-        move_window_to_group(qtile_obj, target, switch=True)
+    """Switch only the current display's minor letter, keeping the major global."""
+    if secondary not in SECONDARIES:
+        return
+
+    save_visible_minor_config(qtile_obj)
+
+    main = visible_major(qtile_obj)
+    target_name = group_name(main, secondary)
+    target_group = qtile_obj.groups_map.get(target_name)
+    current_screen = getattr(qtile_obj, "current_screen", None)
+    target_screen = getattr(target_group, "screen", None)
+
+    if target_group is None or current_screen is None:
+        return
+
+    if move_window and qtile_obj.current_window is not None:
+        qtile_obj.current_window.togroup(target_name)
+
+    if target_screen is not None and target_screen is not current_screen:
+        # If another monitor already shows the requested minor workspace,
+        # swap displays rather than duplicating the group or violating Qtile's
+        # one-group-per-screen model.
+        swap_screen_groups(current_screen, target_screen)
     else:
-        switch_to_group(qtile_obj, target)
+        current_screen.set_group(target_group)
+
+    save_visible_minor_config(qtile_obj)
 
 
 def go_to_secondary_delta(qtile_obj: Any, delta: int, move_window: bool = False) -> None:
-    main, secondary = current_parts(qtile_obj)
-    if main not in MAIN_GROUPS:
-        main = DEFAULT_MAIN
+    _, secondary = current_parts(qtile_obj)
     index = SECONDARIES.index(secondary) if secondary in SECONDARIES else 0
     target_secondary = SECONDARIES[(index + delta) % len(SECONDARIES)]
-    target = group_name(main, target_secondary)
-    if move_window:
-        move_window_to_group(qtile_obj, target, switch=True)
-    else:
-        switch_to_group(qtile_obj, target)
+    go_to_secondary(qtile_obj, target_secondary, move_window)
 
 
 def remember_current_subworkspace() -> None:
     qtile_any = cast(Any, qtile)
-    main, secondary = current_parts(qtile_any)
-    if main in _last_secondary_by_main:
-        _last_secondary_by_main[main] = secondary
+    save_visible_minor_config(qtile_any)
 
 
 def remember_focused_window(window: Any) -> None:
@@ -155,42 +291,26 @@ def remember_focused_window(window: Any) -> None:
 
 
 def assign_starting_workspaces() -> None:
-    """Start monitors on 1/a, 1/b, ..., 1/$n.
-
-    This is only about which groups are initially visible. Group names remain
-    plain main/letter names and never receive screen prefixes.
-    """
+    """Start monitors on 1/a, 1/b, ..., 1/$n."""
     qtile_any = cast(Any, qtile)
+    screens = list(getattr(qtile_any, "screens", []))
+    letters = normalize_minor_config(DEFAULT_MAIN, len(screens))
 
-    for index, screen in enumerate(getattr(qtile_any, "screens", [])):
-        if index >= len(SECONDARIES):
-            break
-        target = qtile_any.groups_map.get(group_name(DEFAULT_MAIN, SECONDARIES[index]))
+    for index, screen in enumerate(screens):
+        target = qtile_any.groups_map.get(group_name(DEFAULT_MAIN, letters[index]))
         if target is not None:
             screen.set_group(target)
 
-
-def swap_screen_groups(screen_a: Any, screen_b: Any) -> None:
-    group_a = getattr(screen_a, "group", None)
-    group_b = getattr(screen_b, "group", None)
-
-    if group_a is None or group_b is None or group_a is group_b:
-        return
-
-    # In practice this gives the desired XMonad-like result: the target window's
-    # workspace appears on the monitor you were using, and the previous content
-    # of that monitor moves to the other display.
-    screen_a.set_group(group_b)
-    screen_b.set_group(group_a)
+    save_visible_minor_config(qtile_any)
 
 
 def focus_previous_window(qtile_obj: Any) -> None:
     """Focus the previously focused live window.
 
-    If the target window is visible on another physical display, swap that
-    display's group with the currently focused display first. This mirrors the
-    useful part of the old XMonad focusLastWindow behavior: the target appears
-    on the monitor you were already looking at.
+    If the target is in a different major group, all displays travel to that
+    major group. The target window's minor workspace is forced onto the current
+    physical display, and the rest of that major's saved per-display layout is
+    restored around it.
     """
     current = qtile_obj.current_window
     target = None
@@ -213,13 +333,26 @@ def focus_previous_window(qtile_obj: Any) -> None:
     if target_group is None:
         return
 
-    current_screen = getattr(qtile_obj, "current_screen", None)
-    target_screen = getattr(target_group, "screen", None)
+    save_visible_minor_config(qtile_obj)
 
-    if current_screen is not None and target_screen is not None and target_screen is not current_screen:
-        swap_screen_groups(current_screen, target_screen)
-    elif current_screen is not None and target_screen is None:
-        current_screen.set_group(target_group)
+    target_main, target_secondary = parse_group_name(target_group.name)
+    current_main = visible_major(qtile_obj)
+    current_screen = getattr(qtile_obj, "current_screen", None)
+    current_index = current_screen_index(qtile_obj)
+
+    if target_main != current_main:
+        switch_major_on_all_screens(
+            qtile_obj,
+            target_main,
+            preferred_screen_index=current_index,
+            preferred_secondary=target_secondary,
+        )
+    else:
+        target_screen = getattr(target_group, "screen", None)
+        if current_screen is not None and target_screen is not None and target_screen is not current_screen:
+            swap_screen_groups(current_screen, target_screen)
+        elif current_screen is not None and target_screen is None:
+            current_screen.set_group(target_group)
 
     try:
         target_group.focus(target, warp=False)
@@ -232,6 +365,8 @@ def focus_previous_window(qtile_obj: Any) -> None:
         target.focus(False)
     except Exception:
         pass
+
+    save_visible_minor_config(qtile_obj)
 
 
 def pango_span(text: str, foreground: str, background: str | None = None, weight: str | None = None) -> str:
@@ -367,36 +502,36 @@ keys = [
     Key([mod, "shift"], "f", lazy.window.toggle_floating(), desc="Toggle floating"),
     Key([mod], "F11", lazy.window.toggle_fullscreen(), desc="Explicitly fullscreen focused window"),
 
-    # XMonad's grouped workspace movement.
-    Key([mod], "h", lazy.function(go_to_secondary_delta, -1), desc="Previous letter workspace in current main group"),
-    Key([mod], "l", lazy.function(go_to_secondary_delta, 1), desc="Next letter workspace in current main group"),
+    # Minor workspace movement within the current global major group.
+    Key([mod], "h", lazy.function(go_to_secondary_delta, -1), desc="Previous letter workspace on this display"),
+    Key([mod], "l", lazy.function(go_to_secondary_delta, 1), desc="Next letter workspace on this display"),
     Key([mod, "shift"], "h", lazy.function(go_to_secondary_delta, -1, True), desc="Move window to previous letter workspace"),
     Key([mod, "shift"], "l", lazy.function(go_to_secondary_delta, 1, True), desc="Move window to next letter workspace"),
 
-    # Temporary/default desktop: the XMonad config's default secondary was 't'.
+    # Temporary/default minor workspace inside the current global major group.
     Key([mod], "a", lazy.function(go_to_secondary, DEFAULT_SECONDARY), desc="Go to temporary/default letter workspace"),
     Key([mod, "shift"], "a", lazy.function(go_to_secondary, DEFAULT_SECONDARY, True), desc="Move window to temporary/default workspace"),
 ]
 
-# Numeric main workspaces: Mod-1..9. Preserve last visited letter per number.
+# Numeric major workspaces: Mod-1..9. These switch all displays together.
 for main in MAIN_GROUPS:
     keys.extend(
         [
-            Key([mod], str(main), lazy.function(go_to_main, main), desc=f"Go to main workspace {main}"),
-            Key([mod, "shift"], str(main), lazy.function(go_to_main, main, True), desc=f"Move window to main workspace {main}"),
+            Key([mod], str(main), lazy.function(go_to_main, main), desc=f"Go to major workspace {main}"),
+            Key([mod, "shift"], str(main), lazy.function(go_to_main, main, True), desc=f"Move window and go to major workspace {main}"),
         ]
     )
 
-# Letter sub-workspaces: Mod-Control-a..z.
+# Letter minor workspaces: Mod-Control-a..z.
 for secondary in SECONDARIES:
     keys.extend(
         [
-            Key([mod, "control"], secondary, lazy.function(go_to_secondary, secondary), desc=f"Go to {secondary} in current main workspace"),
+            Key([mod, "control"], secondary, lazy.function(go_to_secondary, secondary), desc=f"Go to {secondary} on this display"),
             Key(
                 [mod, "control", "shift"],
                 secondary,
                 lazy.function(go_to_secondary, secondary, True),
-                desc=f"Move window to {secondary} in current main workspace",
+                desc=f"Move window to {secondary} on this display",
             ),
         ]
     )
