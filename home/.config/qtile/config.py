@@ -20,12 +20,17 @@ mod = "mod4"
 terminal = "xterm"
 
 COLORS = {
-    "bg": "#1e1e2e",
-    "bg_alt": "#313244",
-    "fg": "#cdd6f4",
-    "muted": "#a6adc8",
-    "accent": "#89b4fa",
-    "accent_2": "#a6e3a1",
+    # Flat xmobar-like bar: mostly text on one background, not widget boxes.
+    "bg": "#10121a",
+    "fg": "#d8dee9",
+    "title": "#c0caf5",
+    "muted": "#7f849c",
+    "subtle": "#4c566a",
+    "dim": "#5f667a",
+    "accent": "#8bd5ff",        # focused workspace
+    "visible": "#d8dee9",       # workspace visible on another monitor
+    "active_hidden": "#a6e3a1", # hidden workspace with windows
+    "clock": "#f9e2af",
     "warning": "#f38ba8",
     "border_focus": "#f38ba8",
     "border_normal": "#585b70",
@@ -249,64 +254,54 @@ def status_group_name(name: str) -> str:
 def screen_status_text() -> str:
     """Coloured screen/workspace status.
 
-    Examples:
-      [a]      focused workspace 1/a
-      (b)      another visible workspace 1/b with windows
-       c       another visible but empty workspace 1/c
-      2/t      hidden workspace 2/t with windows
+    Deliberately flat and xmobar-like: brackets/parens carry meaning, colour
+    carries state, and no token gets a coloured background box.
+
+      [a]    focused workspace 1/a
+      (b)    visible workspace 1/b on another monitor, with windows
+       c     visible but empty workspace 1/c
+      2/t    hidden workspace 2/t with windows
     """
     try:
         qtile_any = cast(Any, qtile)
         current_group = getattr(qtile_any, "current_group", None)
 
-        visible_group_to_screen: dict[str, int] = {}
-        for index, screen in enumerate(getattr(qtile_any, "screens", [])):
+        visible_group_names: set[str] = set()
+        for screen in getattr(qtile_any, "screens", []):
             group = getattr(screen, "group", None)
             if group is not None:
-                visible_group_to_screen[group.name] = index
+                visible_group_names.add(group.name)
 
         parts = []
         for group in getattr(qtile_any, "groups", []):
             windows = getattr(group, "windows", []) or []
             has_windows = bool(windows)
-            is_visible = group.name in visible_group_to_screen
+            is_visible = group.name in visible_group_names
 
             if not is_visible and not has_windows:
                 continue
 
-            screen_index = visible_group_to_screen.get(group.name)
+            name = status_group_name(group.name)
             is_current = current_group is not None and group.name == current_group.name
 
             if is_current:
                 parts.append(
-                    pango_span(
-                        f"[{status_group_name(group.name)}]",
-                        COLORS["accent"],
-                        None,
-                        "bold",
-                    )
+                    pango_span("[", COLORS["subtle"])
+                    + pango_span(name, COLORS["accent"], weight="bold")
+                    + pango_span("]", COLORS["subtle"])
                 )
             elif is_visible and has_windows:
                 parts.append(
-                    pango_span(
-                        f"({status_group_name(group.name)})",
-                        COLORS["muted"],
-                        None,
-                        "bold",
-                    )
+                    pango_span("(", COLORS["subtle"])
+                    + pango_span(name, COLORS["visible"], weight="bold")
+                    + pango_span(")", COLORS["subtle"])
                 )
             elif is_visible:
-                parts.append(
-                    pango_span(
-                        f" {status_group_name(group.name)} ",
-                        COLORS["muted"],
-                        None,
-                    )
-                )
+                parts.append(pango_span(name, COLORS["dim"]))
             else:
-                parts.append(pango_span(status_group_name(group.name), COLORS["muted"], COLORS["bg_alt"]))
+                parts.append(pango_span(name, COLORS["active_hidden"]))
 
-        return " ".join(parts)
+        return pango_span("  ", COLORS["subtle"]).join(parts)
     except Exception:
         return ""
 
@@ -454,9 +449,9 @@ layouts = [
 
 
 widget_defaults = dict(
-    font="DejaVu Sans",
-    fontsize=14,
-    padding=8,
+    font="DejaVu Sans Mono",
+    fontsize=17,
+    padding=6,
     foreground=COLORS["fg"],
     background=COLORS["bg"],
 )
@@ -467,35 +462,37 @@ screens = [
         top=bar.Bar(
             [
                 widget.TextBox(
-                    " 󰍹 ",
-                    fontsize=18,
-                    foreground=COLORS["bg"],
-                    background=COLORS["accent"],
-                    padding=10,
+                    " qtile ",
+                    foreground=COLORS["subtle"],
+                    padding=8,
                 ),
                 ScreenStatus(
-                    foreground=COLORS["fg"],
-                    background=COLORS["bg_alt"],
-                    padding=10,
-                ),
-                widget.Sep(linewidth=0, padding=6, background=COLORS["bg"]),
-                widget.WindowName(
+                    fontsize=18,
                     foreground=COLORS["fg"],
                     background=COLORS["bg"],
+                    padding=8,
+                ),
+                widget.TextBox(" │ ", foreground=COLORS["subtle"], padding=2),
+                widget.WindowName(
+                    fontsize=16,
+                    foreground=COLORS["title"],
+                    background=COLORS["bg"],
                     empty_group_string="",
-                    padding=10,
+                    padding=8,
                 ),
                 widget.Systray(background=COLORS["bg"], padding=8),
+                widget.TextBox(" │ ", foreground=COLORS["subtle"], padding=2),
                 widget.Clock(
-                    format="%Y-%m-%d  %a  %H:%M",
-                    foreground=COLORS["bg"],
-                    background=COLORS["accent"],
+                    format="%a %b %-d  %H:%M",
+                    fontsize=17,
+                    foreground=COLORS["clock"],
+                    background=COLORS["bg"],
                     padding=10,
                 ),
             ],
-            32,
+            36,
             background=COLORS["bg"],
-            margin=[6, 8, 0, 8],
+            margin=[4, 8, 0, 8],
         )
     ),
 ]
