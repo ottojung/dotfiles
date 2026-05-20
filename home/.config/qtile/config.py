@@ -358,6 +358,15 @@ def focus_window_object(group: Any, window: Any) -> None:
         pass
 
 
+def window_is_live(window: Any) -> bool:
+    group = getattr(window, "group", None)
+    if group is None:
+        return False
+
+    windows = list(getattr(group, "windows", []) or [])
+    return window in windows
+
+
 def find_focus_replacement(group: Any, minimized_window: Any) -> Any | None:
     windows = list(getattr(group, "windows", []) or [])
     if not windows:
@@ -438,7 +447,7 @@ def remember_focused_window(window: Any) -> None:
     for old_window in _focus_history:
         if old_window is window:
             continue
-        if getattr(old_window, "group", None) is not None:
+        if window_is_live(old_window):
             alive.append(old_window)
 
     _focus_history = [window] + alive[: _MAX_FOCUS_HISTORY - 1]
@@ -472,8 +481,7 @@ def focus_previous_window(qtile_obj: Any) -> None:
     cleaned = []
 
     for window in _focus_history:
-        group = getattr(window, "group", None)
-        if group is None:
+        if not window_is_live(window):
             continue
         cleaned.append(window)
         if window is not current and target is None:
