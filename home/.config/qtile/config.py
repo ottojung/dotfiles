@@ -738,7 +738,7 @@ if ENABLE_AWESOMEWM_KEY_SCRIPTS:
 layouts = [
     layout.Max(
         border_width=0,
-        margin=8,
+        margin=0,
     ),
     layout.MonadTall(
         ratio=0.5,
