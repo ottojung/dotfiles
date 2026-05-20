@@ -1,162 +1,294 @@
-#! /usr/bin/env bash
+#! /usr/bin/env python3
 
-set -Eeuo pipefail
-
-usage() {
-  cat >&2 <<'EOF'
-Usage:
-  copy-chromium-session-state.sh SOURCE_USER_DATA_DIR TARGET_USER_DATA_DIR
-
-Example:
-  copy-chromium-session-state.sh "$HOME/.config/chromium" "$HOME/tmp/chromium-restored"
-
-Then run:
-  chromium --user-data-dir="$HOME/tmp/chromium-restored"
-EOF
-  exit 2
-}
-
-[[ $# -eq 2 ]] || usage
-
-SRC="${1%/}"
-DST="${2%/}"
-
-[[ -d "$SRC" ]] || {
-  echo "error: source is not a directory: $SRC" >&2
-  exit 1
-}
-
-[[ -f "$SRC/Local State" ]] || {
-  echo "error: source does not look like a Chromium user-data-dir: $SRC" >&2
-  echo "missing: $SRC/Local State" >&2
-  exit 1
-}
-
-if [[ -e "$SRC/SingletonLock" || -e "$SRC/SingletonSocket" || -e "$SRC/SingletonCookie" ]]; then
-  cat >&2 <<EOF
-error: Chromium appears to be running with this user-data-dir.
-
-Close Chromium first, otherwise the session files may be inconsistent:
-
-  $SRC
-
-EOF
-  exit 1
-fi
-
-mkdir -p "$DST"
-
-copy_path() {
-  local rel="$1"
-  local src_path="$SRC/$rel"
-  local dst_parent="$DST/$(dirname "$rel")"
-
-  [[ -e "$src_path" ]] || return 0
-
-  mkdir -p "$dst_parent"
-  cp -a "$src_path" "$dst_parent/"
-}
-
-# Root-level state.
-#
-# "Local State" is important because it contains profile metadata and some
-# Chromium-wide state used by the copied profiles.
-copy_path "Local State"
-
-# Copy every real profile directory. Usually this is "Default", "Profile 1",
-# "Profile 2", etc. We detect profiles by the presence of a Preferences file.
-while IFS= read -r -d '' prefs; do
-  profile_dir="$(dirname "$prefs")"
-  profile_rel="${profile_dir#"$SRC"/}"
-
-  echo "copying profile: $profile_rel" >&2
-
-  # Basic profile config, including startup/session restore preference.
-  copy_path "$profile_rel/Preferences"
-  copy_path "$profile_rel/Secure Preferences"
-
-  # The actual tab/session restore data.
-  copy_path "$profile_rel/Sessions"
-
-  # Web page state used by restored tabs.
-  copy_path "$profile_rel/Session Storage"
-  copy_path "$profile_rel/Local Storage"
-  copy_path "$profile_rel/IndexedDB"
-  copy_path "$profile_rel/databases"
-  copy_path "$profile_rel/File System"
-  copy_path "$profile_rel/Service Worker"
-  copy_path "$profile_rel/SharedStorage"
-  copy_path "$profile_rel/blob_storage"
-
-  # Cookies and network-origin state.
-  #
-  # Cookies are needed for logged-in tabs to reopen as logged-in.
-  # On modern Chromium these live under Profile/Network/.
-  copy_path "$profile_rel/Network"
-
-  # Extension state. Useful if restored tabs depend on extensions or if
-  # extension pages themselves were open.
-  copy_path "$profile_rel/Extensions"
-  copy_path "$profile_rel/Extension State"
-  copy_path "$profile_rel/Extension Rules"
-  copy_path "$profile_rel/Extension Scripts"
-  copy_path "$profile_rel/Extension Cookies"
-  copy_path "$profile_rel/Local Extension Settings"
-  copy_path "$profile_rel/Sync Extension Settings"
-  copy_path "$profile_rel/Managed Extension Settings"
-
-  # Optional but useful: tab back/forward history, favicons, recently visited
-  # links, and profile UI polish. These are small compared to caches.
-  copy_path "$profile_rel/History"
-  copy_path "$profile_rel/History-journal"
-  copy_path "$profile_rel/Favicons"
-  copy_path "$profile_rel/Favicons-journal"
-  copy_path "$profile_rel/Visited Links"
-
-done < <(find "$SRC" -mindepth 2 -maxdepth 2 -type f -name "Preferences" -print0)
-
-# Force "continue where you left off" for copied profiles, so Chromium is more
-# likely to reopen the copied tabs when started only with --user-data-dir=...
-if command -v python3 >/dev/null 2>&1; then
-  python3 - "$DST" <<'PY'
+import argparse
 import json
-import pathlib
+import os
+import shutil
+import sqlite3
 import sys
+from pathlib import Path
 
-root = pathlib.Path(sys.argv[1])
 
-for prefs_path in root.glob("*/Preferences"):
+ROOT_FILES = [
+    "Local State",
+    "First Run",
+]
+
+LOCK_NAMES = {
+    "SingletonLock",
+    "SingletonSocket",
+    "SingletonCookie",
+}
+
+
+PROFILE_PATHS = [
+    # Profile configuration.
+    "Preferences",
+    "Secure Preferences",
+
+    # Sessions / tabs.
+    "Sessions",
+    "Current Session",
+    "Current Tabs",
+    "Last Session",
+    "Last Tabs",
+
+    # Main auth/session state.
+    #
+    # Modern Chromium usually keeps cookies under Network/Cookies.
+    # Older layouts may keep Cookies at the profile root.
+    "Network",
+    "Cookies",
+    "Cookies-journal",
+    "Cookies-wal",
+    "Cookies-shm",
+
+    # Passwords / autofill / account-ish browser DBs.
+    "Login Data",
+    "Login Data-journal",
+    "Login Data-wal",
+    "Login Data-shm",
+    "Web Data",
+    "Web Data-journal",
+    "Web Data-wal",
+    "Web Data-shm",
+
+    # Site state used by logged-in web apps.
+    "Session Storage",
+    "Local Storage",
+    "IndexedDB",
+    "databases",
+    "File System",
+    "Service Worker",
+    "SharedStorage",
+    "blob_storage",
+    "DIPS",
+    "DIPS-journal",
+    "DIPS-wal",
+    "DIPS-shm",
+
+    # Extra network/session state.
+    "TransportSecurity",
+    "Trust Tokens",
+    "Trust Tokens-journal",
+    "Trust Tokens-wal",
+    "Trust Tokens-shm",
+    "Private State Tokens",
+    "Private State Tokens-journal",
+    "Private State Tokens-wal",
+    "Private State Tokens-shm",
+    "Reporting and NEL",
+    "Reporting and NEL-journal",
+    "Reporting and NEL-wal",
+    "Reporting and NEL-shm",
+
+    # Extensions.
+    "Extensions",
+    "Extension State",
+    "Extension Rules",
+    "Extension Scripts",
+    "Extension Cookies",
+    "Local Extension Settings",
+    "Sync Extension Settings",
+    "Managed Extension Settings",
+
+    # Useful browsing/profile state.
+    "History",
+    "History-journal",
+    "History-wal",
+    "History-shm",
+    "Favicons",
+    "Favicons-journal",
+    "Favicons-wal",
+    "Favicons-shm",
+    "Visited Links",
+    "Top Sites",
+    "Top Sites-journal",
+    "Shortcuts",
+    "Shortcuts-journal",
+]
+
+
+def eprint(*args):
+    print(*args, file=sys.stderr)
+
+
+def lexists(path: Path) -> bool:
+    return os.path.lexists(path)
+
+
+def ensure_not_running(user_data_dir: Path, label: str) -> None:
+    found = sorted(name for name in LOCK_NAMES if lexists(user_data_dir / name))
+    if found:
+        raise RuntimeError(
+            f"{label} Chromium user-data-dir appears to be in use:\n"
+            f"  {user_data_dir}\n\n"
+            f"Found: {', '.join(found)}\n"
+            f"Close Chromium using that directory before copying."
+        )
+
+
+def remove_dst(dst: Path) -> None:
+    if not lexists(dst):
+        return
+
+    if dst.is_dir() and not dst.is_symlink():
+        shutil.rmtree(dst)
+    else:
+        dst.unlink()
+
+
+def copy_one(src_root: Path, dst_root: Path, relative: Path) -> None:
+    src = src_root / relative
+    dst = dst_root / relative
+
+    if not lexists(src):
+        return
+
+    dst.parent.mkdir(parents=True, exist_ok=True)
+
+    # Important: replace instead of merging. SQLite DBs plus stale -wal/-shm
+    # files from a previous target profile can make Chromium see weird state.
+    remove_dst(dst)
+
+    if src.is_dir() and not src.is_symlink():
+        shutil.copytree(
+            src,
+            dst,
+            symlinks=True,
+            copy_function=shutil.copy2,
+        )
+    else:
+        shutil.copy2(src, dst, follow_symlinks=False)
+
+
+def find_profiles(src: Path) -> list[Path]:
+    return sorted(
+        child
+        for child in src.iterdir()
+        if child.is_dir() and (child / "Preferences").is_file()
+    )
+
+
+def force_restore_on_startup(profile_dst: Path) -> None:
+    prefs_path = profile_dst / "Preferences"
+    if not prefs_path.is_file():
+        return
+
     try:
         data = json.loads(prefs_path.read_text())
-    except Exception as e:
-        print(f"warning: could not parse {prefs_path}: {e}", file=sys.stderr)
-        continue
+    except Exception as exc:
+        eprint(f"warning: could not parse {prefs_path}: {exc}")
+        return
 
-    session = data.setdefault("session", {})
-    session["restore_on_startup"] = 1
+    data.setdefault("session", {})["restore_on_startup"] = 1
 
-    tmp = prefs_path.with_suffix(".tmp")
+    tmp = prefs_path.with_name(prefs_path.name + ".tmp")
     tmp.write_text(json.dumps(data, separators=(",", ":"), ensure_ascii=False))
     tmp.replace(prefs_path)
 
-    print(f"enabled session restore in: {prefs_path}", file=sys.stderr)
-else
-  echo "warning: python3 not found; could not force restore_on_startup=1" >&2
-fi
 
-cat >&2 <<EOF
+def cookie_db_report(profile: Path) -> None:
+    candidates = [
+        profile / "Network" / "Cookies",
+        profile / "Cookies",
+    ]
 
-Done.
+    for db in candidates:
+        if not db.is_file():
+            continue
 
-Try:
+        try:
+            conn = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+            try:
+                row = conn.execute(
+                    """
+                    SELECT
+                      COUNT(*),
+                      COALESCE(SUM(CASE WHEN length(encrypted_value) > 0 THEN 1 ELSE 0 END), 0),
+                      COALESCE(SUM(CASE WHEN length(value) > 0 THEN 1 ELSE 0 END), 0)
+                    FROM cookies
+                    """
+                ).fetchone()
+            finally:
+                conn.close()
+        except Exception as exc:
+            eprint(f"cookie report: {db}: could not read: {exc}")
+            continue
 
-  chromium --user-data-dir="$DST"
+        total, encrypted, plaintext = row
+        eprint(
+            f"cookie report: {db}: "
+            f"{total} cookies, {encrypted} encrypted, {plaintext} plaintext"
+        )
 
-Notes:
-  - Use the same Chromium/Chrome major version if possible.
-  - Close the source browser before copying.
-  - Cookies/password-protected state may not work if moved to another OS user
-    or another machine, because Chromium may encrypt it via the system keyring.
-  - This intentionally does not copy Cache, GPUCache, Code Cache, Crashpad, etc.
 
-EOF
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("source")
+    parser.add_argument("target")
+    parser.add_argument(
+        "--no-force-restore",
+        action="store_true",
+        help="Do not modify Preferences to enable session restore.",
+    )
+    args = parser.parse_args()
+
+    src = Path(args.source).expanduser().resolve()
+    dst = Path(args.target).expanduser().resolve()
+
+    if not src.is_dir():
+        eprint(f"error: source is not a directory: {src}")
+        return 1
+
+    if not (src / "Local State").is_file():
+        eprint(f"error: not a Chromium user-data-dir: {src}")
+        eprint(f"missing: {src / 'Local State'}")
+        return 1
+
+    ensure_not_running(src, "source")
+    if dst.exists():
+        ensure_not_running(dst, "target")
+
+    dst.mkdir(parents=True, exist_ok=True)
+
+    for name in ROOT_FILES:
+        copy_one(src, dst, Path(name))
+
+    profiles = find_profiles(src)
+    if not profiles:
+        eprint(f"error: no Chromium profiles found in {src}")
+        return 1
+
+    for profile_src in profiles:
+        profile_rel = profile_src.relative_to(src)
+        profile_dst = dst / profile_rel
+
+        eprint(f"copying profile: {profile_rel}")
+
+        for item in PROFILE_PATHS:
+            copy_one(src, dst, profile_rel / item)
+
+        if not args.no_force_restore:
+            force_restore_on_startup(profile_dst)
+
+        cookie_db_report(profile_dst)
+
+    eprint()
+    eprint("Done.")
+    eprint()
+    eprint("Try:")
+    eprint(f'  chromium --user-data-dir="{dst}"')
+    eprint()
+    eprint("If tabs restore but every site asks you to sign in again,")
+    eprint("the cookies were probably copied but cannot be decrypted by this OS user/keyring.")
+
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except RuntimeError as exc:
+        eprint(f"error: {exc}")
+        raise SystemExit(1)
