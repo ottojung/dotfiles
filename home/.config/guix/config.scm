@@ -76,7 +76,7 @@
   lm-sensors ;; CPU diagnostics tool, provides `sensors' program and others (nix: lm_sensors)
   acpi ;; battery diagnostics tool
   rsync ;; copies files between remote computers
-  unison ;; like rsync, but for syncing
+  ;; unison ;; like rsync, but for syncing
   ;; youtube-dl ;; need newest version
   ;; texlive ;; distribution of TeX programs (nix: texlive.combined.scheme-full)
   imagemagick ;; CLI tool to edit images
@@ -128,7 +128,7 @@
   ;; slock ;; simple screen locking ;; broken? Says ~"cannot disable OOM"~ as if I wanted that.
   slim ;; provides `slimlock' screen locker
   xmessage ;; for displaying user messages
-  # awesome ;; the awesome window manager
+  ;; awesome ;; the awesome window manager
   xdg-user-dirs ;; for xdg-user-dir command that is used by various programs
   qtile ;; the qtile window manager
   )
