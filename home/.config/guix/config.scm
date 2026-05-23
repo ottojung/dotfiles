@@ -110,8 +110,6 @@
 (define-packages x-server
   ;; xsel ;; copy-paste from terminal, alternative for xclip
   xclip ;; copy-paste from terminal, alternative for xsel
-  ;; xmonad-with-packages ;; main xmonad program and libraries
-  ;; xmobar ;; panel
   xdg-utils ;; provides xdg-open
   ;; mime-types ;; for xdg-open
   shared-mime-info ;; for xdg-open
@@ -226,9 +224,6 @@
   ;; localed ;; provides systemd's localectl command
   )
 
-(define-packages xmonad-packages
-  ghc-xmonad-contrib xmonad xmobar)
-
 
 (define base
   (patch-pkglist
@@ -241,8 +236,7 @@
    + fonts
    + e-mail
    + drivers
-   + guix-packages
-   + xmonad-packages))
+   + guix-packages))
 
 
 (define marceline
@@ -264,7 +258,7 @@
    - guix-packages
    + glibc-locales
    + nss-certs ;; HTTPS certificates
-   - xmonad-packages))
+   ))
 
 
 (define to-install
