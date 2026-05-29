@@ -702,14 +702,32 @@ for secondary in SECONDARIES:
 
 # Your XMonad config delegated many Mod-* bindings to shell commands named
 # awesomewm-key-* / awesomewm-key-shift-*.
+#
+# Do not maintain exclusion sets by hand. Instead, inspect the keybindings that
+# already exist at this point in the file. This keeps the awesomewm-key-* layer
+# in sync with the real Qtile bindings above.
 ENABLE_AWESOMEWM_KEY_SCRIPTS = True
-QTILE_USED_LETTER_KEYS = {"a", "f", "h", "j", "k", "l", "m", "n", "w", "x"}
-QTILE_USED_SPECIAL_KEYS = {"Tab"}
+
+
+def key_chord_is_already_bound(modifiers: list[str], key_name: str) -> bool:
+    wanted_modifiers = set(modifiers)
+
+    for key_binding in keys:
+        bound_key = getattr(key_binding, "key", None)
+        bound_modifiers = set(getattr(key_binding, "modifiers", []) or [])
+
+        if bound_key == key_name and bound_modifiers == wanted_modifiers:
+            return True
+
+    return False
+
 
 if ENABLE_AWESOMEWM_KEY_SCRIPTS:
     for letter in SECONDARIES:
-        if letter not in QTILE_USED_LETTER_KEYS:
+        if not key_chord_is_already_bound([mod], letter):
             keys.append(Key([mod], letter, lazy.spawn(f"awesomewm-key-{letter}")))
+
+        if not key_chord_is_already_bound([mod, "shift"], letter):
             keys.append(Key([mod, "shift"], letter, lazy.spawn(f"awesomewm-key-shift-{letter}")))
 
     for key_name, script_name in [
@@ -730,8 +748,10 @@ if ENABLE_AWESOMEWM_KEY_SCRIPTS:
         ("Insert", "insert"),
         ("space", "space"),
     ]:
-        if key_name not in QTILE_USED_SPECIAL_KEYS:
+        if not key_chord_is_already_bound([mod], key_name):
             keys.append(Key([mod], key_name, lazy.spawn(f"awesomewm-key-{script_name}")))
+
+        if not key_chord_is_already_bound([mod, "shift"], key_name):
             keys.append(Key([mod, "shift"], key_name, lazy.spawn(f"awesomewm-key-shift-{script_name}")))
 
 
