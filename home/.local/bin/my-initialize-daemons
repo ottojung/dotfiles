@@ -2,21 +2,21 @@
 
 TITLE="my-desktop-initialize"
 
-nice -n 19 my-execute-in-screens \
-	"$TITLE" \
-	"my-notify-daemon" \
-	"my-launch-music-daemon" \
-	"my-cpu-daemon" \
-	"my-wallpaper-daemon" \
-	"my-launch-tray" \
-	"my-break-daemon" \
-	"my-agenda-daemon" \
-	"my-email-daemon" \
-	"my-battery-daemon" \
-	"my-memory-daemon" \
-	"my-clipboard-daemon" \
-	"my-data-sync-daemon" \
+# Daemons common to all machines
+DAEMONS="my-notify-daemon my-launch-music-daemon my-wallpaper-daemon my-launch-tray my-break-daemon my-agenda-daemon my-email-daemon my-memory-daemon my-clipboard-daemon"
 
+# Hostname-specific daemon selection
+case "$MY_HOSTNAME" in
+    marceline)
+        # Fast desktop: no cpu throttling, battery monitoring, or data sync needed
+        ;;
+    *)
+        # pc (laptop) and others: battery-aware daemons
+        DAEMONS="$DAEMONS my-cpu-daemon my-battery-daemon my-data-sync-daemon"
+        ;;
+esac
+
+nice -n 19 my-execute-in-screens "$TITLE" $DAEMONS
 
 my-screensaver-daemon & # Note that this needs to be run from the terminal, it cannot be started from tmux because its PID session will be messed up.
 my-emacs-start-server &
