@@ -1,4 +1,8 @@
 (list (channel
+        (name 'o-channel)
+        (url "https://github.com/ottojung/o-channel.git")
+        (branch "main"))
+      (channel
         (name 'guix)
         (url "https://git.savannah.gnu.org/git/guix.git")
         (branch "master")
