@@ -5,8 +5,8 @@
         (introduction
           (make-channel-introduction
              "ad5ca63ff8e51e007f2008fff48e0152edba7362"
-            (openpgp-fingerprint
-              "8B9BE8115DCDEEFA3E24D5EDB851B4F4C06C04D6"))))
+             (openpgp-fingerprint
+              "8B9B E811 5DCD EEFA 3E24  D5ED B851 B4F4 C06C 04D6"))))
       (channel
         (name 'guix)
         (url "https://git.savannah.gnu.org/git/guix.git")
