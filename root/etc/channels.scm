@@ -1,7 +1,12 @@
 (list (channel
         (name 'o-channel)
         (url "https://github.com/ottojung/o-channel.git")
-        (branch "main"))
+        (branch "main")
+        (introduction
+          (make-channel-introduction
+            "5975d86ccc82a764de862785825e3226fa1b4247"
+            (openpgp-fingerprint
+              "8B9BE8115DCDEEFA3E24D5EDB851B4F4C06C04D6"))))
       (channel
         (name 'guix)
         (url "https://git.savannah.gnu.org/git/guix.git")
