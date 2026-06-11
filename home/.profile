@@ -5,25 +5,20 @@ case $IN_NIX_SHELL in
 		return
 esac
 
-if command -v guix 1>/dev/null 2>/dev/null
-then
-	if test -z "$GUIX_ENVIRONMENT"
+source_guix_profile() {
+	profile="$1"
+
+	if test -f "$profile/etc/profile"
 	then
-		if test -z "$GUIX_PROFILE" || ! test -d "$GUIX_PROFILE"
-		then
-			if test -d "$HOME/.config/guix/current"
-			then export GUIX_PROFILE="$HOME/.config/guix/current"
-			else
-				if test -d "$HOME/.guix-profile"
-				then export GUIX_PROFILE="$HOME/.guix-profile"
-				fi
-			fi
-			if test -f "$GUIX_PROFILE/etc/profile"
-			then . "$GUIX_PROFILE/etc/profile"
-			fi
-			export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
-		fi
+		export GUIX_PROFILE="$profile"
+		. "$GUIX_PROFILE/etc/profile"
 	fi
+}
+
+if test -z "$GUIX_ENVIRONMENT"
+then
+	source_guix_profile "$HOME/.config/guix/current"
+	source_guix_profile "$HOME/.guix-profile"
 fi
 
 ###########
