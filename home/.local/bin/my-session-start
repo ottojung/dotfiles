@@ -7,5 +7,5 @@ set -x
 
 date
 export MIYKA_REPO_NAME="$NAME"
-echo | miyka run "$NAME"
+printf | miyka run "$NAME"
 date
