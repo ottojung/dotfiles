@@ -85,6 +85,8 @@
   ;; docker docker-cli docker-compose ;; Docker stuff
   ;; podman ;; podman stuff. NOTE: does not work on Guix at the moment.
   restic ;; backup program with deduplication and incrementality.
+  omiya-miyka ;; my workspace manager
+  omiya-opencode ;; AI programming TUI
   )
 
 (define-packages compilers
@@ -105,6 +107,7 @@
   ;; maxima ;; mathematica-like computer algebra system
   swi-prolog ;; free prolog implementation
   go ;; the golang compiler
+  omiya-schrec ;; compiler for rose
   )
 
 (define-packages x-server
