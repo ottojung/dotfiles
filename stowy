@@ -221,7 +221,7 @@ my_link() {
 
 	if test "$OVERWRITE" = 0 && test -e "$TGT"
 	then
-		if test $(readlink -f "$TGT" || echo "///") = $(readlink -f "$SRC" || echo "//")
+		if test "$(readlink -f "$TGT" || echo "///")" = "$(readlink -f "$SRC" || echo "//")"
 		then return 0
 		else
 			 error "Want to replace file '$(readlink -f "$SRC" || echo "///")' by '$(readlink -f "$TGT" || echo "//")', but that is only allowed with --overwrite flag"
@@ -243,7 +243,7 @@ my_install_push() {
 	then return 0
 	fi
 
-	if test "$READLINK" = 1 && test $(readlink -f "$SOURCE/$STACK/$1" || echo "///") = $(readlink -f "$TARGET/$STACK/$1" || echo "//")
+	if test "$READLINK" = 1 && test "$(readlink -f "$SOURCE/$STACK/$1" || echo "///")" = "$(readlink -f "$TARGET/$STACK/$1" || echo "//")"
 	then
 		test "$OVERWRITE" = 1 && test -n "$STOWY_LINK_CMD" && my_link "$1"
 		return 0
