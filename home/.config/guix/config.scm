@@ -87,6 +87,7 @@
   restic ;; backup program with deduplication and incrementality.
   omiya-miyka ;; my workspace manager
   omiya-opencode ;; AI programming TUI
+  omiya-purgery ;; like rsync but with transformations
   )
 
 (define-packages compilers
