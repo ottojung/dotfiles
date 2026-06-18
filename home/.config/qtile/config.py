@@ -12,6 +12,11 @@
 #   - major workspace switches move all displays together
 #   - each major workspace remembers its own per-display minor layout
 
+import os
+import time
+os.environ.pop("TZ", None)
+time.tzset()
+
 from html import escape
 from string import ascii_lowercase
 from typing import Any, cast
