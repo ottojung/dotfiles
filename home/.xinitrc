@@ -3,6 +3,9 @@
 
 xinitrc_body() {
 
+set -x
+set -e
+
 . ~/.profile
 
 TMP="/tmp/my-xsession-temp"
