@@ -1,5 +1,8 @@
 #! /bin/sh
 
+
+xinitrc_body() {
+
 . ~/.profile
 
 TMP="/tmp/my-xsession-temp"
@@ -12,3 +15,12 @@ dbus-update-activation-environment --systemd DBUS_SESSION_BUS_ADDRESS DISPLAY XA
 # exec xmonad
 # exec awesome
 exec qtile start
+
+}
+
+if test -z "$MY_ROOT"
+then MY_ROOT="$HOME/my"
+fi
+
+mkdir -p -- "$MY_ROOT/tmp"
+xinitrc_body 2>&1 | tee -- "$MY_ROOT/tmp/session-start.log"
