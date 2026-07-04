@@ -17,6 +17,12 @@ dbus-update-activation-environment --systemd DBUS_SESSION_BUS_ADDRESS DISPLAY XA
 # (gnome-session ; true) || gnome-shell
 # xmonad
 # awesome
+
+
+if test -f ~/.guix-profile/lib/libfontconfig.so
+then export LD_PRELOAD="$HOME"/.guix-profile/lib/libfontconfig.so
+fi
+
 qtile start
 
 }
