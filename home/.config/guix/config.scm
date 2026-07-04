@@ -112,6 +112,7 @@
   )
 
 (define-packages x-server
+  xinit ;; provides `startx`
   ;; xsel ;; copy-paste from terminal, alternative for xclip
   xclip ;; copy-paste from terminal, alternative for xsel
   xdg-utils ;; provides xdg-open
