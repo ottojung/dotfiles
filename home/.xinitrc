@@ -17,7 +17,7 @@ dbus-update-activation-environment --systemd DBUS_SESSION_BUS_ADDRESS DISPLAY XA
 # exec (gnome-session ; true) || gnome-shell
 # exec xmonad
 # exec awesome
-exec qtile start
+qtile start
 
 }
 
