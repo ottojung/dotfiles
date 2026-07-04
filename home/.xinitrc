@@ -1,7 +1,6 @@
 #! /bin/sh
 
 set -x
-set -e
 
 . ~/.profile
 
@@ -21,6 +20,7 @@ then export LD_PRELOAD="$HOME"/.guix-profile/lib/libfontconfig.so
 fi
 
 qtile start
+
 while true
 do sleep 99999
 done
