@@ -870,19 +870,7 @@
   (keyboard-layout "us" #:options (list "ctrl:nocaps")))
 
 (define (set-display-manager services)
-  (define display-manager-types (list gdm-service-type slim-service-type))
-  (define my-xorg-config
-    (xorg-configuration (keyboard-layout my-desktop-keyboard)))
-
-  (cons* (service
-          slim-service-type (slim-configuration
-                             (xorg-configuration my-xorg-config)
-                             (display ":0")
-                             (vt "vt7")))
-         (remove
-          (lambda (service)
-            (member (service-kind service) display-manager-types))
-          services)))
+  services)
 
 (define (modify-special-files services)
   (modify-services
