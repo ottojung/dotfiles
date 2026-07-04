@@ -17,12 +17,9 @@ dbus-update-activation-environment --systemd DBUS_SESSION_BUS_ADDRESS DISPLAY XA
 # xmonad
 # awesome
 
-echo "$LD_PRELOAD"
-
 if test -f ~/.guix-profile/lib/libfontconfig.so
 then export LD_PRELOAD=~/.guix-profile/lib/libfontconfig.so
 fi
-
 qtile start
 
 }
