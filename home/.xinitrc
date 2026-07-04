@@ -15,8 +15,4 @@
 # awesome
 
 
-if test -f ~/.guix-profile/lib/libfontconfig.so
-then export LD_PRELOAD="$HOME"/.guix-profile/lib/libfontconfig.so
-fi
-
-exec qtile start
+exec env LD_PRELOAD="$HOME"/.guix-profile/lib/libfontconfig.so qtile start
