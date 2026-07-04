@@ -32,4 +32,4 @@ then MY_ROOT="$HOME/my"
 fi
 
 mkdir -p -- "$MY_ROOT/tmp"
-xinitrc_body 2>&1 | tee -- "$MY_ROOT/tmp/session-start.log"
+xinitrc_body 2>&1 1> "$MY_ROOT/tmp/session-start.log"
