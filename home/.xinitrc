@@ -1,8 +1,5 @@
 #! /bin/sh
 
-
-xinitrc_body() {
-
 set -x
 set -e
 
@@ -24,12 +21,7 @@ then export LD_PRELOAD="$HOME"/.guix-profile/lib/libfontconfig.so
 fi
 
 qtile start
+while true
+do sleep 99999
+done
 
-}
-
-if test -z "$MY_ROOT"
-then MY_ROOT="$HOME/my"
-fi
-
-mkdir -p -- "$MY_ROOT/tmp"
-xinitrc_body 2>&1 | tee -- "$MY_ROOT/tmp/session-start.log"
