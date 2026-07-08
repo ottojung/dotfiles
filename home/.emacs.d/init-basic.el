@@ -21,7 +21,6 @@
  '(dired-hide-details-hide-information-lines t)
  '(dired-hide-details-hide-symlink-targets nil)
  '(dired-listing-switches "-alFhgG")
- '(inhibit-startup-screen t)
  '(menu-bar-mode nil)
  '(message-default-mail-headers "Cc:
 Bcc:
