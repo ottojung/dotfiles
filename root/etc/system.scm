@@ -8,7 +8,7 @@
 (use-modules (nongnu packages linux)) ;; propriatary channels
 (use-modules (srfi srfi-1))
 
-(define this-hostname "pc")
+(define this-hostname "phoebe")
 
 (use-service-modules
   cups
