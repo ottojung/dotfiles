@@ -61,31 +61,47 @@
      %setuid-programs))
 
    (services
-    (add-my-desktop-services %desktop-services))
+    (modify-services
+     (cons (service openssh-service-type)
+           (add-my-desktop-services %desktop-services))
+     (guix-service-type
+      config =>
+      (guix-configuration
+       (inherit config)
+       (substitute-urls
+        (append (list "https://substitutes.nonguix.org")
+                %default-substitute-urls))
+       (authorized-keys
+        (append
+         (list
+          (plain-file
+           "nonguix-signing-key.pub"
+           "(public-key
+ (ecc
+  (curve Ed25519)
+  (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))
+"))
+         %default-authorized-guix-keys))))))
 
    (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
                 (targets (list "/boot/efi"))
                 (keyboard-layout keyboard-layout)))
-   (mapped-devices (list (mapped-device
-                          (source (uuid
-                                   "8b37a5aa-dd43-4f9c-901a-8e488ae6e701"))
-                          (target "cryptroot")
-                          (type luks-device-mapping))))
 
    ;; The list of file systems that get "mounted".  The unique
    ;; file system identifiers there ("UUIDs") can be obtained
    ;; by running 'blkid' in a terminal.
-   (file-systems (cons* (file-system
-                         (mount-point "/boot/efi")
-                         (device (uuid "4ED6-B9A2"
-                                       'fat32))
-                         (type "vfat"))
-                        (file-system
-                         (mount-point "/")
-                         (device "/dev/mapper/cryptroot")
-                         (type "ext4")
-                         (dependencies mapped-devices)) %base-file-systems))))
+   (file-systems
+    (cons* (file-system
+             (mount-point "/boot/efi")
+             (device (uuid "E787-9747" 'fat32))
+             (type "vfat"))
+           (file-system
+             (mount-point "/")
+             (device
+              (uuid "4d2248ba-3f1f-46a6-bbe4-119cf7359373"))
+             (type "ext4"))
+           %base-file-systems))))
 
 
 (define blocked-websites
