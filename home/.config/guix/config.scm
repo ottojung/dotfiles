@@ -95,7 +95,7 @@
   ;; binutils ;; gcc and linker and stuff
   ;; nodejs
   make ;; (nix: gnumake)
-  ;; guile
+  guile ;; pinned to channel commit; resolves to 3.0.9
   ;; python ;; (nix: python3)
   ;; racket
   ;; chez ;; provides `scheme' - r6rs compiler
