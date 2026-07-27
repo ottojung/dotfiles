@@ -1,6 +1,9 @@
-#!/bin/sh
+#! /bin/sh
+
+set -xe
+
 ssh -o ExitOnForwardFailure=yes \
     -o ServerAliveInterval=30 \
     -N \
     -R 59930:localhost:22 \
-    root@$MY_SERVER_NAME
+    root@"$MY_SERVER_NAME"
