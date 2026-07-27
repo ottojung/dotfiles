@@ -11,7 +11,7 @@ case "$MY_HOSTNAME" in
         # Fast desktop: no cpu throttling, battery monitoring, or data sync needed
         ;;
     *)
-        # pc (laptop) and others: battery-aware daemons
+        # phoebe and others: battery-aware daemons
         DAEMONS="$DAEMONS my-cpu-daemon my-battery-daemon my-data-sync-daemon my-make-ssh-tunnel"
         ;;
 esac
