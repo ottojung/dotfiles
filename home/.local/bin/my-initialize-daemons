@@ -12,7 +12,7 @@ case "$MY_HOSTNAME" in
         ;;
     *)
         # phoebe and others: battery-aware daemons
-        DAEMONS="$DAEMONS my-cpu-daemon my-battery-daemon my-data-sync-daemon my-make-ssh-tunnel"
+        DAEMONS="$DAEMONS my-data-sync-daemon my-make-ssh-tunnel"
         ;;
 esac
 
