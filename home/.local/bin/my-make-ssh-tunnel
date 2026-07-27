@@ -6,4 +6,5 @@ ssh -o ExitOnForwardFailure=yes \
     -o ServerAliveInterval=30 \
     -N \
     -R 59930:localhost:22 \
+    -v \
     root@"$MY_SERVER_NAME"
