@@ -1,10 +1,102 @@
 #! /bin/sh
 
-set -xe
+set -u
 
-ssh -o ExitOnForwardFailure=yes \
-    -o ServerAliveInterval=30 \
-    -N \
-    -R 59930:localhost:22 \
+: "${MY_SERVER_NAME:?MY_SERVER_NAME must be set}"
+
+REMOTE_USER="${MY_SSH_TUNNEL_USER:-root}"
+REMOTE_PORT="${MY_SSH_TUNNEL_PORT:-59930}"
+
+LOCAL_HOST="${MY_SSH_TUNNEL_LOCAL_HOST:-127.0.0.1}"
+LOCAL_PORT="${MY_SSH_TUNNEL_LOCAL_PORT:-22}"
+
+INITIAL_RETRY_DELAY="${MY_SSH_TUNNEL_INITIAL_RETRY_DELAY:-2}"
+MAX_RETRY_DELAY="${MY_SSH_TUNNEL_MAX_RETRY_DELAY:-60}"
+STABLE_CONNECTION_SECONDS="${MY_SSH_TUNNEL_STABLE_SECONDS:-300}"
+
+child_pid=""
+
+terminate()
+{
+    trap - HUP INT TERM
+
+    if [ -n "$child_pid" ]; then
+        kill "$child_pid" 2>/dev/null || :
+        wait "$child_pid" 2>/dev/null || :
+    fi
+
+    printf '%s\n' "SSH tunnel stopped." >&2
+    exit 0
+}
+
+trap terminate HUP INT TERM
+
+# Construct the command using positional parameters so every argument remains
+# safely quoted.
+set -- ssh \
     -v \
-    root@"$MY_SERVER_NAME"
+    -N \
+    -T \
+    -o BatchMode=yes \
+    -o ConnectTimeout=10 \
+    -o ConnectionAttempts=1 \
+    -o ExitOnForwardFailure=yes \
+    -o ServerAliveInterval=15 \
+    -o ServerAliveCountMax=3 \
+    -o TCPKeepAlive=yes \
+    -o ForwardAgent=no \
+    -o ForwardX11=no \
+    -R "127.0.0.1:${REMOTE_PORT}:${LOCAL_HOST}:${LOCAL_PORT}"
+
+# Optionally set MY_SSH_TUNNEL_IDENTITY_FILE to use a particular key.
+if [ -n "${MY_SSH_TUNNEL_IDENTITY_FILE:-}" ]; then
+    set -- "$@" \
+        -o IdentitiesOnly=yes \
+        -i "$MY_SSH_TUNNEL_IDENTITY_FILE"
+fi
+
+set -- "$@" "${REMOTE_USER}@${MY_SERVER_NAME}"
+
+retry_delay="$INITIAL_RETRY_DELAY"
+
+while :; do
+    started_at="$(date +%s)"
+
+    printf '%s\n' \
+        "Opening reverse SSH tunnel: ${MY_SERVER_NAME}:${REMOTE_PORT} -> ${LOCAL_HOST}:${LOCAL_PORT}" \
+        >&2
+
+    "$@" &
+    child_pid="$!"
+
+    if wait "$child_pid"; then
+        status=0
+    else
+        status="$?"
+    fi
+
+    child_pid=""
+
+    ended_at="$(date +%s)"
+    connection_seconds=$((ended_at - started_at))
+
+    # A connection that remained up for a while was probably healthy, so a
+    # later failure should start again with the short retry delay.
+    if [ "$connection_seconds" -ge "$STABLE_CONNECTION_SECONDS" ]; then
+        retry_delay="$INITIAL_RETRY_DELAY"
+    fi
+
+    printf '%s\n' \
+        "SSH exited with status ${status} after ${connection_seconds}s; retrying in ${retry_delay}s." \
+        >&2
+
+    sleep "$retry_delay" &
+    child_pid="$!"
+    wait "$child_pid" || :
+    child_pid=""
+
+    retry_delay=$((retry_delay * 2))
+    if [ "$retry_delay" -gt "$MAX_RETRY_DELAY" ]; then
+        retry_delay="$MAX_RETRY_DELAY"
+    fi
+done
