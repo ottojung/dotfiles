@@ -88,6 +88,7 @@
   omiya-miyka ;; my workspace manager
   omiya-opencode ;; AI programming TUI
   omiya-purgery ;; like rsync but with transformations
+  omiya-tunnel-client ;; an MCP server thingy from OpenAI
   )
 
 (define-packages compilers
