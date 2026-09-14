@@ -171,6 +171,21 @@ def append_assistant_answer(
         f.write("\n")
 
 
+def combine_prompt(
+    prompt: str,
+    guidelines: str | None,
+) -> str:
+    if guidelines is None or not guidelines.strip():
+        return prompt
+
+    return (
+        "## Guidelines\n\n"
+        f"{guidelines.strip()}\n\n"
+        "## Request\n\n"
+        f"{prompt}"
+    )
+
+
 def run_agent(
     *,
     prompt: str,
@@ -294,6 +309,14 @@ def main() -> int:
     )
 
     parser.add_argument(
+        "--guidelines",
+        help=(
+            "Optional generic instructions prepended to the request, "
+            "such as AGENTS.md-style working guidelines."
+        ),
+    )
+
+    parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
@@ -321,6 +344,11 @@ def main() -> int:
         )
         return 127
 
+    effective_prompt = combine_prompt(
+        args.prompt,
+        args.guidelines,
+    )
+
     root = state_root()
     agent_dir = root / agent_id(title)
 
@@ -342,6 +370,14 @@ def main() -> int:
     logger.info("Pi sessions: %s", session_dir)
     logger.debug("Metadata: %s", metadata_path)
 
+    if args.guidelines is not None and args.guidelines.strip():
+        logger.info(
+            "Generic guidelines: provided (%d characters)",
+            len(args.guidelines.strip()),
+        )
+    else:
+        logger.info("Generic guidelines: none")
+
     with lock_path.open("w") as lock_file:
         try:
             fcntl.flock(
@@ -356,10 +392,10 @@ def main() -> int:
             return 1
 
         logger.info("Appending user prompt to history")
-        append_user_prompt(history_path, args.prompt)
+        append_user_prompt(history_path, effective_prompt)
 
         return_code, final_answer = run_agent(
-            prompt=args.prompt,
+            prompt=effective_prompt,
             session_dir=session_dir,
         )
 
