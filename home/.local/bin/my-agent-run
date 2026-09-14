@@ -1,0 +1,396 @@
+#!/usr/bin/env python3
+
+from __future__ import annotations
+
+import argparse
+import fcntl
+import hashlib
+import json
+import logging
+import os
+import re
+import shutil
+import signal
+import subprocess
+import sys
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+
+PROVIDER = "opencode-cli"
+MODEL = "opencode/muse-spark-1.3-contributor-free"
+THINKING = "high"
+
+LOGGER_NAME = "my-agent-run"
+logger = logging.getLogger(LOGGER_NAME)
+
+
+def timestamp() -> str:
+    return datetime.now().astimezone().isoformat(timespec="seconds")
+
+
+def state_root() -> Path:
+    xdg_state_home = os.environ.get("XDG_STATE_HOME")
+    if xdg_state_home:
+        return Path(xdg_state_home).expanduser() / "pi-task-agents"
+
+    return Path.home() / ".local" / "state" / "pi-task-agents"
+
+
+def agent_id(title: str) -> str:
+    slug = re.sub(r"[^A-Za-z0-9._-]+", "-", title)
+    slug = slug.strip("-._")[:60] or "agent"
+
+    digest = hashlib.sha256(title.encode("utf-8")).hexdigest()[:16]
+
+    return f"{slug}-{digest}"
+
+
+def configure_console_logging(verbose: bool) -> None:
+    logger.setLevel(logging.DEBUG)
+
+    console = logging.StreamHandler(sys.stderr)
+    console.setLevel(logging.DEBUG if verbose else logging.INFO)
+    console.setFormatter(
+        logging.Formatter(
+            "%(levelname)s: %(message)s",
+        )
+    )
+
+    logger.addHandler(console)
+
+
+def configure_file_logging(log_path: Path) -> None:
+    file_handler = logging.FileHandler(
+        log_path,
+        encoding="utf-8",
+    )
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(
+        logging.Formatter(
+            "%(asctime)s %(levelname)s %(message)s",
+        )
+    )
+
+    logger.addHandler(file_handler)
+
+
+def extract_assistant_text(message: Any) -> str | None:
+    """
+    Extract visible assistant text only.
+
+    Thinking blocks, tool calls, tool results, images, and other content
+    types are deliberately ignored.
+    """
+    if not isinstance(message, dict):
+        return None
+
+    if message.get("role") != "assistant":
+        return None
+
+    content = message.get("content")
+
+    if isinstance(content, str):
+        text = content.strip()
+        return text or None
+
+    if not isinstance(content, list):
+        return None
+
+    parts: list[str] = []
+
+    for block in content:
+        if not isinstance(block, dict):
+            continue
+
+        if (
+            block.get("type") == "text"
+            and isinstance(block.get("text"), str)
+        ):
+            text = block["text"].strip()
+
+            if text:
+                parts.append(text)
+
+    if not parts:
+        return None
+
+    return "\n\n".join(parts)
+
+
+def initialize_agent(
+    agent_dir: Path,
+    title: str,
+) -> None:
+    agent_dir.mkdir(parents=True, exist_ok=True)
+
+    metadata_path = agent_dir / "agent.json"
+    history_path = agent_dir / "history.md"
+
+    if not metadata_path.exists():
+        metadata_path.write_text(
+            json.dumps(
+                {
+                    "title": title,
+                    "provider": PROVIDER,
+                    "model": MODEL,
+                    "created_at": timestamp(),
+                },
+                indent=2,
+                ensure_ascii=False,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+    if not history_path.exists():
+        history_path.write_text(
+            f"# {title}\n",
+            encoding="utf-8",
+        )
+
+
+def append_user_prompt(
+    history_path: Path,
+    prompt: str,
+) -> None:
+    with history_path.open("a", encoding="utf-8") as f:
+        f.write(f"\n\n## User — {timestamp()}\n\n")
+        f.write(prompt.rstrip())
+        f.write("\n")
+
+
+def append_assistant_answer(
+    history_path: Path,
+    answer: str,
+) -> None:
+    with history_path.open("a", encoding="utf-8") as f:
+        f.write(f"\n## Assistant — {timestamp()}\n\n")
+        f.write(answer.rstrip())
+        f.write("\n")
+
+
+def run_agent(
+    *,
+    prompt: str,
+    session_dir: Path,
+) -> tuple[int, str | None]:
+    command = [
+        "pi",
+        "--mode",
+        "json",
+        "--provider",
+        PROVIDER,
+        "--model",
+        MODEL,
+        "--thinking",
+        THINKING,
+        "--session-dir",
+        str(session_dir),
+        "--continue",
+        prompt,
+    ]
+
+    logger.info("Starting Pi")
+    logger.info("Provider: %s", PROVIDER)
+    logger.info("Model: %s", MODEL)
+    logger.info("Thinking: %s", THINKING)
+
+    logger.debug(
+        "Command: %s",
+        " ".join(command[:-1] + ["<PROMPT>"]),
+    )
+
+    try:
+        process = subprocess.Popen(
+            command,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=None,
+            text=True,
+            encoding="utf-8",
+            bufsize=1,
+        )
+    except FileNotFoundError:
+        logger.exception("Could not execute pi")
+        return 127, None
+
+    logger.info("Pi process started with PID %d", process.pid)
+
+    assert process.stdout is not None
+
+    final_answer: str | None = None
+
+    try:
+        for raw_line in process.stdout:
+            line = raw_line.strip()
+
+            if not line:
+                continue
+
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                logger.warning(
+                    "Received non-JSON output from Pi: %s",
+                    line,
+                )
+                continue
+
+            event_type = event.get("type")
+            logger.debug("Pi event: %s", event_type)
+
+            if event_type == "message_end":
+                text = extract_assistant_text(event.get("message"))
+
+                if text is not None:
+                    final_answer = text
+                    logger.debug(
+                        "Captured assistant message (%d characters)",
+                        len(text),
+                    )
+
+        return_code = process.wait()
+
+    except KeyboardInterrupt:
+        logger.warning("Interrupted; sending SIGINT to Pi")
+
+        process.send_signal(signal.SIGINT)
+
+        try:
+            return_code = process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            logger.warning(
+                "Pi did not exit after SIGINT; killing process"
+            )
+            process.kill()
+            process.wait()
+            return_code = 130
+
+    logger.info("Pi exited with status %d", return_code)
+
+    return return_code, final_answer
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Run a persistent named Pi agent. "
+            "Each --title has its own conversation context and history."
+        )
+    )
+
+    parser.add_argument(
+        "--title",
+        required=True,
+        help="Persistent agent identity.",
+    )
+
+    parser.add_argument(
+        "--prompt",
+        required=True,
+        help="Prompt to send as the next turn.",
+    )
+
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Show debug-level wrapper diagnostics.",
+    )
+
+    args = parser.parse_args()
+
+    configure_console_logging(args.verbose)
+
+    title = args.title.strip()
+
+    if not title:
+        logger.error("--title must not be empty")
+        return 1
+
+    if shutil.which("pi") is None:
+        logger.error("pi was not found in PATH")
+        return 127
+
+    if shutil.which("opencode") is None:
+        logger.error(
+            "opencode was not found in PATH; "
+            "the opencode-cli Pi provider requires it"
+        )
+        return 127
+
+    root = state_root()
+    agent_dir = root / agent_id(title)
+
+    session_dir = agent_dir / "sessions"
+    history_path = agent_dir / "history.md"
+    run_log_path = agent_dir / "run.log"
+    metadata_path = agent_dir / "agent.json"
+    lock_path = agent_dir / "lock"
+
+    initialize_agent(agent_dir, title)
+    session_dir.mkdir(parents=True, exist_ok=True)
+
+    configure_file_logging(run_log_path)
+
+    logger.info('Agent: "%s"', title)
+    logger.info("Agent state: %s", agent_dir)
+    logger.info("Conversation history: %s", history_path)
+    logger.info("Operational log: %s", run_log_path)
+    logger.info("Pi sessions: %s", session_dir)
+    logger.debug("Metadata: %s", metadata_path)
+
+    with lock_path.open("w") as lock_file:
+        try:
+            fcntl.flock(
+                lock_file.fileno(),
+                fcntl.LOCK_EX | fcntl.LOCK_NB,
+            )
+        except BlockingIOError:
+            logger.error(
+                'Agent "%s" is already running',
+                title,
+            )
+            return 1
+
+        logger.info("Appending user prompt to history")
+        append_user_prompt(history_path, args.prompt)
+
+        return_code, final_answer = run_agent(
+            prompt=args.prompt,
+            session_dir=session_dir,
+        )
+
+        if final_answer is not None:
+            logger.info(
+                "Appending final assistant answer to history"
+            )
+
+            append_assistant_answer(
+                history_path,
+                final_answer,
+            )
+
+            print(final_answer, flush=True)
+
+        else:
+            logger.warning(
+                "Pi produced no final assistant text; "
+                "nothing was appended as an assistant answer"
+            )
+
+        if return_code != 0:
+            logger.error(
+                "Agent run failed with exit status %d",
+                return_code,
+            )
+        else:
+            logger.info("Agent run completed successfully")
+
+        return return_code
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
