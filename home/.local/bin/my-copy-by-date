@@ -1,14 +1,104 @@
 #!/usr/bin/env python3
 
 import argparse
+import json
 import logging
+import os
+import re
 import shutil
+import stat
+import subprocess
 import sys
+from dataclasses import dataclass
 from datetime import datetime, time
 from pathlib import Path
 
 
 log = logging.getLogger("my-copy-by-date")
+REMOTE_RE = re.compile(r"^(?P<host>[^/:\s]+@[^/:\s]+):(?P<path>.+)$")
+
+REMOTE_SCAN_PROGRAM = r'''
+import json
+import os
+import stat
+import sys
+
+source_arg = sys.argv[1]
+start = float(sys.argv[2])
+end = float(sys.argv[3])
+source = os.path.abspath(os.path.expanduser(source_arg))
+
+if not os.path.isdir(source):
+    print(f"source directory does not exist: {source_arg}", file=sys.stderr)
+    raise SystemExit(2)
+
+examined = 0
+candidates = []
+
+for directory, _, filenames in os.walk(source):
+    for filename in filenames:
+        full_path = os.path.join(directory, filename)
+        examined += 1
+        try:
+            metadata = os.lstat(full_path)
+        except OSError as exc:
+            print(f"warning: could not inspect {full_path}: {exc}", file=sys.stderr)
+            continue
+
+        if not stat.S_ISREG(metadata.st_mode):
+            continue
+
+        modified = metadata.st_mtime
+        if start <= modified <= end:
+            candidates.append(
+                {
+                    "path": os.path.relpath(full_path, source),
+                    "mtime": modified,
+                }
+            )
+
+json.dump({"source": source, "examined": examined, "candidates": candidates}, sys.stdout)
+'''
+
+
+@dataclass(frozen=True)
+class Location:
+    host: str | None
+    path: str
+
+    @property
+    def remote(self) -> bool:
+        return self.host is not None
+
+    def display(self) -> str:
+        if self.remote:
+            return f"{self.host}:{self.path}"
+        return self.path
+
+    def rsync_source(self) -> str:
+        path = self.path.rstrip("/") + "/"
+        if self.remote:
+            return f"{self.host}:{path}"
+        return path
+
+    def rsync_destination(self) -> str:
+        path = self.path.rstrip("/") + "/"
+        if self.remote:
+            return f"{self.host}:{path}"
+        return path
+
+
+@dataclass(frozen=True)
+class Candidate:
+    path: str
+    mtime: float
+
+
+def parse_location(value: str) -> Location:
+    match = REMOTE_RE.match(value)
+    if match:
+        return Location(match.group("host"), match.group("path"))
+    return Location(None, value)
 
 
 def parse_datetime(value: str, *, is_end: bool) -> float:
@@ -43,95 +133,229 @@ def parse_range(value: str) -> tuple[float, float]:
     return start, end
 
 
-def find_candidates(source: Path, start: float, end: float) -> tuple[list[Path], int]:
-    log.info("Finding candidate files in %s", source)
+def format_timestamp(timestamp: float) -> str:
+    return datetime.fromtimestamp(timestamp).isoformat(sep=" ", timespec="seconds")
 
-    candidates: list[Path] = []
+
+def find_local_candidates(
+    source: Location,
+    start: float,
+    end: float,
+) -> tuple[list[Candidate], int, Location]:
+    root = Path(source.path).expanduser().resolve()
+    normalized_source = Location(None, str(root))
+
+    if not root.is_dir():
+        raise RuntimeError(f"source directory does not exist: {root}")
+
+    log.info("Finding candidate files locally in %s", root)
+
+    candidates: list[Candidate] = []
     examined = 0
 
-    for path in source.rglob("*"):
-        if not path.is_file():
-            continue
+    for directory, _, filenames in os.walk(root):
+        for filename in filenames:
+            path = Path(directory) / filename
+            examined += 1
+            try:
+                metadata = path.lstat()
+            except OSError as exc:
+                log.warning("Could not inspect %s: %s", path, exc)
+                continue
 
-        examined += 1
+            if not stat.S_ISREG(metadata.st_mode):
+                continue
 
-        try:
-            modified = path.stat().st_mtime
-        except OSError as exc:
-            log.warning("Could not inspect %s: %s", path, exc)
-            continue
+            modified = metadata.st_mtime
+            if start <= modified <= end:
+                relative = os.path.relpath(path, root)
+                candidates.append(Candidate(relative, modified))
+                log.debug(
+                    "Candidate: %s (modified %s)",
+                    relative,
+                    format_timestamp(modified),
+                )
 
-        if start <= modified <= end:
-            candidates.append(path)
-            log.debug(
-                "Candidate: %s (modified %s)",
-                path,
-                datetime.fromtimestamp(modified).isoformat(sep=" ", timespec="seconds"),
-            )
-
-    log.info("Examined %d file(s)", examined)
-    log.info("Found %d candidate file(s)", len(candidates))
-    return candidates, examined
+    return candidates, examined, normalized_source
 
 
-def copy_candidates(
-    candidates: list[Path],
-    source: Path,
-    destination: Path,
-) -> tuple[int, int]:
-    log.info("Creating destination directory if needed: %s", destination)
-    destination.mkdir(parents=True, exist_ok=True)
+def find_remote_candidates(
+    source: Location,
+    start: float,
+    end: float,
+) -> tuple[list[Candidate], int, Location]:
+    assert source.host is not None
 
-    log.info("Copying %d candidate file(s)", len(candidates))
+    log.info("Finding candidate files on %s via SSH", source.host)
+    log.debug("Remote source directory: %s", source.path)
 
-    copied = 0
-    failed = 0
+    remote_command = "python3 - " + " ".join(
+        [
+            shlex_quote(source.path),
+            shlex_quote(str(start)),
+            shlex_quote(str(end)),
+        ]
+    )
 
-    for index, src in enumerate(candidates, start=1):
-        relative = src.relative_to(source)
-        dst = destination / relative
+    result = subprocess.run(
+        ["ssh", source.host, remote_command],
+        input=REMOTE_SCAN_PROGRAM,
+        text=True,
+        capture_output=True,
+    )
 
-        try:
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            log.debug(
-                "[%d/%d] Copying %s -> %s",
-                index,
-                len(candidates),
-                src,
-                dst,
-            )
-            shutil.copy2(src, dst)
-            copied += 1
-        except OSError as exc:
-            failed += 1
-            log.error(
-                "[%d/%d] Failed to copy %s: %s",
-                index,
-                len(candidates),
-                src,
-                exc,
-            )
+    if result.stderr:
+        for line in result.stderr.splitlines():
+            if result.returncode == 0:
+                log.warning("Remote scan: %s", line)
+            else:
+                log.error("Remote scan: %s", line)
 
-    return copied, failed
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"remote candidate search failed on {source.host} with exit status "
+            f"{result.returncode}"
+        )
+
+    try:
+        payload = json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(
+            f"remote candidate search on {source.host} returned invalid data"
+        ) from exc
+
+    candidates = [
+        Candidate(item["path"], float(item["mtime"])) for item in payload["candidates"]
+    ]
+
+    for candidate in candidates:
+        log.debug(
+            "Candidate: %s (modified %s)",
+            candidate.path,
+            format_timestamp(candidate.mtime),
+        )
+
+    normalized_source = Location(source.host, payload["source"])
+    return candidates, int(payload["examined"]), normalized_source
+
+
+def shlex_quote(value: str) -> str:
+    # Keep the import surface small while still safely constructing the one command
+    # string that OpenSSH passes to the remote shell.
+    import shlex
+
+    return shlex.quote(value)
+
+
+def find_candidates(
+    source: Location,
+    start: float,
+    end: float,
+) -> tuple[list[Candidate], int, Location]:
+    if source.remote:
+        return find_remote_candidates(source, start, end)
+    return find_local_candidates(source, start, end)
+
+
+def normalize_destination(destination: Location) -> Location:
+    if destination.remote:
+        return destination
+    return Location(None, str(Path(destination.path).expanduser().resolve()))
+
+
+def count_rsync_transfers(stdout: str) -> int:
+    match = re.search(
+        r"^Number of regular files transferred:\s+([0-9,]+)$",
+        stdout,
+        flags=re.MULTILINE,
+    )
+    if match is None:
+        raise RuntimeError("could not determine rsync transfer count from its statistics")
+    return int(match.group(1).replace(",", ""))
+
+
+def run_rsync(
+    source: Location,
+    destination: Location,
+    candidates: list[Candidate],
+    *,
+    verbose: bool,
+) -> int:
+    command = [
+        "rsync",
+        "--archive",
+        "--recursive",
+        "--partial",
+        "--mkpath",
+        "--from0",
+        "--files-from=-",
+        "--stats",
+    ]
+
+    if verbose:
+        command.extend(["--itemize-changes", "--human-readable"])
+
+    command.extend([source.rsync_source(), destination.rsync_destination()])
+
+    log.info("Copying %d candidate file(s) with rsync", len(candidates))
+    log.debug("Running: %s", " ".join(shlex_quote(arg) for arg in command))
+
+    file_list = b"".join(os.fsencode(candidate.path) + b"\0" for candidate in candidates)
+
+    env = os.environ.copy()
+    env["LC_ALL"] = "C"
+    result = subprocess.run(
+        command,
+        input=file_list,
+        capture_output=True,
+        env=env,
+    )
+
+    stdout = result.stdout.decode(errors="replace")
+    stderr = result.stderr.decode(errors="replace")
+
+    if verbose and stdout:
+        for line in stdout.splitlines():
+            log.info("rsync: %s", line)
+
+    if stderr:
+        for line in stderr.splitlines():
+            if result.returncode == 0:
+                log.warning("rsync: %s", line)
+            else:
+                log.error("rsync: %s", line)
+
+    if result.returncode != 0:
+        raise RuntimeError(f"rsync failed with exit status {result.returncode}")
+
+    return count_rsync_transfers(stdout)
+
+
+def require_program(name: str) -> None:
+    if shutil.which(name) is None:
+        raise RuntimeError(f"required program not found in PATH: {name}")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Copy files whose modification time falls within a date range."
+        description=(
+            "Copy files whose modification time falls within a date range. "
+            "Locations may be local paths or user@host:path remote paths."
+        )
     )
     parser.add_argument(
         "--from",
         dest="source",
-        type=Path,
         required=True,
-        help="source directory",
+        metavar="PATH",
+        help="source directory, optionally user@host:path",
     )
     parser.add_argument(
         "--to",
         dest="destination",
-        type=Path,
         required=True,
-        help="destination directory",
+        metavar="PATH",
+        help="destination directory, optionally user@host:path",
     )
     parser.add_argument(
         "--range",
@@ -145,7 +369,7 @@ def main() -> int:
         "-v",
         "--verbose",
         action="store_true",
-        help="show individual candidate and copy operations",
+        help="show individual candidates, transfers, and the rsync command",
     )
 
     args = parser.parse_args()
@@ -155,36 +379,50 @@ def main() -> int:
         format="%(message)s",
     )
 
-    source = args.source.expanduser().resolve()
-    destination = args.destination.expanduser().resolve()
+    source = parse_location(args.source)
+    destination = normalize_destination(parse_location(args.destination))
     start, end = args.date_range
 
-    if not source.is_dir():
-        parser.error(f"source directory does not exist: {source}")
+    if source.remote and destination.remote:
+        parser.error(
+            "rsync cannot copy directly between two remote hosts; one side must be local"
+        )
 
-    log.info("Source:      %s", source)
-    log.info("Destination: %s", destination)
-    log.info(
-        "Date range:  %s .. %s",
-        datetime.fromtimestamp(start).isoformat(sep=" ", timespec="seconds"),
-        datetime.fromtimestamp(end).isoformat(sep=" ", timespec="seconds"),
-    )
+    try:
+        require_program("rsync")
+        if source.remote or destination.remote:
+            require_program("ssh")
 
-    candidates, _ = find_candidates(source, start, end)
+        log.info("Source:      %s", source.display())
+        log.info("Destination: %s", destination.display())
+        log.info("Date range:  %s .. %s", format_timestamp(start), format_timestamp(end))
 
-    if not candidates:
-        log.info("Nothing to copy.")
+        candidates, examined, source = find_candidates(source, start, end)
+
+        log.info("Examined %d file(s)", examined)
+        log.info("Found %d candidate file(s)", len(candidates))
+
+        if not candidates:
+            log.info("Nothing to copy.")
+            return 0
+
+        transferred = run_rsync(
+            source,
+            destination,
+            candidates,
+            verbose=args.verbose,
+        )
+
+        log.info("")
+        log.info("Done.")
+        log.info("Candidates:  %d", len(candidates))
+        log.info("Transferred: %d", transferred)
+        log.info("Unchanged:   %d", len(candidates) - transferred)
         return 0
 
-    copied, failed = copy_candidates(candidates, source, destination)
-
-    log.info("")
-    log.info("Done.")
-    log.info("Candidates: %d", len(candidates))
-    log.info("Copied:     %d", copied)
-    log.info("Failed:     %d", failed)
-
-    return 1 if failed else 0
+    except RuntimeError as exc:
+        log.error("Error: %s", exc)
+        return 1
 
 
 if __name__ == "__main__":
