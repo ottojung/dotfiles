@@ -49,6 +49,7 @@
   transmission ;; torrent server
   beep ;; makes sounds in the terminal
   file ;; provies information about files
+  tar ;; the tar archive
   )
 
 (define-packages cli-programs
