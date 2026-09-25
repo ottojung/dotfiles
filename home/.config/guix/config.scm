@@ -50,6 +50,8 @@
   beep ;; makes sounds in the terminal
   file ;; provies information about files
   tar ;; the tar archive
+  inetutils ;; for things like the hostname
+  coreutils ;; for things like readlink and lots of others
   )
 
 (define-packages cli-programs
