@@ -35,8 +35,8 @@
   rlwrap ;; provides `readline` functionality for CLI programs
   tree ;; like `ls` but recursive
   entr ;; runs command when file is updated
-  ;; wget ;; downloads stuff from the internet, like curl
-  ;; curl ;; downloads stuff from the internet, like wget
+  wget ;; downloads stuff from the internet, like curl
+  curl ;; downloads stuff from the internet, like wget
   libnotify ;; provides `notify-send'
   sox ;; provides `play' command
   figlet ;; transforms text into nice drawings
