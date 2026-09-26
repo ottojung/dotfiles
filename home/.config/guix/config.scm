@@ -27,6 +27,7 @@
   man-db ;; default manual
   stow ;; a tool to deploy dotfiles
   ;; bc ;; very old calculator, provides bc and dc. Use awk instead
+  gawk ;; the GNU AWK implementation
   fzf ;; command line fuzzy finder
   openssl ;; protocols & encryption stuff
   openssh ;; allows to ssh on servers
@@ -53,6 +54,14 @@
   tar ;; the tar archive
   inetutils ;; for things like the hostname
   coreutils ;; for things like readlink and lots of others
+  sed ;; the default string replacement command
+  grep ;; the default string search command
+  ripgrep ;; a better strings search command
+  util-linux-with-udev ;; assorted basic system utilities
+  patch ;; for changes with diff
+  file ;; inspecting files
+  gzip ;; basic compression
+  xz ;; more compression
   )
 
 (define-packages cli-programs
