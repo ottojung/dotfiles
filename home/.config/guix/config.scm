@@ -252,7 +252,6 @@
 (define marceline
   (patch-pkglist
    + base
-   - openssh ;; weird DNS handling
    - man-db ;; missing lost of manual entries
    + ruby
    - texlive
