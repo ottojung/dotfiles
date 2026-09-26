@@ -21,6 +21,7 @@
   less ;; literally the "less" command
   ncurses ;; provides "clear" and "reset"
   dash ;; a POSIX-compliant shell
+  bash ;; a standard GNU system shell
   time ;; measure time taken by programs
   pv ;; measures progress of the unix pipe
   man-db ;; default manual
