@@ -62,6 +62,7 @@
   file ;; inspecting files
   gzip ;; basic compression
   xz ;; more compression
+  which ;; a worse `command -v`.
   )
 
 (define-packages cli-programs
