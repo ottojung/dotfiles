@@ -274,9 +274,6 @@
    + e-mail
    - drivers
    + alacritty
-   - guix-packages
-   + glibc-locales
-   + nss-certs ;; HTTPS certificates
    ))
 
 
