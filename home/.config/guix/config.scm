@@ -97,6 +97,7 @@
   lynx ;; CLI browser
   weechat ;; CLI IRC client
   ;; docker docker-cli docker-compose ;; Docker stuff
+  podman podman-compose ;; rootless Docker stuff
   ;; podman ;; podman stuff. NOTE: does not work on Guix at the moment.
   restic ;; backup program with deduplication and incrementality.
   omiya-miyka ;; my workspace manager
