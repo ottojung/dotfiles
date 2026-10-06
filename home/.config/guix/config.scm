@@ -275,6 +275,8 @@
    + e-mail
    - drivers
    + alacritty
+   - xinit ;; provided by the distro
+   - xdg-utils ;; provided by the distro
    ))
 
 
