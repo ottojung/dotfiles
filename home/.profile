@@ -21,6 +21,18 @@ then
 	source_guix_profile "$HOME/.guix-profile"
 fi
 
+# Guix-installed TLS clients need a CA bundle even on a foreign distro.
+# Keep curl, libcurl users (including Git), and OpenSSL on the same trust store.
+guix_ca_dir="$HOME/.guix-profile/etc/ssl/certs"
+if test -r "$guix_ca_dir/ca-certificates.crt"
+then
+    export SSL_CERT_DIR="$guix_ca_dir"
+    export SSL_CERT_FILE="$guix_ca_dir/ca-certificates.crt"
+    export CURL_CA_BUNDLE="$SSL_CERT_FILE"
+    export GIT_SSL_CAINFO="$SSL_CERT_FILE"
+fi
+unset guix_ca_dir
+
 ###########
 ## PATHS ##
 ###########
