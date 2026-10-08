@@ -15,6 +15,7 @@
 (use-package-modules haskell haskell-xyz wm gcc)
 
 (define-packages cli-tools
+  nss-certs ;; HTTPS certificates
   findutils ;; literally the "find" command
   diffutils ;; literally the "diff" command
   procps ;; commands like "ps", "top", "pkill", etc
@@ -239,7 +240,6 @@
 (define-packages guix-packages
   gnupg ;; gpg for pgs
   pinentry ;; needed for GPG for some reason
-  nss-certs ;; HTTPS certificates used by Guix-installed programs
   glibc-locales ;; provides locales
   ;; glibc-utf8-locales-2.29 ;; provides utf8 locales
   ;; localed ;; provides systemd's localectl command
