@@ -1,2 +1,0 @@
-#! /bin/sh
-ssh -J root@"$MY_SERVER_NAME" -p 59930 user1@localhost -- "$@"
