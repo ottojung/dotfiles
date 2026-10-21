@@ -104,7 +104,13 @@
     (service wpa-supplicant-service-type)
     (service network-manager-service-type)
     (service containerd-service-type)
-    (service elogind-service-type)
+    ;; Closing the lid should only blank the built-in screen, never suspend
+    ;; the headless server (whether on battery, AC power, or docked).
+    (service elogind-service-type
+             (elogind-configuration
+              (handle-lid-switch 'ignore)
+              (handle-lid-switch-external-power 'ignore)
+              (handle-lid-switch-docked 'ignore)))
     (service docker-service-type)
     (simple-service 'billy-startup
                     shepherd-root-service-type
