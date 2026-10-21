@@ -33,21 +33,6 @@
                      (equal? "/usr/bin/env" (car entry)))
                    files)))))
 
-;; Shepherd does not inherit interactive shell initialization.  Give the
-;; scripts the paths and environment variables they actually rely on.
-(define my-service-path
-  (string-append "/home/user1/.local/bin:"
-                 "/home/user1/.guix-profile/bin:"
-                 "/home/user1/.config/guix/current/bin:"
-                 "/run/current-system/profile/bin"))
-
-(define (my-service-environment)
-  (list "HOME=/home/user1"
-        "USER=user1"
-        "LOGNAME=user1"
-        "MY_MEDIA=/home/user1/my/media"
-        (string-append "PATH=" my-service-path)))
-
 (define (billy-startup-services)
   (list
    (shepherd-service
@@ -55,15 +40,14 @@
     (provision '(billy-ssh-tunnel))
     (requirement '(user-processes networking))
     (start #~(make-forkexec-constructor
-              '("/home/user1/.local/bin/my-make-ssh-tunnel")
+              '("/bin/sh" "-c" ". \"$HOME/.profile\"; exec my-make-ssh-tunnel")
               #:user "user1"
               #:group "user1g"
               #:directory "/home/user1"
               #:file-creation-mask #o077
               #:log-file "/home/user1/.local/state/billy-ssh-tunnel.log"
               #:environment-variables
-              (cons "MY_SERVER_NAME=vau.place"
-                    '#$(my-service-environment))))
+              '("HOME=/home/user1" "PATH=/run/current-system/profile/bin:/bin")))
     (stop #~(make-kill-destructor))
     (respawn? #t))
 
@@ -72,14 +56,14 @@
     (provision '(billy-lubko-container))
     (requirement '(user-processes networking dockerd))
     (start #~(make-forkexec-constructor
-              '("/home/user1/.local/bin/my-lubko-container-start")
+              '("/bin/sh" "-c" ". \"$HOME/.profile\"; exec my-lubko-container-start")
               #:user "user1"
               #:group "user1g"
               #:supplementary-groups '("docker")
               #:directory "/home/user1"
               #:file-creation-mask #o077
               #:log-file "/home/user1/.local/state/billy-lubko-container.log"
-              #:environment-variables '#$(my-service-environment)))
+              #:environment-variables '("HOME=/home/user1" "PATH=/run/current-system/profile/bin:/bin")))
     (stop #~(make-kill-destructor))
     (respawn? #t))))
 
